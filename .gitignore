@@ -1,0 +1,27 @@
+# various extensions left behind
+*.sw[op]
+*-
+*-HEAD
+*-git
+*-patched
+*-pristine
+*.bak
+*.cxx-*
+*.git
+*.hxx-*
+*.log
+*.orig
+*.patched
+*.pristine
+*.pyc
+*.rej
+*~
+.\#*
+*.o
+*.DS_Store
+
+.build/
+build/
+bin/
+*.kdev4
+.kdev4*
