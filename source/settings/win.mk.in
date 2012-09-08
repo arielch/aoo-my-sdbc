@@ -1,0 +1,43 @@
+#**************************************************************
+#
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing,
+#  software distributed under the License is distributed on an
+#  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#  KIND, either express or implied.  See the License for the
+#  specific language governing permissions and limitations
+#  under the License.
+#
+#**************************************************************
+
+# Unx utilities for Windows:
+# http://sourceforge.net/projects/unxutils/files/latest/download
+
+# Extract external libraries
+# This tar does not understand -z, so we need zcat too
+TAR=C:\UnxUtils\usr\local\wbin\tar.exe
+ZCAT=C:\UnxUtils\usr\local\wbin\zcat.exe
+
+# patching the external libraries
+PATCH=C:\UnxUtils\usr\local\wbin\patch.exe
+
+# get rid of echoing XML files
+CAT=C:\UnxUtils\usr\local\wbin\cat.exe
+SED=C:\UnxUtils\usr\local\wbin\sed.exe
+
+# we could use xcopy to copy recursively, but it sucks
+COPY=C:\UnxUtils\usr\local\wbin\cp.exe
+COPYRECURSIVE=$(COPY) -rf
+
+# MySQL Connector/C is built with CMake
+# http://www.cmake.org/cmake/resources/software.html
+CMAKE=C:\cmake-2.8.9-win32-x86\bin\cmake.exe

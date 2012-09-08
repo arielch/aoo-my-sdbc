@@ -20,6 +20,13 @@
 *.o
 *.DS_Store
 
+*.tar.gz
+*.zip
+
+/source/settings/linux.mk
+/source/settings/win.mk
+/source/settings/macos.mk
+
 .build/
 build/
 bin/

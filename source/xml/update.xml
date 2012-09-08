@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<description xmlns="http://openoffice.org/extensions/description/2006" xmlns:d="http://openoffice.org/extensions/description/2006" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <identifier value="#DESCRIPTION_IDENTIFIER#"/>
+    <version value="#EXTENSION_VERSION#"/>
+    <publisher>
+        <name xlink:href="#DESCRIPTION_PUBLISHER_URL#" lang="en">#DESCRIPTION_PUBLISHER_NAME#</name>
+    </publisher>
+    <update-download>
+        <src xlink:href="#UPDATE_DOWNLOAD#"/>
+    </update-download>
+    <release-notes>
+        <src xlink:href="#RELEASE_NOTES#" lang="en"/>
+    </release-notes>
+</description>
