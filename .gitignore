@@ -25,7 +25,7 @@
 
 /source/settings/linux.mk
 /source/settings/win.mk
-/source/settings/macos.mk
+/source/settings/mac.mk
 
 .build/
 build/

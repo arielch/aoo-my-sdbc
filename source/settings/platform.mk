@@ -32,9 +32,7 @@ else
 		EXTENSION_PLATFORM=freebsd_x86_64
 	else
 	ifeq "$(UNOPKG_PLATFORM)" "Linux_PowerPC"
-	EXTENSION_PLATFORM=linux_powerpc
-	#ifeq "$(UNOPKG_PLATFORM)" "Linux_SPARC"
-	#	EXTENSION_PLATFORM=
+		EXTENSION_PLATFORM=linux_powerpc
 	else
 	ifeq "$(UNOPKG_PLATFORM)" "Linux_x86"
 		EXTENSION_PLATFORM=linux_x86
@@ -49,6 +47,7 @@ else
 	else
 	ifeq "$(UNOPKG_PLATFORM)" "MacOSX_x86"
 		EXTENSION_PLATFORM=macosx_x86
+		include settings/mac.mk
 	else
 	ifeq "$(UNOPKG_PLATFORM)" "Solaris_SPARC"
 		EXTENSION_PLATFORM=solaris_sparc
@@ -70,6 +69,8 @@ else
 	endif
 endif
 
+#ifeq "$(UNOPKG_PLATFORM)" "Linux_SPARC"
+#	EXTENSION_PLATFORM=
 #ifeq "$(UNOPKG_PLATFORM)" "Solaris_SPARC64"
 #	EXTENSION_PLATFORM=
 #ifeq "$(UNOPKG_PLATFORM)" "kFreeBSD_x86"
