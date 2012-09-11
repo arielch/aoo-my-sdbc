@@ -222,12 +222,12 @@ namespace connectivity
 #define IMPLEMENT_SERVICE_INFO(classname, implasciiname, serviceasciiname)    \
     ::rtl::OUString SAL_CALL classname::getImplementationName() throw (::com::sun::star::uno::RuntimeException)    \
     {    \
-        return ::rtl::OUString::createFromAscii(implasciiname);    \
+        return ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM(implasciiname) );    \
     }    \
     ::com::sun::star::uno::Sequence< ::rtl::OUString > SAL_CALL classname::getSupportedServiceNames() throw(::com::sun::star::uno::RuntimeException)    \
     {    \
         ::com::sun::star::uno::Sequence< ::rtl::OUString > aSupported(1);    \
-        aSupported[0] = ::rtl::OUString::createFromAscii(serviceasciiname);    \
+        aSupported[0] = ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( serviceasciiname ) );    \
         return aSupported;    \
     }    \
     sal_Bool SAL_CALL classname::supportsService(const ::rtl::OUString& _rServiceName) throw(::com::sun::star::uno::RuntimeException)    \

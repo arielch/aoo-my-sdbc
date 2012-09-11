@@ -60,6 +60,7 @@ using namespace com::sun::star::beans;
 using namespace com::sun::star::sdbc;
 using ::osl::MutexGuard;
 using ::rtl::OUString;
+using ::rtl::OUStringToOString;
 
 
 #define MYSQLC_URI_PREFIX "sdbc:mysqlc:"
@@ -127,7 +128,7 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
     // parse url. Url has the following format:
     // external server: sdbc:mysqlc:[hostname]:[port]/[dbname]
 
-    if (!url.compareTo(OUString::createFromAscii(MYSQLC_URI_PREFIX), sizeof(MYSQLC_URI_PREFIX)-1)) {
+    if ( !url.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLC_URI_PREFIX ) ) ) {
         nIndex = 12;
     } else {
         bEmbedded = sal_True;
@@ -161,19 +162,19 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
 
     m_settings.connectionURL = url;
     for (;pIter != pEnd;++pIter) {
-        if (!pIter->Name.compareToAscii("user")) {
+        if (!pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("user"))) {
             OSL_VERIFY( pIter->Value >>= aUser );
-        } else if (!pIter->Name.compareToAscii("password")) {
+        } else if (!pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("password"))) {
             OSL_VERIFY( pIter->Value >>= aPass );
-        } else if (!pIter->Name.compareToAscii("LocalSocket")) {
+        } else if (!pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("LocalSocket"))) {
             OSL_VERIFY( pIter->Value >>= sUnixSocket );
             unixSocketPassed = true;
-        } else if (!pIter->Name.compareToAscii("NamedPipe")) {
+        } else if (!pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("NamedPipe"))) {
             OSL_VERIFY( pIter->Value >>= sNamedPipe );
             namedPipePassed = true;
-        } else if ( !pIter->Name.compareToAscii("PublicConnectionURL")) {
+        } else if ( !pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("PublicConnectionURL"))) {
             OSL_VERIFY( pIter->Value >>= m_settings.connectionURL );
-        } else if ( !pIter->Name.compareToAscii("NewURL")) {    // legacy name for "PublicConnectionURL"
+        } else if ( !pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("NewURL"))) {    // legacy name for "PublicConnectionURL"
             OSL_VERIFY( pIter->Value >>= m_settings.connectionURL );
         }
     }
