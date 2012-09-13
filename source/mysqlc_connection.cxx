@@ -128,6 +128,22 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
     // parse url. Url has the following format:
     // external server: sdbc:mysqlc:[hostname]:[port]/[dbname]
 
+    // TODO the url should be parsed, and info taken into account!
+    //
+    // The Application should send a well-formed URL when choosing a
+    // socket/named-pipe, actually it sends sdbc:mysqlc:localhost:3306/dbname
+    // and the socket name is sent to the Driver on the property
+    // "LocalSocket"/"NamedPipe" ONLY in the Wizard, but NOT upon connection
+    //
+    // URL Protocols (see MySQL_Connection::init)
+    //
+    //  Unix Socket:        unix://
+    //  Win Named Pipe:     pipe://
+    //  TCP:                tcp://
+    //
+    // See also our Properties and Features in Drivers.xcu
+
+    // TODO this makes no sense
     if ( !url.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLC_URI_PREFIX ) ) ) {
         nIndex = 12;
     } else {
@@ -156,9 +172,7 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
     // get user and password for mysql connection
     const PropertyValue *pIter    = info.getConstArray();
     const PropertyValue *pEnd    = pIter + info.getLength();
-    OUString aUser, aPass, sUnixSocket, sNamedPipe;
-    bool unixSocketPassed = false;
-    bool namedPipePassed = false;
+    OUString aUser, aPass, sSocketOrPipe;
 
     m_settings.connectionURL = url;
     for (;pIter != pEnd;++pIter) {
@@ -166,12 +180,13 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
             OSL_VERIFY( pIter->Value >>= aUser );
         } else if (!pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("password"))) {
             OSL_VERIFY( pIter->Value >>= aPass );
+#ifdef UNX
         } else if (!pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("LocalSocket"))) {
-            OSL_VERIFY( pIter->Value >>= sUnixSocket );
-            unixSocketPassed = true;
+            OSL_VERIFY( pIter->Value >>= sSocketOrPipe );
+#else
         } else if (!pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("NamedPipe"))) {
-            OSL_VERIFY( pIter->Value >>= sNamedPipe );
-            namedPipePassed = true;
+            OSL_VERIFY( pIter->Value >>= sSocketOrPipe );
+#endif
         } else if ( !pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("PublicConnectionURL"))) {
             OSL_VERIFY( pIter->Value >>= m_settings.connectionURL );
         } else if ( !pIter->Name.compareToAscii(RTL_CONSTASCII_STRINGPARAM("NewURL"))) {    // legacy name for "PublicConnectionURL"
@@ -182,21 +197,34 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
     if (bEmbedded == sal_False) {
         try {
             sql::ConnectOptionsMap connProps;
-            ext_std::string host_str = OUStringToOString(aHostName, m_settings.encoding).getStr();
-            ext_std::string user_str = OUStringToOString(aUser, m_settings.encoding).getStr();
-            ext_std::string pass_str = OUStringToOString(aPass, m_settings.encoding).getStr();
+
+            // TODO check OUString length
+            ext_std::string user_str   = OUStringToOString(aUser, m_settings.encoding).getStr();
+            ext_std::string pass_str   = OUStringToOString(aPass, m_settings.encoding).getStr();
             ext_std::string schema_str = OUStringToOString(aDbName, m_settings.encoding).getStr();
-            connProps["hostName"] = sql::ConnectPropertyVal(host_str);
+
+            ext_std::string host_str;
+            sql::SQLString socket_str;
+
             connProps["userName"] = sql::ConnectPropertyVal(user_str);
             connProps["password"] = sql::ConnectPropertyVal(pass_str);
-            connProps["schema"] = sql::ConnectPropertyVal(schema_str);
-            connProps["port"] = sql::ConnectPropertyVal((int)(nPort));
-            if (unixSocketPassed) {
-                sql::SQLString socket_str = OUStringToOString(sUnixSocket, m_settings.encoding).getStr();
+            connProps["schema"]   = sql::ConnectPropertyVal(schema_str);
+
+            if (sSocketOrPipe.getLength()) {
+                socket_str = OUStringToOString(sSocketOrPipe, m_settings.encoding).getStr();
+                // TODO ConnectOptionsMap knows "pipe" too
                 connProps["socket"] = socket_str;
-            } else if (namedPipePassed) {
-                sql::SQLString pipe_str = OUStringToOString(sNamedPipe, m_settings.encoding).getStr();
-                connProps["socket"] = pipe_str;
+            } else {
+                // TODO we shouldn't convert "localhost" to "127.0.0.1"
+                // this will hide errors in Base because it will connect via
+                // TCP/IP with default port even if a socket/named pipe was set
+                // but ignored by Base
+                if (aHostName.equalsAsciiL(RTL_CONSTASCII_STRINGPARAM("localhost")))
+                    aHostName = rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("127.0.0.1"));
+
+                host_str   = OUStringToOString(aHostName, m_settings.encoding).getStr();
+                connProps["hostName"] = sql::ConnectPropertyVal(host_str);
+                connProps["port"]     = sql::ConnectPropertyVal((int)(nPort));
             }
 
 #ifndef SYSTEM_MYSQL
@@ -227,9 +255,10 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
 
             OSL_TRACE("clientlib=%s", mysqlLib.c_str());
 #endif
-
+            // TODO add host and socket/pipe
             OSL_TRACE("hostName=%s", host_str.c_str());
             OSL_TRACE("port=%i", int(nPort));
+            OSL_TRACE("socket/pipe=%s", socket_str.c_str());
             OSL_TRACE("userName=%s", user_str.c_str());
             OSL_TRACE("password=%s", pass_str.c_str());
             OSL_TRACE("schema=%s", schema_str.c_str());
