@@ -89,7 +89,7 @@ ODatabaseMetaData::ODatabaseMetaData(OConnection& _rCon)
     ,meta(_rCon.getConnectionSettings().cppConnection->getMetaData())
     ,identifier_quote_string_set(false)
 {
-    OSL_TRACE("ODatabaseMetaData::ODatabaseMetaData");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::ODatabaseMetaData");
     if (!m_rConnection.isCatalogUsed())
     {
         osl_incrementInterlockedCount(&m_refCount);
@@ -103,7 +103,7 @@ ODatabaseMetaData::ODatabaseMetaData(OConnection& _rCon)
 /* {{{ ODatabaseMetaData::~ODatabaseMetaData() -I- */
 ODatabaseMetaData::~ODatabaseMetaData()
 {
-    OSL_TRACE("ODatabaseMetaData::~ODatabaseMetaData");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::~ODatabaseMetaData");
 }
 /* }}} */
 
@@ -847,7 +847,7 @@ sal_Bool SAL_CALL ODatabaseMetaData::supportsTableCorrelationNames()
 sal_Bool SAL_CALL ODatabaseMetaData::supportsConvert(sal_Int32 /* fromType */, sal_Int32 /* toType */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::supportsConvert");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::supportsConvert");
     try {
         /* ToDo -> use supportsConvert( fromType, toType) */
         return meta->supportsConvert()? sal_True:sal_False;
@@ -1101,7 +1101,7 @@ sal_Bool SAL_CALL ODatabaseMetaData::supportsANSI92IntermediateSQL()
 OUString SAL_CALL ODatabaseMetaData::getURL()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getURL");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getURL");
     return m_rConnection.getConnectionSettings().connectionURL;
 }
 /* }}} */
@@ -1120,7 +1120,7 @@ OUString SAL_CALL ODatabaseMetaData::getUserName()
 OUString SAL_CALL ODatabaseMetaData::getDriverName()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getDriverName");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getDriverName");
     OUString aValue( RTL_CONSTASCII_USTRINGPARAM( "MySQL Connector/OO.org" ) );
     return aValue;
 }
@@ -1131,7 +1131,7 @@ OUString SAL_CALL ODatabaseMetaData::getDriverName()
 OUString SAL_CALL ODatabaseMetaData::getDriverVersion()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getDriverVersion");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getDriverVersion");
     static const OUString sVersion( RTL_CONSTASCII_USTRINGPARAM( "0.9.2" ) );
     return sVersion;
 }
@@ -1178,7 +1178,7 @@ OUString SAL_CALL ODatabaseMetaData::getSchemaTerm()
 sal_Int32 SAL_CALL ODatabaseMetaData::getDriverMajorVersion()
     throw(RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getDriverMajorVersion");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getDriverMajorVersion");
     return MYSQLC_VERSION_MAJOR;
 }
 /* }}} */
@@ -1188,7 +1188,7 @@ sal_Int32 SAL_CALL ODatabaseMetaData::getDriverMajorVersion()
 sal_Int32 SAL_CALL ODatabaseMetaData::getDefaultTransactionIsolation()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getDefaultTransactionIsolation");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getDefaultTransactionIsolation");
     try {
         switch (meta->getDefaultTransactionIsolation()) {
             case sql::TRANSACTION_SERIALIZABLE:        return TransactionIsolation::SERIALIZABLE;
@@ -1212,7 +1212,7 @@ sal_Int32 SAL_CALL ODatabaseMetaData::getDefaultTransactionIsolation()
 sal_Int32 SAL_CALL ODatabaseMetaData::getDriverMinorVersion()
     throw(RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getDriverMinorVersion");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getDriverMinorVersion");
     return MYSQLC_VERSION_MINOR;
 }
 /* }}} */
@@ -1366,7 +1366,7 @@ sal_Bool SAL_CALL ODatabaseMetaData::supportsResultSetType(sal_Int32 setType)
 sal_Bool SAL_CALL ODatabaseMetaData::supportsResultSetConcurrency(sal_Int32 setType, sal_Int32 concurrency)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::supportsResultSetConcurrency");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::supportsResultSetConcurrency");
     /* TODO: Check this out */
     try {
         return meta->supportsResultSetConcurrency(setType, concurrency==com::sun::star::sdbc::TransactionIsolation::READ_COMMITTED?
@@ -1479,7 +1479,7 @@ sal_Bool SAL_CALL ODatabaseMetaData::supportsBatchUpdates()
 Reference< XConnection > SAL_CALL ODatabaseMetaData::getConnection()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getConnection");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getConnection");
     return (Reference< XConnection >)&m_rConnection;
 }
 /* }}} */
@@ -1496,7 +1496,7 @@ Reference< XConnection > SAL_CALL ODatabaseMetaData::getConnection()
 Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTableTypes()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getTableTypes");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getTableTypes");
     const char * table_types[] = {"TABLE", "VIEW"};
     sal_Int32 requiredVersion[] = {0, 50000};
 
@@ -1521,7 +1521,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTableTypes()
 Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTypeInfo()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getTypeInfo");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getTypeInfo");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
 
     std::vector< std::vector< Any > > rRows;
@@ -1564,7 +1564,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTypeInfo()
 Reference< XResultSet > SAL_CALL ODatabaseMetaData::getCatalogs()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getCatalogs");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getCatalogs");
 
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
@@ -1599,7 +1599,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getCatalogs()
 Reference< XResultSet > SAL_CALL ODatabaseMetaData::getSchemas()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getSchemas");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getSchemas");
 
     Reference< XResultSet > xResultSet;
     std::vector< std::vector< Any > > rRows;
@@ -1651,7 +1651,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getColumnPrivileges(
         const OUString& columnNamePattern)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getColumnPrivileges");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getColumnPrivileges");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
 
@@ -1694,7 +1694,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getColumns(
         const OUString& columnNamePattern)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getColumns");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getColumns");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
     ext_std::string    cat(catalog.hasValue()? OUStringToOString(getStringFromAny(catalog), m_rConnection.getConnectionEncoding()).getStr():""),
@@ -1743,7 +1743,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTables(
         const Sequence< OUString >& types )
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getTables");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getTables");
 
     Reference< XResultSet > xResultSet;
     std::vector< std::vector< Any > > rRows;
@@ -1805,7 +1805,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getProcedureColumns(
         const OUString& /* columnNamePattern */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getProcedureColumns");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getProcedureColumns");
     // Currently there is no information available
     return NULL;
 }
@@ -1819,7 +1819,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getProcedures(
         const OUString& procedureNamePattern)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getProcedures");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getProcedures");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
 
@@ -1864,7 +1864,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getVersionColumns(
         const OUString& /* table */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getVersionColumns");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getVersionColumns");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
     lcl_setRows_throw(xResultSet, 16,rRows);
@@ -1880,7 +1880,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getExportedKeys(
         const OUString&  table )
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getExportedKeys");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getExportedKeys");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
     ext_std::string    cat(catalog.hasValue()? OUStringToOString(getStringFromAny(catalog), m_rConnection.getConnectionEncoding()).getStr():""),
@@ -1920,7 +1920,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getImportedKeys(
         const OUString& table)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getImportedKeys");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getImportedKeys");
 
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
@@ -1962,7 +1962,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getPrimaryKeys(
         const OUString& table)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getPrimaryKeys");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getPrimaryKeys");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
 
@@ -2005,7 +2005,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getIndexInfo(
         sal_Bool approximate)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getIndexInfo");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getIndexInfo");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
 
@@ -2048,7 +2048,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getBestRowIdentifier(
         sal_Bool nullable)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getBestRowIdentifier");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getBestRowIdentifier");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
 
@@ -2089,7 +2089,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTablePrivileges(
         const OUString& tableNamePattern)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getTablePrivileges");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getTablePrivileges");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
 
@@ -2154,7 +2154,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getCrossReference(
         const OUString& foreignTable)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getCrossReference");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getCrossReference");
     Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
     std::vector< std::vector< Any > > rRows;
 
@@ -2199,7 +2199,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getUDTs(
         const Sequence< sal_Int32 >& /* types */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("ODatabaseMetaData::getUDTs");
+    OSL_TRACE( "mysqlc::ODatabaseMetaData::getUDTs");
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("ODatabaseMetaData::getUDTs", *this);
     return NULL;
 }

@@ -42,7 +42,7 @@ OResultSetMetaData::~OResultSetMetaData()
 sal_Int32 SAL_CALL OResultSetMetaData::getColumnDisplaySize(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getColumnDisplaySize");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getColumnDisplaySize");
 
     try {
         meta->getColumnDisplaySize(column);
@@ -60,7 +60,7 @@ sal_Int32 SAL_CALL OResultSetMetaData::getColumnDisplaySize(sal_Int32 column)
 sal_Int32 SAL_CALL OResultSetMetaData::getColumnType(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getColumnType");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getColumnType");
     checkColumnIndex(column);
 
     try {
@@ -83,7 +83,7 @@ sal_Int32 SAL_CALL OResultSetMetaData::getColumnType(sal_Int32 column)
 sal_Int32 SAL_CALL OResultSetMetaData::getColumnCount()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getColumnCount");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getColumnCount");
     try {
         return meta->getColumnCount();
     } catch (sql::MethodNotImplementedException) {
@@ -100,7 +100,7 @@ sal_Int32 SAL_CALL OResultSetMetaData::getColumnCount()
 sal_Bool SAL_CALL OResultSetMetaData::isCaseSensitive(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::isCaseSensitive");
+    OSL_TRACE("mysqlc::OResultSetMetaData::isCaseSensitive");
     checkColumnIndex(column);
 
     try {
@@ -119,7 +119,7 @@ sal_Bool SAL_CALL OResultSetMetaData::isCaseSensitive(sal_Int32 column)
 OUString SAL_CALL OResultSetMetaData::getSchemaName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getSchemaName");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getSchemaName");
     checkColumnIndex(column);
 
     try {
@@ -138,7 +138,7 @@ OUString SAL_CALL OResultSetMetaData::getSchemaName(sal_Int32 column)
 OUString SAL_CALL OResultSetMetaData::getColumnName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getColumnName");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getColumnName");
     checkColumnIndex(column);
 
     try {
@@ -157,7 +157,7 @@ OUString SAL_CALL OResultSetMetaData::getColumnName(sal_Int32 column)
 OUString SAL_CALL OResultSetMetaData::getTableName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getTableName");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getTableName");
     checkColumnIndex(column);
 
     try {
@@ -176,7 +176,7 @@ OUString SAL_CALL OResultSetMetaData::getTableName(sal_Int32 column)
 OUString SAL_CALL OResultSetMetaData::getCatalogName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getCatalogName");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getCatalogName");
     checkColumnIndex(column);
 
     try {
@@ -195,7 +195,7 @@ OUString SAL_CALL OResultSetMetaData::getCatalogName(sal_Int32 column)
 OUString SAL_CALL OResultSetMetaData::getColumnTypeName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getColumnTypeName");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getColumnTypeName");
     checkColumnIndex(column);
 
     try {
@@ -214,7 +214,7 @@ OUString SAL_CALL OResultSetMetaData::getColumnTypeName(sal_Int32 column)
 OUString SAL_CALL OResultSetMetaData::getColumnLabel(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getColumnLabel");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getColumnLabel");
     checkColumnIndex(column);
 
     try {
@@ -233,7 +233,7 @@ OUString SAL_CALL OResultSetMetaData::getColumnLabel(sal_Int32 column)
 OUString SAL_CALL OResultSetMetaData::getColumnServiceName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getColumnServiceName");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getColumnServiceName");
     checkColumnIndex(column);
 
     OUString aRet = OUString();
@@ -246,7 +246,7 @@ OUString SAL_CALL OResultSetMetaData::getColumnServiceName(sal_Int32 column)
 sal_Bool SAL_CALL OResultSetMetaData::isCurrency(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::isCurrency");
+    OSL_TRACE("mysqlc::OResultSetMetaData::isCurrency");
     checkColumnIndex(column);
 
     try {
@@ -265,7 +265,7 @@ sal_Bool SAL_CALL OResultSetMetaData::isCurrency(sal_Int32 column)
 sal_Bool SAL_CALL OResultSetMetaData::isAutoIncrement(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::isAutoIncrement");
+    OSL_TRACE("mysqlc::OResultSetMetaData::isAutoIncrement");
     checkColumnIndex(column);
 
     try {
@@ -284,7 +284,7 @@ sal_Bool SAL_CALL OResultSetMetaData::isAutoIncrement(sal_Int32 column)
 sal_Bool SAL_CALL OResultSetMetaData::isSigned(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::isSigned");
+    OSL_TRACE("mysqlc::OResultSetMetaData::isSigned");
     checkColumnIndex(column);
 
     try {
@@ -303,7 +303,7 @@ sal_Bool SAL_CALL OResultSetMetaData::isSigned(sal_Int32 column)
 sal_Int32 SAL_CALL OResultSetMetaData::getPrecision(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getPrecision");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getPrecision");
     checkColumnIndex(column);
 
     try {
@@ -322,7 +322,7 @@ sal_Int32 SAL_CALL OResultSetMetaData::getPrecision(sal_Int32 column)
 sal_Int32 SAL_CALL OResultSetMetaData::getScale(sal_Int32 column)
     throw(::com::sun::star::sdbc::SQLException, ::com::sun::star::uno::RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::getScale");
+    OSL_TRACE("mysqlc::OResultSetMetaData::getScale");
     checkColumnIndex(column);
     try {
         return meta->getScale(column);
@@ -340,7 +340,7 @@ sal_Int32 SAL_CALL OResultSetMetaData::getScale(sal_Int32 column)
 sal_Int32 SAL_CALL OResultSetMetaData::isNullable(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::isNullable");
+    OSL_TRACE("mysqlc::OResultSetMetaData::isNullable");
     checkColumnIndex(column);
 
     try {
@@ -359,7 +359,7 @@ sal_Int32 SAL_CALL OResultSetMetaData::isNullable(sal_Int32 column)
 sal_Bool SAL_CALL OResultSetMetaData::isSearchable(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::isSearchable");
+    OSL_TRACE("mysqlc::OResultSetMetaData::isSearchable");
     checkColumnIndex(column);
 
     try {
@@ -378,7 +378,7 @@ sal_Bool SAL_CALL OResultSetMetaData::isSearchable(sal_Int32 column)
 sal_Bool SAL_CALL OResultSetMetaData::isReadOnly(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::isReadOnly");
+    OSL_TRACE("mysqlc::OResultSetMetaData::isReadOnly");
     checkColumnIndex(column);
 
     try {
@@ -397,7 +397,7 @@ sal_Bool SAL_CALL OResultSetMetaData::isReadOnly(sal_Int32 column)
 sal_Bool SAL_CALL OResultSetMetaData::isDefinitelyWritable(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::isDefinitelyWritable");
+    OSL_TRACE("mysqlc::OResultSetMetaData::isDefinitelyWritable");
     checkColumnIndex(column);
 
     try {
@@ -416,7 +416,7 @@ sal_Bool SAL_CALL OResultSetMetaData::isDefinitelyWritable(sal_Int32 column)
 sal_Bool SAL_CALL OResultSetMetaData::isWritable(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::isWritable");
+    OSL_TRACE("mysqlc::OResultSetMetaData::isWritable");
     checkColumnIndex(column);
 
     try {
@@ -435,7 +435,7 @@ sal_Bool SAL_CALL OResultSetMetaData::isWritable(sal_Int32 column)
 void OResultSetMetaData::checkColumnIndex(sal_Int32 columnIndex)
     throw (SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSetMetaData::checkColumnIndex");
+    OSL_TRACE("mysqlc::OResultSetMetaData::checkColumnIndex");
     if (columnIndex < 1 || columnIndex > (sal_Int32) meta->getColumnCount()) {
 
         ::rtl::OUStringBuffer buf;

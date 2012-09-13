@@ -48,7 +48,7 @@ MysqlCDriver::MysqlCDriver(const Reference< XMultiServiceFactory >& _rxFactory)
     ,m_bAttemptedLoadCppConn( false )
 #endif
 {
-    OSL_TRACE("MysqlCDriver::MysqlCDriver");
+    OSL_TRACE("mysqlc::MysqlCDriver::MysqlCDriver");
     cppDriver = NULL;
 }
 /* }}} */
@@ -57,7 +57,7 @@ MysqlCDriver::MysqlCDriver(const Reference< XMultiServiceFactory >& _rxFactory)
 /* {{{ MysqlCDriver::disposing() -I- */
 void MysqlCDriver::disposing()
 {
-    OSL_TRACE("MysqlCDriver::disposing");
+    OSL_TRACE("mysqlc::MysqlCDriver::disposing");
     ::osl::MutexGuard aGuard(m_aMutex);
 
     // when driver will be destroied so all our connections have to be destroied as well
@@ -80,7 +80,7 @@ void MysqlCDriver::disposing()
 OUString MysqlCDriver::getImplementationName_Static()
     throw(RuntimeException)
 {
-    OSL_TRACE("MysqlCDriver::getImplementationName_Static");
+    OSL_TRACE("mysqlc::MysqlCDriver::getImplementationName_Static");
     return ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "com.sun.star.comp.sdbc.mysqlc.MysqlCDriver" ) );
 }
 /* }}} */
@@ -90,7 +90,7 @@ OUString MysqlCDriver::getImplementationName_Static()
 Sequence< OUString > MysqlCDriver::getSupportedServiceNames_Static()
     throw(RuntimeException)
 {
-    OSL_TRACE("MysqlCDriver::getSupportedServiceNames_Static");
+    OSL_TRACE("mysqlc::MysqlCDriver::getSupportedServiceNames_Static");
     // which service is supported
     // for more information @see com.sun.star.sdbc.Driver
     Sequence< OUString > aSNS(1);
@@ -104,7 +104,7 @@ Sequence< OUString > MysqlCDriver::getSupportedServiceNames_Static()
 OUString SAL_CALL MysqlCDriver::getImplementationName()
     throw(RuntimeException)
 {
-    OSL_TRACE("MysqlCDriver::getImplementationName");
+    OSL_TRACE("mysqlc::MysqlCDriver::getImplementationName");
     return getImplementationName_Static();
 }
 /* }}} */
@@ -114,7 +114,7 @@ OUString SAL_CALL MysqlCDriver::getImplementationName()
 sal_Bool SAL_CALL MysqlCDriver::supportsService(const OUString& _rServiceName)
     throw(RuntimeException)
 {
-    OSL_TRACE("MysqlCDriver::supportsService");
+    OSL_TRACE("mysqlc::MysqlCDriver::supportsService");
     Sequence< OUString > aSupported(getSupportedServiceNames());
     const OUString* pSupported = aSupported.getConstArray();
     const OUString* pEnd = pSupported + aSupported.getLength();
@@ -129,7 +129,7 @@ sal_Bool SAL_CALL MysqlCDriver::supportsService(const OUString& _rServiceName)
 Sequence< OUString > SAL_CALL MysqlCDriver::getSupportedServiceNames()
     throw(RuntimeException)
 {
-    OSL_TRACE("MysqlCDriver::getSupportedServiceNames");
+    OSL_TRACE("mysqlc::MysqlCDriver::getSupportedServiceNames");
     return getSupportedServiceNames_Static();
 }
 /* }}} */
@@ -199,7 +199,7 @@ Reference< XConnection > SAL_CALL MysqlCDriver::connect(const OUString& url, con
 {
     ::osl::MutexGuard aGuard( m_aMutex );
 
-    OSL_TRACE("MysqlCDriver::connect");
+    OSL_TRACE("mysqlc::MysqlCDriver::connect");
     if (!acceptsURL(url)) {
         return NULL;
     }
@@ -234,7 +234,7 @@ Reference< XConnection > SAL_CALL MysqlCDriver::connect(const OUString& url, con
 sal_Bool SAL_CALL MysqlCDriver::acceptsURL(const OUString& url)
         throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("MysqlCDriver::acceptsURL");
+    OSL_TRACE("mysqlc::MysqlCDriver::acceptsURL");
     return (!url.compareToAscii( RTL_CONSTASCII_STRINGPARAM("sdbc:mysqlc:") ));
 }
 /* }}} */
@@ -244,7 +244,7 @@ sal_Bool SAL_CALL MysqlCDriver::acceptsURL(const OUString& url)
 Sequence< DriverPropertyInfo > SAL_CALL MysqlCDriver::getPropertyInfo(const OUString& url, const Sequence< PropertyValue >& /* info */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("MysqlCDriver::getPropertyInfo");
+    OSL_TRACE("mysqlc::MysqlCDriver::getPropertyInfo");
     if (acceptsURL(url)) {
         ::std::vector< DriverPropertyInfo > aDriverInfo;
 
@@ -274,7 +274,7 @@ Sequence< DriverPropertyInfo > SAL_CALL MysqlCDriver::getPropertyInfo(const OUSt
 sal_Int32 SAL_CALL MysqlCDriver::getMajorVersion()
     throw(RuntimeException)
 {
-    OSL_TRACE("MysqlCDriver::getMajorVersion");
+    OSL_TRACE("mysqlc::MysqlCDriver::getMajorVersion");
     return MYSQLC_VERSION_MAJOR;
 }
 /* }}} */
@@ -284,7 +284,7 @@ sal_Int32 SAL_CALL MysqlCDriver::getMajorVersion()
 sal_Int32 SAL_CALL MysqlCDriver::getMinorVersion()
     throw(RuntimeException)
 {
-    OSL_TRACE("MysqlCDriver::getMinorVersion");
+    OSL_TRACE("mysqlc::MysqlCDriver::getMinorVersion");
     return MYSQLC_VERSION_MINOR;
 }
 /* }}} */

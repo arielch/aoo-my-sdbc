@@ -56,7 +56,7 @@ IMPLEMENT_SERVICE_INFO(OPreparedStatement,"com.sun.star.sdbcx.mysqlc.PreparedSta
 OPreparedStatement::OPreparedStatement(OConnection* _pConnection, sql::PreparedStatement * _cppPrepStmt)
     :OCommonStatement(_pConnection, _cppPrepStmt)
 {
-    OSL_TRACE("OPreparedStatement::OPreparedStatement");
+    OSL_TRACE("mysqlc::OPreparedStatement::OPreparedStatement");
     m_pConnection = _pConnection;
     m_pConnection->acquire();
 
@@ -72,7 +72,7 @@ OPreparedStatement::OPreparedStatement(OConnection* _pConnection, sql::PreparedS
 /* {{{ OPreparedStatement::~OPreparedStatement() -I- */
 OPreparedStatement::~OPreparedStatement()
 {
-    OSL_TRACE("OPreparedStatement::~OPreparedStatement");
+    OSL_TRACE("mysqlc::OPreparedStatement::~OPreparedStatement");
 }
 /* }}} */
 
@@ -81,7 +81,7 @@ OPreparedStatement::~OPreparedStatement()
 void SAL_CALL OPreparedStatement::acquire()
     throw()
 {
-    OSL_TRACE("OPreparedStatement::acquire");
+    OSL_TRACE("mysqlc::OPreparedStatement::acquire");
     OCommonStatement::acquire();
 }
 /* }}} */
@@ -91,7 +91,7 @@ void SAL_CALL OPreparedStatement::acquire()
 void SAL_CALL OPreparedStatement::release()
     throw()
 {
-    OSL_TRACE("OPreparedStatement::release");
+    OSL_TRACE("mysqlc::OPreparedStatement::release");
     OCommonStatement::release();
 }
 /* }}} */
@@ -101,7 +101,7 @@ void SAL_CALL OPreparedStatement::release()
 Any SAL_CALL OPreparedStatement::queryInterface(const Type & rType)
     throw(RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::queryInterface");
+    OSL_TRACE("mysqlc::OPreparedStatement::queryInterface");
     Any aRet = OCommonStatement::queryInterface(rType);
     if (!aRet.hasValue()) {
         aRet = OPreparedStatement_BASE::queryInterface(rType);
@@ -115,7 +115,7 @@ Any SAL_CALL OPreparedStatement::queryInterface(const Type & rType)
 Sequence< Type > SAL_CALL OPreparedStatement::getTypes()
     throw(RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::getTypes");
+    OSL_TRACE("mysqlc::OPreparedStatement::getTypes");
     return concatSequences(OPreparedStatement_BASE::getTypes(), OCommonStatement::getTypes());
 }
 /* }}} */
@@ -125,7 +125,7 @@ Sequence< Type > SAL_CALL OPreparedStatement::getTypes()
 Reference< XResultSetMetaData > SAL_CALL OPreparedStatement::getMetaData()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::getMetaData");
+    OSL_TRACE("mysqlc::OPreparedStatement::getMetaData");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
 
@@ -150,7 +150,7 @@ Reference< XResultSetMetaData > SAL_CALL OPreparedStatement::getMetaData()
 void SAL_CALL OPreparedStatement::close()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::close");
+    OSL_TRACE("mysqlc::OPreparedStatement::close");
 
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
@@ -173,7 +173,7 @@ void SAL_CALL OPreparedStatement::close()
 sal_Bool SAL_CALL OPreparedStatement::execute()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::execute");
+    OSL_TRACE("mysqlc::OPreparedStatement::execute");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
 
@@ -192,7 +192,7 @@ sal_Bool SAL_CALL OPreparedStatement::execute()
 sal_Int32 SAL_CALL OPreparedStatement::executeUpdate()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::executeUpdate");
+    OSL_TRACE("mysqlc::OPreparedStatement::executeUpdate");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
 
@@ -211,7 +211,7 @@ sal_Int32 SAL_CALL OPreparedStatement::executeUpdate()
 void SAL_CALL OPreparedStatement::setString(sal_Int32 parameter, const OUString& x)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setString");
+    OSL_TRACE("mysqlc::OPreparedStatement::setString");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -232,7 +232,7 @@ void SAL_CALL OPreparedStatement::setString(sal_Int32 parameter, const OUString&
 Reference< XConnection > SAL_CALL OPreparedStatement::getConnection()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::getConnection");
+    OSL_TRACE("mysqlc::OPreparedStatement::getConnection");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
 
@@ -262,7 +262,7 @@ sal_Bool SAL_CALL OPreparedStatement::execute( const OUString& sql )
 Reference< XResultSet > SAL_CALL OPreparedStatement::executeQuery()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::executeQuery");
+    OSL_TRACE("mysqlc::OPreparedStatement::executeQuery");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
 
@@ -282,7 +282,7 @@ Reference< XResultSet > SAL_CALL OPreparedStatement::executeQuery()
 void SAL_CALL OPreparedStatement::setBoolean(sal_Int32 parameter, sal_Bool x)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setBoolean");
+    OSL_TRACE("mysqlc::OPreparedStatement::setBoolean");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -302,7 +302,7 @@ void SAL_CALL OPreparedStatement::setBoolean(sal_Int32 parameter, sal_Bool x)
 void SAL_CALL OPreparedStatement::setByte(sal_Int32 parameter, sal_Int8 x)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setByte");
+    OSL_TRACE("mysqlc::OPreparedStatement::setByte");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -322,7 +322,7 @@ void SAL_CALL OPreparedStatement::setByte(sal_Int32 parameter, sal_Int8 x)
 void SAL_CALL OPreparedStatement::setDate(sal_Int32 parameter, const Date& aData)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setDate");
+    OSL_TRACE("mysqlc::OPreparedStatement::setDate");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -351,7 +351,7 @@ void SAL_CALL OPreparedStatement::setDate(sal_Int32 parameter, const Date& aData
 void SAL_CALL OPreparedStatement::setTime(sal_Int32 parameter, const Time& aVal)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setTime");
+    OSL_TRACE("mysqlc::OPreparedStatement::setTime");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -380,7 +380,7 @@ void SAL_CALL OPreparedStatement::setTime(sal_Int32 parameter, const Time& aVal)
 void SAL_CALL OPreparedStatement::setTimestamp(sal_Int32 parameter, const DateTime& aVal)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setTimestamp");
+    OSL_TRACE("mysqlc::OPreparedStatement::setTimestamp");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -419,7 +419,7 @@ void SAL_CALL OPreparedStatement::setTimestamp(sal_Int32 parameter, const DateTi
 void SAL_CALL OPreparedStatement::setDouble(sal_Int32 parameter, double x)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setDouble");
+    OSL_TRACE("mysqlc::OPreparedStatement::setDouble");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -439,7 +439,7 @@ void SAL_CALL OPreparedStatement::setDouble(sal_Int32 parameter, double x)
 void SAL_CALL OPreparedStatement::setFloat(sal_Int32 parameter, float x)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setFloat");
+    OSL_TRACE("mysqlc::OPreparedStatement::setFloat");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -459,7 +459,7 @@ void SAL_CALL OPreparedStatement::setFloat(sal_Int32 parameter, float x)
 void SAL_CALL OPreparedStatement::setInt(sal_Int32 parameter, sal_Int32 x)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setInt");
+    OSL_TRACE("mysqlc::OPreparedStatement::setInt");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -479,7 +479,7 @@ void SAL_CALL OPreparedStatement::setInt(sal_Int32 parameter, sal_Int32 x)
 void SAL_CALL OPreparedStatement::setLong(sal_Int32 parameter, sal_Int64 aVal)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setLong");
+    OSL_TRACE("mysqlc::OPreparedStatement::setLong");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -499,7 +499,7 @@ void SAL_CALL OPreparedStatement::setLong(sal_Int32 parameter, sal_Int64 aVal)
 void SAL_CALL OPreparedStatement::setNull(sal_Int32 parameter, sal_Int32 sqlType)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setNull");
+    OSL_TRACE("mysqlc::OPreparedStatement::setNull");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -519,7 +519,7 @@ void SAL_CALL OPreparedStatement::setNull(sal_Int32 parameter, sal_Int32 sqlType
 void SAL_CALL OPreparedStatement::setClob(sal_Int32 parameter, const Reference< XClob >& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setClob");
+    OSL_TRACE("mysqlc::OPreparedStatement::setClob");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -533,7 +533,7 @@ void SAL_CALL OPreparedStatement::setClob(sal_Int32 parameter, const Reference< 
 void SAL_CALL OPreparedStatement::setBlob(sal_Int32 parameter, const Reference< XBlob >& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setBlob");
+    OSL_TRACE("mysqlc::OPreparedStatement::setBlob");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -547,7 +547,7 @@ void SAL_CALL OPreparedStatement::setBlob(sal_Int32 parameter, const Reference< 
 void SAL_CALL OPreparedStatement::setArray(sal_Int32 parameter, const Reference< XArray >& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setArray");
+    OSL_TRACE("mysqlc::OPreparedStatement::setArray");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -561,7 +561,7 @@ void SAL_CALL OPreparedStatement::setArray(sal_Int32 parameter, const Reference<
 void SAL_CALL OPreparedStatement::setRef(sal_Int32 parameter, const Reference< XRef >& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setRef");
+    OSL_TRACE("mysqlc::OPreparedStatement::setRef");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -603,7 +603,7 @@ namespace
 void SAL_CALL OPreparedStatement::setObjectWithInfo(sal_Int32 _parameterIndex, const Any& _value, sal_Int32 _targetSqlType, sal_Int32 /* scale */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setObjectWithInfo");
+    OSL_TRACE("mysqlc::OPreparedStatement::setObjectWithInfo");
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     MutexGuard aGuard(m_aMutex);
     checkParameterIndex( _parameterIndex );
@@ -740,7 +740,7 @@ void SAL_CALL OPreparedStatement::setObjectWithInfo(sal_Int32 _parameterIndex, c
 void SAL_CALL OPreparedStatement::setObjectNull(sal_Int32 parameter, sal_Int32 /* sqlType */, const OUString& /* typeName */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setObjectNull");
+    OSL_TRACE("mysqlc::OPreparedStatement::setObjectNull");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -754,7 +754,7 @@ void SAL_CALL OPreparedStatement::setObjectNull(sal_Int32 parameter, sal_Int32 /
 void SAL_CALL OPreparedStatement::setObject(sal_Int32 parameter, const Any& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setObject");
+    OSL_TRACE("mysqlc::OPreparedStatement::setObject");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -768,7 +768,7 @@ void SAL_CALL OPreparedStatement::setObject(sal_Int32 parameter, const Any& /* x
 void SAL_CALL OPreparedStatement::setShort(sal_Int32 parameter, sal_Int16 x)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setShort");
+    OSL_TRACE("mysqlc::OPreparedStatement::setShort");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -788,7 +788,7 @@ void SAL_CALL OPreparedStatement::setShort(sal_Int32 parameter, sal_Int16 x)
 void SAL_CALL OPreparedStatement::setBytes(sal_Int32 parameter, const Sequence< sal_Int8 >& x)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setBytes");
+    OSL_TRACE("mysqlc::OPreparedStatement::setBytes");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -811,7 +811,7 @@ void SAL_CALL OPreparedStatement::setCharacterStream(sal_Int32 parameter,
                                                     sal_Int32 /* length */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setCharacterStream");
+    OSL_TRACE("mysqlc::OPreparedStatement::setCharacterStream");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -827,7 +827,7 @@ void SAL_CALL OPreparedStatement::setBinaryStream(sal_Int32 parameter,
                                                 sal_Int32 /* length */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::setBinaryStream");
+    OSL_TRACE("mysqlc::OPreparedStatement::setBinaryStream");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
     checkParameterIndex(parameter);
@@ -841,7 +841,7 @@ void SAL_CALL OPreparedStatement::setBinaryStream(sal_Int32 parameter,
 void SAL_CALL OPreparedStatement::clearParameters()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::clearParameters");
+    OSL_TRACE("mysqlc::OPreparedStatement::clearParameters");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OPreparedStatement::rBHelper.bDisposed);
 
@@ -860,7 +860,7 @@ void SAL_CALL OPreparedStatement::clearParameters()
 void SAL_CALL OPreparedStatement::clearBatch()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::clearBatch");
+    OSL_TRACE("mysqlc::OPreparedStatement::clearBatch");
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::clearBatch", *this);
 }
 /* }}} */
@@ -870,7 +870,7 @@ void SAL_CALL OPreparedStatement::clearBatch()
 void SAL_CALL OPreparedStatement::addBatch()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::addBatch");
+    OSL_TRACE("mysqlc::OPreparedStatement::addBatch");
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::addBatch", *this);
 }
 /* }}} */
@@ -880,7 +880,7 @@ void SAL_CALL OPreparedStatement::addBatch()
 Sequence< sal_Int32 > SAL_CALL OPreparedStatement::executeBatch()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OPreparedStatement::executeBatch");
+    OSL_TRACE("mysqlc::OPreparedStatement::executeBatch");
     Sequence< sal_Int32 > aRet= Sequence< sal_Int32 > ();
     return aRet;
 }
@@ -891,7 +891,7 @@ Sequence< sal_Int32 > SAL_CALL OPreparedStatement::executeBatch()
 void OPreparedStatement::setFastPropertyValue_NoBroadcast(sal_Int32 nHandle,const Any& rValue)
     throw(Exception)
 {
-    OSL_TRACE("OPreparedStatement::setFastPropertyValue_NoBroadcast");
+    OSL_TRACE("mysqlc::OPreparedStatement::setFastPropertyValue_NoBroadcast");
     switch(nHandle)
     {
         case PROPERTY_ID_RESULTSETCONCURRENCY:
@@ -913,7 +913,7 @@ void OPreparedStatement::setFastPropertyValue_NoBroadcast(sal_Int32 nHandle,cons
 /* {{{ OPreparedStatement::checkParameterIndex() -I- */
 void OPreparedStatement::checkParameterIndex(sal_Int32 column)
 {
-    OSL_TRACE("OPreparedStatement::checkColumnIndex");
+    OSL_TRACE("mysqlc::OPreparedStatement::checkColumnIndex");
     if (column < 1 || column > (sal_Int32) m_paramCount) {
         OUString buf( RTL_CONSTASCII_USTRINGPARAM( "Parameter index out of range" ) );
         throw SQLException(buf, *this, OUString(), 1, Any ());

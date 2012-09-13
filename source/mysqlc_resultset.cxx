@@ -57,7 +57,7 @@ using ::rtl::OUString;
 OUString SAL_CALL OResultSet::getImplementationName()
     throw (RuntimeException)
 {
-    OSL_TRACE("OResultSet::getImplementationName");
+    OSL_TRACE("mysqlc::OResultSet::getImplementationName");
     return ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "com.sun.star.sdbcx.mysqlc.ResultSet" ) );
 }
 /* }}} */
@@ -67,7 +67,7 @@ OUString SAL_CALL OResultSet::getImplementationName()
 Sequence< OUString > SAL_CALL OResultSet::getSupportedServiceNames()
     throw(RuntimeException)
 {
-    OSL_TRACE("OResultSet::getSupportedServiceNames");
+    OSL_TRACE("mysqlc::OResultSet::getSupportedServiceNames");
     Sequence< OUString > aSupported(2);
     aSupported[0] = OUString( RTL_CONSTASCII_USTRINGPARAM( "com.sun.star.sdbc.ResultSet" ) );
     aSupported[1] = OUString( RTL_CONSTASCII_USTRINGPARAM( "com.sun.star.sdbcx.ResultSet" ) );
@@ -80,7 +80,7 @@ Sequence< OUString > SAL_CALL OResultSet::getSupportedServiceNames()
 sal_Bool SAL_CALL OResultSet::supportsService(const OUString& _rServiceName)
     throw(RuntimeException)
 {
-    OSL_TRACE("OResultSet::supportsService");
+    OSL_TRACE("mysqlc::OResultSet::supportsService");
     Sequence< OUString > aSupported(getSupportedServiceNames());
     const OUString* pSupported = aSupported.getConstArray();
     const OUString* pEnd = pSupported + aSupported.getLength();
@@ -101,7 +101,7 @@ OResultSet::OResultSet(OCommonStatement * pStmt, sql::ResultSet * result, rtl_Te
     ,fieldCount( 0 )
     ,m_encoding( _encoding )
 {
-    OSL_TRACE("OResultSet::OResultSet");
+    OSL_TRACE("mysqlc::OResultSet::OResultSet");
     try {
         sql::ResultSetMetaData * rs_meta = m_result->getMetaData();
         fieldCount = rs_meta->getColumnCount();
@@ -115,7 +115,7 @@ OResultSet::OResultSet(OCommonStatement * pStmt, sql::ResultSet * result, rtl_Te
 /* {{{ OResultSet::~OResultSet() -I- */
 OResultSet::~OResultSet()
 {
-    OSL_TRACE("OResultSet::~OResultSet");
+    OSL_TRACE("mysqlc::OResultSet::~OResultSet");
 }
 /* }}} */
 
@@ -123,7 +123,7 @@ OResultSet::~OResultSet()
 /* {{{ OResultSet::disposing() -I- */
 void OResultSet::disposing()
 {
-    OSL_TRACE("OResultSet::disposing");
+    OSL_TRACE("mysqlc::OResultSet::disposing");
     OPropertySetHelper::disposing();
 
     MutexGuard aGuard(m_aMutex);
@@ -138,7 +138,7 @@ void OResultSet::disposing()
 Any SAL_CALL OResultSet::queryInterface(const Type & rType)
     throw(RuntimeException)
 {
-    OSL_TRACE("OResultSet::queryInterface");
+    OSL_TRACE("mysqlc::OResultSet::queryInterface");
     Any aRet = OPropertySetHelper::queryInterface(rType);
     if (!aRet.hasValue()) {
         aRet = OResultSet_BASE::queryInterface(rType);
@@ -152,7 +152,7 @@ Any SAL_CALL OResultSet::queryInterface(const Type & rType)
 Sequence< Type > SAL_CALL OResultSet::getTypes()
     throw(RuntimeException)
 {
-    OSL_TRACE("OResultSet::getTypes");
+    OSL_TRACE("mysqlc::OResultSet::getTypes");
     OTypeCollection aTypes(    ::getCppuType((const  Reference< XMultiPropertySet > *) NULL),
                                                 ::getCppuType((const Reference< XFastPropertySet > *) NULL),
                                                 ::getCppuType((const Reference< XPropertySet > *) NULL));
@@ -166,7 +166,7 @@ Sequence< Type > SAL_CALL OResultSet::getTypes()
 sal_Int32 SAL_CALL OResultSet::findColumn(const OUString& columnName)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::findColumn");
+    OSL_TRACE("mysqlc::OResultSet::findColumn");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -191,7 +191,7 @@ sal_Int32 SAL_CALL OResultSet::findColumn(const OUString& columnName)
 Reference< XInputStream > SAL_CALL OResultSet::getBinaryStream(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getBinaryStream");
+    OSL_TRACE("mysqlc::OResultSet::getBinaryStream");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -206,7 +206,7 @@ Reference< XInputStream > SAL_CALL OResultSet::getBinaryStream(sal_Int32 column)
 Reference< XInputStream > SAL_CALL OResultSet::getCharacterStream(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getCharacterStream");
+    OSL_TRACE("mysqlc::OResultSet::getCharacterStream");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -221,7 +221,7 @@ Reference< XInputStream > SAL_CALL OResultSet::getCharacterStream(sal_Int32 colu
 sal_Bool SAL_CALL OResultSet::getBoolean(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getBoolean");
+    OSL_TRACE("mysqlc::OResultSet::getBoolean");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -252,7 +252,7 @@ sal_Bool SAL_CALL OResultSet::getBoolean(sal_Int32 column)
 sal_Int8 SAL_CALL OResultSet::getByte(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getByte");
+    OSL_TRACE("mysqlc::OResultSet::getByte");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -271,7 +271,7 @@ sal_Int8 SAL_CALL OResultSet::getByte(sal_Int32 column)
 Sequence< sal_Int8 > SAL_CALL OResultSet::getBytes(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getBytes");
+    OSL_TRACE("mysqlc::OResultSet::getBytes");
 
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     MutexGuard aGuard(m_aMutex);
@@ -291,7 +291,7 @@ Sequence< sal_Int8 > SAL_CALL OResultSet::getBytes(sal_Int32 column)
 Date SAL_CALL OResultSet::getDate(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getDate");
+    OSL_TRACE("mysqlc::OResultSet::getDate");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -330,7 +330,7 @@ Date SAL_CALL OResultSet::getDate(sal_Int32 column)
 double SAL_CALL OResultSet::getDouble(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getDouble");
+    OSL_TRACE("mysqlc::OResultSet::getDouble");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -349,7 +349,7 @@ double SAL_CALL OResultSet::getDouble(sal_Int32 column)
 float SAL_CALL OResultSet::getFloat(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getFloat");
+    OSL_TRACE("mysqlc::OResultSet::getFloat");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -368,7 +368,7 @@ float SAL_CALL OResultSet::getFloat(sal_Int32 column)
 sal_Int32 SAL_CALL OResultSet::getInt(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getInt");
+    OSL_TRACE("mysqlc::OResultSet::getInt");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -387,7 +387,7 @@ sal_Int32 SAL_CALL OResultSet::getInt(sal_Int32 column)
 sal_Int32 SAL_CALL OResultSet::getRow()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getRow");
+    OSL_TRACE("mysqlc::OResultSet::getRow");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -405,7 +405,7 @@ sal_Int32 SAL_CALL OResultSet::getRow()
 sal_Int64 SAL_CALL OResultSet::getLong(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getLong");
+    OSL_TRACE("mysqlc::OResultSet::getLong");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -424,7 +424,7 @@ sal_Int64 SAL_CALL OResultSet::getLong(sal_Int32 column)
 Reference< XResultSetMetaData > SAL_CALL OResultSet::getMetaData()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getMetaData");
+    OSL_TRACE("mysqlc::OResultSet::getMetaData");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     try {
@@ -445,7 +445,7 @@ Reference< XResultSetMetaData > SAL_CALL OResultSet::getMetaData()
 Reference< XArray > SAL_CALL OResultSet::getArray(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getArray");
+    OSL_TRACE("mysqlc::OResultSet::getArray");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -460,7 +460,7 @@ Reference< XArray > SAL_CALL OResultSet::getArray(sal_Int32 column)
 Reference< XClob > SAL_CALL OResultSet::getClob(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getClob");
+    OSL_TRACE("mysqlc::OResultSet::getClob");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -475,7 +475,7 @@ Reference< XClob > SAL_CALL OResultSet::getClob(sal_Int32 column)
 Reference< XBlob > SAL_CALL OResultSet::getBlob(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getBlob");
+    OSL_TRACE("mysqlc::OResultSet::getBlob");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -490,7 +490,7 @@ Reference< XBlob > SAL_CALL OResultSet::getBlob(sal_Int32 column)
 Reference< XRef > SAL_CALL OResultSet::getRef(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getRef");
+    OSL_TRACE("mysqlc::OResultSet::getRef");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -505,7 +505,7 @@ Reference< XRef > SAL_CALL OResultSet::getRef(sal_Int32 column)
 Any SAL_CALL OResultSet::getObject(sal_Int32 column, const Reference< XNameAccess >& /* typeMap */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getObject");
+    OSL_TRACE("mysqlc::OResultSet::getObject");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -522,7 +522,7 @@ Any SAL_CALL OResultSet::getObject(sal_Int32 column, const Reference< XNameAcces
 sal_Int16 SAL_CALL OResultSet::getShort(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getShort");
+    OSL_TRACE("mysqlc::OResultSet::getShort");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -540,7 +540,7 @@ sal_Int16 SAL_CALL OResultSet::getShort(sal_Int32 column)
 OUString SAL_CALL OResultSet::getString(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getString");
+    OSL_TRACE("mysqlc::OResultSet::getString");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -565,7 +565,7 @@ OUString SAL_CALL OResultSet::getString(sal_Int32 column)
 Time SAL_CALL OResultSet::getTime(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getTime");
+    OSL_TRACE("mysqlc::OResultSet::getTime");
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     MutexGuard aGuard(m_aMutex);
 
@@ -602,7 +602,7 @@ Time SAL_CALL OResultSet::getTime(sal_Int32 column)
 DateTime SAL_CALL OResultSet::getTimestamp(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getTimestamp");
+    OSL_TRACE("mysqlc::OResultSet::getTimestamp");
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     MutexGuard aGuard(m_aMutex);
 
@@ -626,7 +626,7 @@ DateTime SAL_CALL OResultSet::getTimestamp(sal_Int32 column)
 sal_Bool SAL_CALL OResultSet::isBeforeFirst()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::isBeforeFirst");
+    OSL_TRACE("mysqlc::OResultSet::isBeforeFirst");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -644,7 +644,7 @@ sal_Bool SAL_CALL OResultSet::isBeforeFirst()
 sal_Bool SAL_CALL OResultSet::isAfterLast()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::isAfterLast");
+    OSL_TRACE("mysqlc::OResultSet::isAfterLast");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -662,7 +662,7 @@ sal_Bool SAL_CALL OResultSet::isAfterLast()
 sal_Bool SAL_CALL OResultSet::isFirst()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::isFirst");
+    OSL_TRACE("mysqlc::OResultSet::isFirst");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -680,7 +680,7 @@ sal_Bool SAL_CALL OResultSet::isFirst()
 sal_Bool SAL_CALL OResultSet::isLast()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::isLast");
+    OSL_TRACE("mysqlc::OResultSet::isLast");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -698,7 +698,7 @@ sal_Bool SAL_CALL OResultSet::isLast()
 void SAL_CALL OResultSet::beforeFirst()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::beforeFirst");
+    OSL_TRACE("mysqlc::OResultSet::beforeFirst");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -715,7 +715,7 @@ void SAL_CALL OResultSet::beforeFirst()
 void SAL_CALL OResultSet::afterLast()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::afterLast");
+    OSL_TRACE("mysqlc::OResultSet::afterLast");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -731,7 +731,7 @@ void SAL_CALL OResultSet::afterLast()
 /* {{{ OResultSet::close() -I- */
 void SAL_CALL OResultSet::close() throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::close");
+    OSL_TRACE("mysqlc::OResultSet::close");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -749,7 +749,7 @@ void SAL_CALL OResultSet::close() throw(SQLException, RuntimeException)
 /* {{{ OResultSet::first() -I- */
 sal_Bool SAL_CALL OResultSet::first() throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::first");
+    OSL_TRACE("mysqlc::OResultSet::first");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -767,7 +767,7 @@ sal_Bool SAL_CALL OResultSet::first() throw(SQLException, RuntimeException)
 sal_Bool SAL_CALL OResultSet::last()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::last");
+    OSL_TRACE("mysqlc::OResultSet::last");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -785,7 +785,7 @@ sal_Bool SAL_CALL OResultSet::last()
 sal_Bool SAL_CALL OResultSet::absolute(sal_Int32 row)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::absolute");
+    OSL_TRACE("mysqlc::OResultSet::absolute");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -803,7 +803,7 @@ sal_Bool SAL_CALL OResultSet::absolute(sal_Int32 row)
 sal_Bool SAL_CALL OResultSet::relative(sal_Int32 row)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::relative");
+    OSL_TRACE("mysqlc::OResultSet::relative");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -821,7 +821,7 @@ sal_Bool SAL_CALL OResultSet::relative(sal_Int32 row)
 sal_Bool SAL_CALL OResultSet::previous()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::previous");
+    OSL_TRACE("mysqlc::OResultSet::previous");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -839,7 +839,7 @@ sal_Bool SAL_CALL OResultSet::previous()
 Reference< XInterface > SAL_CALL OResultSet::getStatement()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getStatement");
+    OSL_TRACE("mysqlc::OResultSet::getStatement");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -852,7 +852,7 @@ Reference< XInterface > SAL_CALL OResultSet::getStatement()
 sal_Bool SAL_CALL OResultSet::rowDeleted()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::rowDeleted");
+    OSL_TRACE("mysqlc::OResultSet::rowDeleted");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -865,7 +865,7 @@ sal_Bool SAL_CALL OResultSet::rowDeleted()
 sal_Bool SAL_CALL OResultSet::rowInserted()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::rowInserted");
+    OSL_TRACE("mysqlc::OResultSet::rowInserted");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -878,7 +878,7 @@ sal_Bool SAL_CALL OResultSet::rowInserted()
 sal_Bool SAL_CALL OResultSet::rowUpdated()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::rowUpdated");
+    OSL_TRACE("mysqlc::OResultSet::rowUpdated");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -891,7 +891,7 @@ sal_Bool SAL_CALL OResultSet::rowUpdated()
 sal_Bool SAL_CALL OResultSet::next()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::next");
+    OSL_TRACE("mysqlc::OResultSet::next");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -909,7 +909,7 @@ sal_Bool SAL_CALL OResultSet::next()
 sal_Bool SAL_CALL OResultSet::wasNull()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::wasNull");
+    OSL_TRACE("mysqlc::OResultSet::wasNull");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -927,7 +927,7 @@ sal_Bool SAL_CALL OResultSet::wasNull()
 void SAL_CALL OResultSet::cancel()
     throw(RuntimeException)
 {
-    OSL_TRACE("OResultSet::cancel");
+    OSL_TRACE("mysqlc::OResultSet::cancel");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 }
@@ -938,7 +938,7 @@ void SAL_CALL OResultSet::cancel()
 void SAL_CALL OResultSet::clearWarnings()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::clearWarnings");
+    OSL_TRACE("mysqlc::OResultSet::clearWarnings");
 }
 /* }}} */
 
@@ -947,7 +947,7 @@ void SAL_CALL OResultSet::clearWarnings()
 Any SAL_CALL OResultSet::getWarnings()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getWarnings");
+    OSL_TRACE("mysqlc::OResultSet::getWarnings");
     Any aRet= Any();
     return aRet;
 }
@@ -958,7 +958,7 @@ Any SAL_CALL OResultSet::getWarnings()
 void SAL_CALL OResultSet::insertRow()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::insertRow");
+    OSL_TRACE("mysqlc::OResultSet::insertRow");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     // you only have to implement this if you want to insert new rows
@@ -971,7 +971,7 @@ void SAL_CALL OResultSet::insertRow()
 void SAL_CALL OResultSet::updateRow()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateRow");
+    OSL_TRACE("mysqlc::OResultSet::updateRow");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -985,7 +985,7 @@ void SAL_CALL OResultSet::updateRow()
 void SAL_CALL OResultSet::deleteRow()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::deleteRow");
+    OSL_TRACE("mysqlc::OResultSet::deleteRow");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OResultSet::deleteRow", *this);
@@ -997,7 +997,7 @@ void SAL_CALL OResultSet::deleteRow()
 void SAL_CALL OResultSet::cancelRowUpdates()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::cancelRowUpdates");
+    OSL_TRACE("mysqlc::OResultSet::cancelRowUpdates");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OResultSet::cancelRowUpdates", *this);
@@ -1009,7 +1009,7 @@ void SAL_CALL OResultSet::cancelRowUpdates()
 void SAL_CALL OResultSet::moveToInsertRow()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::moveToInsertRow");
+    OSL_TRACE("mysqlc::OResultSet::moveToInsertRow");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -1023,7 +1023,7 @@ void SAL_CALL OResultSet::moveToInsertRow()
 void SAL_CALL OResultSet::moveToCurrentRow()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::moveToCurrentRow");
+    OSL_TRACE("mysqlc::OResultSet::moveToCurrentRow");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 }
@@ -1034,7 +1034,7 @@ void SAL_CALL OResultSet::moveToCurrentRow()
 void SAL_CALL OResultSet::updateNull(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateNull");
+    OSL_TRACE("mysqlc::OResultSet::updateNull");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1047,7 +1047,7 @@ void SAL_CALL OResultSet::updateNull(sal_Int32 column)
 void SAL_CALL OResultSet::updateBoolean(sal_Int32 column, sal_Bool /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateBoolean");
+    OSL_TRACE("mysqlc::OResultSet::updateBoolean");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1060,7 +1060,7 @@ void SAL_CALL OResultSet::updateBoolean(sal_Int32 column, sal_Bool /* x */)
 void SAL_CALL OResultSet::updateByte(sal_Int32 column, sal_Int8 /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateByte");
+    OSL_TRACE("mysqlc::OResultSet::updateByte");
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     MutexGuard aGuard(m_aMutex);
     checkColumnIndex(column);
@@ -1073,7 +1073,7 @@ void SAL_CALL OResultSet::updateByte(sal_Int32 column, sal_Int8 /* x */)
 void SAL_CALL OResultSet::updateShort(sal_Int32 column, sal_Int16 /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateShort");
+    OSL_TRACE("mysqlc::OResultSet::updateShort");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1086,7 +1086,7 @@ void SAL_CALL OResultSet::updateShort(sal_Int32 column, sal_Int16 /* x */)
 void SAL_CALL OResultSet::updateInt(sal_Int32 column, sal_Int32 /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateInt");
+    OSL_TRACE("mysqlc::OResultSet::updateInt");
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     MutexGuard aGuard(m_aMutex);
     checkColumnIndex(column);
@@ -1099,7 +1099,7 @@ void SAL_CALL OResultSet::updateInt(sal_Int32 column, sal_Int32 /* x */)
 void SAL_CALL OResultSet::updateLong(sal_Int32 column, sal_Int64 /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateLong");
+    OSL_TRACE("mysqlc::OResultSet::updateLong");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1112,7 +1112,7 @@ void SAL_CALL OResultSet::updateLong(sal_Int32 column, sal_Int64 /* x */)
 void SAL_CALL OResultSet::updateFloat(sal_Int32 column, float /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateFloat");
+    OSL_TRACE("mysqlc::OResultSet::updateFloat");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1125,7 +1125,7 @@ void SAL_CALL OResultSet::updateFloat(sal_Int32 column, float /* x */)
 void SAL_CALL OResultSet::updateDouble(sal_Int32 column, double /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateDouble");
+    OSL_TRACE("mysqlc::OResultSet::updateDouble");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1138,7 +1138,7 @@ void SAL_CALL OResultSet::updateDouble(sal_Int32 column, double /* x */)
 void SAL_CALL OResultSet::updateString(sal_Int32 column, const OUString& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateString");
+    OSL_TRACE("mysqlc::OResultSet::updateString");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1151,7 +1151,7 @@ void SAL_CALL OResultSet::updateString(sal_Int32 column, const OUString& /* x */
 void SAL_CALL OResultSet::updateBytes(sal_Int32 column, const Sequence< sal_Int8 >& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateBytes");
+    OSL_TRACE("mysqlc::OResultSet::updateBytes");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1164,7 +1164,7 @@ void SAL_CALL OResultSet::updateBytes(sal_Int32 column, const Sequence< sal_Int8
 void SAL_CALL OResultSet::updateDate(sal_Int32 column, const Date& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateDate");
+    OSL_TRACE("mysqlc::OResultSet::updateDate");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1177,7 +1177,7 @@ void SAL_CALL OResultSet::updateDate(sal_Int32 column, const Date& /* x */)
 void SAL_CALL OResultSet::updateTime(sal_Int32 column, const Time& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateTime");
+    OSL_TRACE("mysqlc::OResultSet::updateTime");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1190,7 +1190,7 @@ void SAL_CALL OResultSet::updateTime(sal_Int32 column, const Time& /* x */)
 void SAL_CALL OResultSet::updateTimestamp(sal_Int32 column, const DateTime& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateTimestamp");
+    OSL_TRACE("mysqlc::OResultSet::updateTimestamp");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1204,7 +1204,7 @@ void SAL_CALL OResultSet::updateBinaryStream(sal_Int32 column, const Reference< 
                                             sal_Int32 /* length */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateBinaryStream");
+    OSL_TRACE("mysqlc::OResultSet::updateBinaryStream");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1218,7 +1218,7 @@ void SAL_CALL OResultSet::updateCharacterStream(sal_Int32 column, const Referenc
                                                 sal_Int32 /* length */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateCharacterStream");
+    OSL_TRACE("mysqlc::OResultSet::updateCharacterStream");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1231,7 +1231,7 @@ void SAL_CALL OResultSet::updateCharacterStream(sal_Int32 column, const Referenc
 void SAL_CALL OResultSet::refreshRow()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::refreshRow");
+    OSL_TRACE("mysqlc::OResultSet::refreshRow");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OResultSet::refreshRow", *this);
@@ -1243,7 +1243,7 @@ void SAL_CALL OResultSet::refreshRow()
 void SAL_CALL OResultSet::updateObject(sal_Int32 column, const Any& /* x */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateObject");
+    OSL_TRACE("mysqlc::OResultSet::updateObject");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1256,7 +1256,7 @@ void SAL_CALL OResultSet::updateObject(sal_Int32 column, const Any& /* x */)
 void SAL_CALL OResultSet::updateNumericObject(sal_Int32 column, const Any& /* x */, sal_Int32 /* scale */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::updateNumericObject");
+    OSL_TRACE("mysqlc::OResultSet::updateNumericObject");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     checkColumnIndex(column);
@@ -1270,7 +1270,7 @@ void SAL_CALL OResultSet::updateNumericObject(sal_Int32 column, const Any& /* x 
 Any SAL_CALL OResultSet::getBookmark()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::getBookmark");
+    OSL_TRACE("mysqlc::OResultSet::getBookmark");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     Any aRet = Any();
@@ -1287,7 +1287,7 @@ Any SAL_CALL OResultSet::getBookmark()
 sal_Bool SAL_CALL OResultSet::moveToBookmark(const Any& /* bookmark */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::moveToBookmark");
+    OSL_TRACE("mysqlc::OResultSet::moveToBookmark");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -1300,7 +1300,7 @@ sal_Bool SAL_CALL OResultSet::moveToBookmark(const Any& /* bookmark */)
 sal_Bool SAL_CALL OResultSet::moveRelativeToBookmark(const Any& /* bookmark */, sal_Int32 /* rows */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::moveRelativeToBookmark");
+    OSL_TRACE("mysqlc::OResultSet::moveRelativeToBookmark");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -1314,7 +1314,7 @@ sal_Bool SAL_CALL OResultSet::moveRelativeToBookmark(const Any& /* bookmark */, 
 sal_Int32 SAL_CALL OResultSet::compareBookmarks(const Any& /* n1 */, const Any& /* n2 */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::compareBookmarks");
+    OSL_TRACE("mysqlc::OResultSet::compareBookmarks");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
 
@@ -1329,7 +1329,7 @@ sal_Int32 SAL_CALL OResultSet::compareBookmarks(const Any& /* n1 */, const Any& 
 sal_Bool SAL_CALL OResultSet::hasOrderedBookmarks()
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::hasOrderedBookmarks");
+    OSL_TRACE("mysqlc::OResultSet::hasOrderedBookmarks");
     return sal_False;
 }
 /* }}} */
@@ -1339,7 +1339,7 @@ sal_Bool SAL_CALL OResultSet::hasOrderedBookmarks()
 sal_Int32 SAL_CALL OResultSet::hashBookmark(const Any& /* bookmark */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::hashBookmark");
+    OSL_TRACE("mysqlc::OResultSet::hashBookmark");
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OResultSet::hashBookmark", *this);
     return 0;
 }
@@ -1351,7 +1351,7 @@ sal_Int32 SAL_CALL OResultSet::hashBookmark(const Any& /* bookmark */)
 Sequence< sal_Int32 > SAL_CALL OResultSet::deleteRows(const Sequence< Any >& /* rows */)
     throw(SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::deleteRows");
+    OSL_TRACE("mysqlc::OResultSet::deleteRows");
     MutexGuard aGuard(m_aMutex);
     checkDisposed(OResultSet_BASE::rBHelper.bDisposed);
     Sequence< sal_Int32 > aRet = Sequence< sal_Int32 >();
@@ -1365,7 +1365,7 @@ Sequence< sal_Int32 > SAL_CALL OResultSet::deleteRows(const Sequence< Any >& /* 
 /* {{{ OResultSet::createArrayHelper() -I- */
 IPropertyArrayHelper * OResultSet::createArrayHelper() const
 {
-    OSL_TRACE("OResultSet::createArrayHelper");
+    OSL_TRACE("mysqlc::OResultSet::createArrayHelper");
     Sequence< Property > aProps(5);
     Property* pProperties = aProps.getArray();
     sal_Int32 nPos = 0;
@@ -1383,7 +1383,7 @@ IPropertyArrayHelper * OResultSet::createArrayHelper() const
 /* {{{ OResultSet::getInfoHelper() -I- */
 IPropertyArrayHelper & OResultSet::getInfoHelper()
 {
-    OSL_TRACE("OResultSet::getInfoHelper");
+    OSL_TRACE("mysqlc::OResultSet::getInfoHelper");
     return (*const_cast<OResultSet*>(this)->getArrayHelper());
 }
 /* }}} */
@@ -1396,7 +1396,7 @@ sal_Bool OResultSet::convertFastPropertyValue(Any & /* rConvertedValue */,
                                             const Any& /* rValue */)
     throw (::com::sun::star::lang::IllegalArgumentException)
 {
-    OSL_TRACE("OResultSet::convertFastPropertyValue");
+    OSL_TRACE("mysqlc::OResultSet::convertFastPropertyValue");
     switch (nHandle) {
         case PROPERTY_ID_ISBOOKMARKABLE:
         case PROPERTY_ID_CURSORNAME:
@@ -1417,7 +1417,7 @@ sal_Bool OResultSet::convertFastPropertyValue(Any & /* rConvertedValue */,
 void OResultSet::setFastPropertyValue_NoBroadcast(sal_Int32 nHandle, const Any& /* rValue */)
     throw (Exception)
 {
-    OSL_TRACE("OResultSet::setFastPropertyValue_NoBroadcast");
+    OSL_TRACE("mysqlc::OResultSet::setFastPropertyValue_NoBroadcast");
     switch (nHandle) {
         case PROPERTY_ID_ISBOOKMARKABLE:
         case PROPERTY_ID_CURSORNAME:
@@ -1438,7 +1438,7 @@ void OResultSet::setFastPropertyValue_NoBroadcast(sal_Int32 nHandle, const Any& 
 /* {{{ OResultSet::getFastPropertyValue() -I- */
 void OResultSet::getFastPropertyValue(Any& _rValue, sal_Int32 nHandle) const
 {
-    OSL_TRACE("OResultSet::getFastPropertyValue");
+    OSL_TRACE("mysqlc::OResultSet::getFastPropertyValue");
     switch (nHandle) {
         case PROPERTY_ID_ISBOOKMARKABLE:
             _rValue <<= sal_False;
@@ -1469,7 +1469,7 @@ void OResultSet::getFastPropertyValue(Any& _rValue, sal_Int32 nHandle) const
 void SAL_CALL OResultSet::acquire()
     throw()
 {
-    OSL_TRACE("OResultSet::acquire");
+    OSL_TRACE("mysqlc::OResultSet::acquire");
     OResultSet_BASE::acquire();
 }
 /* }}} */
@@ -1479,7 +1479,7 @@ void SAL_CALL OResultSet::acquire()
 void SAL_CALL OResultSet::release()
     throw()
 {
-    OSL_TRACE("OResultSet::release");
+    OSL_TRACE("mysqlc::OResultSet::release");
     OResultSet_BASE::release();
 }
 /* }}} */
@@ -1488,7 +1488,7 @@ void SAL_CALL OResultSet::release()
 /* {{{ OResultSet::getPropertySetInfo() -I- */
 ::com::sun::star::uno::Reference< ::com::sun::star::beans::XPropertySetInfo > SAL_CALL OResultSet::getPropertySetInfo() throw(::com::sun::star::uno::RuntimeException)
 {
-    OSL_TRACE("OResultSet::getPropertySetInfo");
+    OSL_TRACE("mysqlc::OResultSet::getPropertySetInfo");
     return (::cppu::OPropertySetHelper::createPropertySetInfo(getInfoHelper()));
 }
 /* }}} */
@@ -1498,7 +1498,7 @@ void SAL_CALL OResultSet::release()
 void OResultSet::checkColumnIndex(sal_Int32 index)
     throw (SQLException, RuntimeException)
 {
-    OSL_TRACE("OResultSet::checkColumnIndex");
+    OSL_TRACE("mysqlc::OResultSet::checkColumnIndex");
     if ((index < 1 || index > (int) fieldCount)) {
         /* static object for efficiency or thread safety is a problem ? */
         OUString buf( RTL_CONSTASCII_USTRINGPARAM( "index out of range" ) );
