@@ -1601,25 +1601,31 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getSchemas()
 {
     OSL_TRACE("ODatabaseMetaData::getSchemas");
 
-    Reference< XResultSet > xResultSet(getOwnConnection().getDriver().getFactory()->createInstance(::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
+    Reference< XResultSet > xResultSet;
     std::vector< std::vector< Any > > rRows;
 
     try {
+        xResultSet.set(getOwnConnection().getDriver().getFactory()->createInstance(
+            ::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
+        OUString sCatalog = m_rConnection.getCatalog();
+        // MySQL_Connection::getSchema() queries "SELECT DATABASE()"
+        sql::SQLString sOwnSchema = meta->getConnection()->getSchema();
         rtl_TextEncoding encoding = m_rConnection.getConnectionEncoding();
         std::auto_ptr< sql::ResultSet> rset( meta->getSchemas());
         sql::ResultSetMetaData * rs_meta = rset->getMetaData();
         sal_uInt32 columns = rs_meta->getColumnCount();
+
         while (rset->next()) {
             std::vector< Any > aRow(1);
-            bool informationSchema = false;
+            bool bOwnSchema = false;
             for (sal_uInt32 i = 1; i <= columns; i++) {
                 sql::SQLString columnStringValue = rset->getString(i);
                 if (i == 1) {   // TABLE_SCHEM
-                    informationSchema = (0 == columnStringValue.compare("information_schema"));
+                    bOwnSchema = columnStringValue.compare(sOwnSchema) == 0;
                 }
                 aRow.push_back(makeAny(mysqlc_sdbc_driver::convert(columnStringValue, encoding)));
             }
-            if (!informationSchema ) {
+            if (bOwnSchema ) {
                 rRows.push_back(aRow);
             }
         }
@@ -1738,25 +1744,29 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTables(
     throw(SQLException, RuntimeException)
 {
     OSL_TRACE("ODatabaseMetaData::getTables");
-    sal_Int32 nLength = types.getLength();
 
-    Reference< XResultSet > xResultSet(getOwnConnection().
-        getDriver().getFactory()->createInstance(
-                ::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
+    Reference< XResultSet > xResultSet;
     std::vector< std::vector< Any > > rRows;
-
-    ext_std::string cat(catalog.hasValue()? OUStringToOString(getStringFromAny(catalog), m_rConnection.getConnectionEncoding()).getStr():""),
-                sPattern(OUStringToOString(schemaPattern, m_rConnection.getConnectionEncoding()).getStr()),
-                tNamePattern(OUStringToOString(tableNamePattern, m_rConnection.getConnectionEncoding()).getStr());
-
-    ext_std::list<sql::SQLString> tabTypes;
-    for (const OUString *pStart = types.getConstArray(), *p = pStart, *pEnd = pStart + nLength; p != pEnd; ++p) {
-        tabTypes.push_back(OUStringToOString(*p, m_rConnection.getConnectionEncoding()).getStr());
-    }
-
     try {
+        xResultSet.set(getOwnConnection().getDriver().getFactory()->createInstance(
+                    ::rtl::OUString(RTL_CONSTASCII_USTRINGPARAM("org.openoffice.comp.helper.DatabaseMetaDataResultSet"))),UNO_QUERY);
+
+        ext_std::string cat(catalog.hasValue()? OUStringToOString(getStringFromAny(catalog), m_rConnection.getConnectionEncoding()).getStr():""),
+                    sPattern(OUStringToOString(schemaPattern, m_rConnection.getConnectionEncoding()).getStr()),
+                    tNamePattern(OUStringToOString(tableNamePattern, m_rConnection.getConnectionEncoding()).getStr());
+
+        ext_std::list<sql::SQLString> tabTypes;
+        sal_Int32 nLength = types.getLength();
+        for (const OUString *pStart = types.getConstArray(), *p = pStart, *pEnd = pStart + nLength; p != pEnd; ++p) {
+            tabTypes.push_back(OUStringToOString(*p, m_rConnection.getConnectionEncoding()).getStr());
+        }
+
+        sql::SQLString sOwnSchema = meta->getConnection()->getSchema();
+        if (sPattern.compare(wild)==0 || sPattern.compare("") == 0)
+            sPattern = sOwnSchema;
+
         std::auto_ptr< sql::ResultSet> rset( meta->getTables(cat,
-                                               sPattern.compare("")? sPattern:wild,
+                                               sPattern,
                                                tNamePattern.compare("")? tNamePattern:wild,
                                                tabTypes));
 
@@ -1765,17 +1775,13 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTables(
         sal_uInt32 columns = rs_meta->getColumnCount();
         while (rset->next()) {
             std::vector< Any > aRow(1);
-            bool informationSchema = false;
-            for (sal_uInt32 i = 1; (i <= columns) && !informationSchema; ++i) {
+
+            for (sal_uInt32 i = 1; (i <= columns); ++i) {
                 sql::SQLString columnStringValue = rset->getString(i);
-                if (i == 2) {   // TABLE_SCHEM
-                    informationSchema = ( 0 == columnStringValue.compare("information_schema"));
-                }
                 aRow.push_back(makeAny(mysqlc_sdbc_driver::convert(columnStringValue, encoding)));
             }
-            if (!informationSchema) {
-                rRows.push_back(aRow);
-            }
+
+            rRows.push_back(aRow);
         }
     } catch (sql::MethodNotImplementedException) {
         mysqlc_sdbc_driver::throwFeatureNotImplementedException("ODatabaseMetaData::getTables", *this);
