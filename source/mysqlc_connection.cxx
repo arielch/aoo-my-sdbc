@@ -212,8 +212,18 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
 
             if (sSocketOrPipe.getLength()) {
                 socket_str = OUStringToOString(sSocketOrPipe, m_settings.encoding).getStr();
-                // TODO ConnectOptionsMap knows "pipe" too
+                rtl::OUStringBuffer aBuff;
+#ifdef UNX
+                aBuff.appendAscii( RTL_CONSTASCII_STRINGPARAM( "socket://" ) );
                 connProps["socket"] = socket_str;
+#else
+                aBuff.appendAscii( RTL_CONSTASCII_STRINGPARAM( "pipe://" ) );
+                connProps["pipe"] = socket_str;
+#endif
+                aBuff.append( sSocketOrPipe );
+                aHostName = aBuff.makeStringAndClear();
+                host_str = OUStringToOString( aHostName, m_settings.encoding ).getStr();
+                connProps["hostName"] = sql::ConnectPropertyVal(host_str);
             } else {
                 // TODO we shouldn't convert "localhost" to "127.0.0.1"
                 // this will hide errors in Base because it will connect via
