@@ -207,7 +207,8 @@ $(COMP_COMPONENTS) : xml/components.xml
 
 # rule for component package file
 $(COMP_PACKAGE) : $(OUT_COMP_LIB)/$(COMP_IMPL_NAME) $(OUT_COMP_LIB)/$(MYSQLCONNC_LIB) $(OUT_COMP_LIB)/$(MYSQLCONNCPP_LIB) $(COMP_DRIVER_CFG)  $(COMP_UNOPKG_MANIFEST) $(COMP_COMPONENTS)  $(COMP_UNOPKG_DESCRIPTION)
-	-$(MKDIR) $(subst /,$(PS),$(@D)) && $(DEL) $(subst \\,\,$(subst /,$(PS),$@))
+	-$(DEL) $(subst \\,\,$(subst /,$(PS),$@))
+	-$(MKDIR) $(subst /,$(PS),$(@D))
 	-$(MKDIR) $(subst /,$(PS),$(OUT_COMP_GEN)/$(UNOPKG_PLATFORM))
 	$(COPY) $(subst /,$(PS),$<) $(subst /,$(PS),$(OUT_COMP_GEN)/$(UNOPKG_PLATFORM))
 	$(COPY) $(subst /,$(PS),$(OUT_COMP_LIB)/$(MYSQLCONNC_LIB)) $(subst /,$(PS),$(OUT_COMP_GEN)/$(UNOPKG_PLATFORM))
