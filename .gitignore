@@ -26,9 +26,3 @@
 /source/settings/linux.mk
 /source/settings/win.mk
 /source/settings/mac.mk
-
-.build/
-build/
-bin/
-*.kdev4
-.kdev4*
