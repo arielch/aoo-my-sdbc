@@ -48,6 +48,14 @@ EXTENSION_VERSION=$(MYSQLC_VERSION_MAJOR).$(MYSQLC_VERSION_MINOR).$(MYSQLC_VERSI
 # Define non-platform/compiler specific settings
 COMP_NAME=aoo-mysql-connector
 
+ifeq "$(DEBUG)" "yes"
+COMP_NAME=aoo-mysql-connector-debug
+else
+ifneq "$(RELEASESTATUS)" ""
+COMP_NAME=aoo-mysql-connector-$(RELEASESTATUS)
+endif
+endif
+
 OUT_COMP_INC=$(OUT_INC)/$(COMP_NAME)
 OUT_COMP_GEN=$(OUT_MISC)/$(COMP_NAME)
 OUT_COMP_SLO=$(OUT_SLO)/$(COMP_NAME)
