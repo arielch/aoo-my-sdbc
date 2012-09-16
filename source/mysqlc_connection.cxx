@@ -66,7 +66,6 @@ using ::rtl::OUStringToOString;
 #define MYSQLC_URI_PREFIX "sdbc:mysqlc:"
 
 
-/* {{{ OConnection::OConnection() -I- */
 OConnection::OConnection(MysqlCDriver& _rDriver, sql::Driver * _cppDriver)
     :OMetaConnection_BASE(m_aMutex)
     ,OSubComponent<OConnection, OConnection_BASE>((::cppu::OWeakObject*)&_rDriver, this)
@@ -80,10 +79,8 @@ OConnection::OConnection(MysqlCDriver& _rDriver, sql::Driver * _cppDriver)
     OSL_TRACE("mysqlc::OConnection::OConnection");
     m_rDriver.acquire();
 }
-/* }}} */
 
 
-/* {{{ OConnection::OConnection() -I- */
 OConnection::~OConnection()
 {
     OSL_TRACE("mysqlc::OConnection::~OConnection");
@@ -92,23 +89,19 @@ OConnection::~OConnection()
     }
     m_rDriver.release();
 }
-/* }}} */
 
 
-/* {{{ OConnection::release() -I- */
 void SAL_CALL OConnection::release()
     throw()
 {
     OSL_TRACE("mysqlc::OConnection::release");
     relase_ChildImpl();
 }
-/* }}} */
 
 #ifndef SYSTEM_MYSQL
     extern "C" { void SAL_CALL thisModule() {} }
 #endif
 
-/* {{{ OConnection::construct() -I- */
 void OConnection::construct(const OUString& url, const Sequence< PropertyValue >& info)
     throw(SQLException)
 {
@@ -305,14 +298,12 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
     stmt->executeUpdate("SET session sql_mode='ANSI_QUOTES'");
     stmt->executeUpdate("SET NAMES utf8");
 }
-/* }}} */
 
 
 // XServiceInfo
 IMPLEMENT_SERVICE_INFO(OConnection, "com.sun.star.sdbc.drivers.mysqlc.OConnection", "com.sun.star.sdbc.Connection")
 
 
-/* {{{ OConnection::createStatement() -I- */
 Reference< XStatement > SAL_CALL OConnection::createStatement()
     throw(SQLException, RuntimeException)
 {
@@ -332,10 +323,8 @@ Reference< XStatement > SAL_CALL OConnection::createStatement()
     }
     return xReturn;
 }
-/* }}} */
 
 
-/* {{{ OConnection::createStatement() -I- */
 Reference< XPreparedStatement > SAL_CALL OConnection::prepareStatement(const OUString& _sSql)
     throw(SQLException, RuntimeException)
 {
@@ -356,10 +345,8 @@ Reference< XPreparedStatement > SAL_CALL OConnection::prepareStatement(const OUS
     }
     return xStatement;
 }
-/* }}} */
 
 
-/* {{{ OConnection::prepareCall() -U- */
 Reference< XPreparedStatement > SAL_CALL OConnection::prepareCall(const OUString& /*_sSql*/ )
     throw(SQLException, RuntimeException)
 {
@@ -370,10 +357,8 @@ Reference< XPreparedStatement > SAL_CALL OConnection::prepareCall(const OUString
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OConnection::prepareCall", *this);
     return Reference< XPreparedStatement >();
 }
-/* }}} */
 
 
-/* {{{ OConnection::nativeSQL() -I- */
 OUString SAL_CALL OConnection::nativeSQL(const OUString& _sSql)
     throw(SQLException, RuntimeException)
 {
@@ -390,10 +375,8 @@ OUString SAL_CALL OConnection::nativeSQL(const OUString& _sSql)
     }
     return sNativeSQL;
 }
-/* }}} */
 
 
-/* {{{ OConnection::setAutoCommit() -I- */
 void SAL_CALL OConnection::setAutoCommit(sal_Bool autoCommit)
     throw(SQLException, RuntimeException)
 {
@@ -406,10 +389,8 @@ void SAL_CALL OConnection::setAutoCommit(sal_Bool autoCommit)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OConnection::getAutoCommit() -I- */
 sal_Bool SAL_CALL OConnection::getAutoCommit()
     throw(SQLException, RuntimeException)
 {
@@ -428,10 +409,8 @@ sal_Bool SAL_CALL OConnection::getAutoCommit()
     }
     return autoCommit;
 }
-/* }}} */
 
 
-/* {{{ OConnection::commit() -I- */
 void SAL_CALL OConnection::commit()
     throw(SQLException, RuntimeException)
 {
@@ -444,10 +423,8 @@ void SAL_CALL OConnection::commit()
         mysqlc_sdbc_driver::translateAndThrow(e, *this, getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OConnection::rollback() -I- */
 void SAL_CALL OConnection::rollback()
     throw(SQLException, RuntimeException)
 {
@@ -460,10 +437,8 @@ void SAL_CALL OConnection::rollback()
         mysqlc_sdbc_driver::translateAndThrow(e, *this, getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OConnection::isClosed() -I- */
 sal_Bool SAL_CALL OConnection::isClosed()
     throw(SQLException, RuntimeException)
 {
@@ -473,10 +448,8 @@ sal_Bool SAL_CALL OConnection::isClosed()
     // just simple -> we are close when we are disposed taht means someone called dispose(); (XComponent)
     return (OConnection_BASE::rBHelper.bDisposed);
 }
-/* }}} */
 
 
-/* {{{ OConnection::createStatement() -I- */
 Reference< XDatabaseMetaData > SAL_CALL OConnection::getMetaData()
     throw(SQLException, RuntimeException)
 {
@@ -496,10 +469,8 @@ Reference< XDatabaseMetaData > SAL_CALL OConnection::getMetaData()
 
     return xMetaData;
 }
-/* }}} */
 
 
-/* {{{ OConnection::createStatement() -I- */
 void SAL_CALL OConnection::setReadOnly(sal_Bool readOnly)
     throw(SQLException, RuntimeException)
 {
@@ -509,10 +480,8 @@ void SAL_CALL OConnection::setReadOnly(sal_Bool readOnly)
 
     m_settings.readOnly = readOnly;
 }
-/* }}} */
 
 
-/* {{{ OConnection::createStatement() -I- */
 sal_Bool SAL_CALL OConnection::isReadOnly()
     throw(SQLException, RuntimeException)
 {
@@ -523,10 +492,8 @@ sal_Bool SAL_CALL OConnection::isReadOnly()
     // return if your connection to readonly
     return (m_settings.readOnly);
 }
-/* }}} */
 
 
-/* {{{ OConnection::createStatement() -I- */
 void SAL_CALL OConnection::setCatalog(const OUString& catalog)
     throw(SQLException, RuntimeException)
 {
@@ -541,10 +508,8 @@ void SAL_CALL OConnection::setCatalog(const OUString& catalog)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OConnection::createStatement() -I- */
 OUString SAL_CALL OConnection::getCatalog()
     throw(SQLException, RuntimeException)
 {
@@ -560,10 +525,8 @@ OUString SAL_CALL OConnection::getCatalog()
     }
     return catalog;
 }
-/* }}} */
 
 
-/* {{{ OConnection::createStatement() -I- */
 void SAL_CALL OConnection::setTransactionIsolation(sal_Int32 level)
     throw(SQLException, RuntimeException)
 {
@@ -598,10 +561,8 @@ void SAL_CALL OConnection::setTransactionIsolation(sal_Int32 level)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OConnection::createStatement() -I- */
 sal_Int32 SAL_CALL OConnection::getTransactionIsolation()
     throw(SQLException, RuntimeException)
 {
@@ -623,10 +584,8 @@ sal_Int32 SAL_CALL OConnection::getTransactionIsolation()
     }
     return TransactionIsolation::NONE;
 }
-/* }}} */
 
 
-/* {{{ OConnection::getTypeMap() -I- */
 Reference<XNameAccess> SAL_CALL OConnection::getTypeMap()
     throw(SQLException, RuntimeException)
 {
@@ -640,10 +599,8 @@ Reference<XNameAccess> SAL_CALL OConnection::getTypeMap()
     }
     return (t);
 }
-/* }}} */
 
 
-/* {{{ OConnection::setTypeMap() -I- */
 void SAL_CALL OConnection::setTypeMap(const Reference<XNameAccess >& typeMap)
     throw(SQLException, RuntimeException)
 {
@@ -653,11 +610,9 @@ void SAL_CALL OConnection::setTypeMap(const Reference<XNameAccess >& typeMap)
 
     m_typeMap = typeMap;
 }
-/* }}} */
 
 
 // XCloseable
-/* {{{ OConnection::close() -I- */
 void SAL_CALL OConnection::close()
     throw(SQLException, RuntimeException)
 {
@@ -673,11 +628,9 @@ void SAL_CALL OConnection::close()
     }
     dispose();
 }
-/* }}} */
 
 
 // XWarningsSupplier
-/* {{{ OConnection::getWarnings() -I- */
 Any SAL_CALL OConnection::getWarnings()
     throw(SQLException, RuntimeException)
 {
@@ -686,29 +639,23 @@ Any SAL_CALL OConnection::getWarnings()
     // when you collected some warnings -> return it
     return x;
 }
-/* }}} */
 
 
-/* {{{ OConnection::clearWarnings() -I- */
 void SAL_CALL OConnection::clearWarnings()
     throw(SQLException, RuntimeException)
 {
     OSL_TRACE("mysqlc::OConnection::clearWarnings");
     // you should clear your collected warnings here#
 }
-/* }}} */
 
 
-/* {{{ OConnection::buildTypeInfo() -I- */
 void OConnection::buildTypeInfo()
     throw(SQLException)
 {
     OSL_TRACE("mysqlc::OConnection::buildTypeInfo");
 }
-/* }}} */
 
 
-/* {{{ OConnection::disposing() -I- */
 void OConnection::disposing()
 {
     OSL_TRACE("mysqlc::OConnection::disposing");
@@ -729,12 +676,10 @@ void OConnection::disposing()
     dispose_ChildImpl();
     OConnection_BASE::disposing();
 }
-/* }}} */
 
 
 /* ToDo - upcast the connection to MySQL_Connection and use ::getSessionVariable() */
 
-/* {{{ OConnection::getMysqlVariable() -I- */
 OUString OConnection::getMysqlVariable(const char *varname)
     throw(SQLException, RuntimeException)
 {
@@ -761,10 +706,8 @@ OUString OConnection::getMysqlVariable(const char *varname)
 
     return ret;
 }
-/* }}} */
 
 
-/* {{{ OConnection::getMysqlVersion() -I- */
 sal_Int32 OConnection::getMysqlVersion()
     throw(SQLException, RuntimeException)
 {
@@ -782,10 +725,8 @@ sal_Int32 OConnection::getMysqlVersion()
     }
     return version;
 }
-/* }}} */
 
 
-/* {{{ OConnection::sdbcColumnType() -I- */
 // TODO: Not used
 //sal_Int32 OConnection::sdbcColumnType(OUString typeName)
 //{
@@ -822,13 +763,3 @@ sal_Int32 OConnection::getMysqlVersion()
     return sSqlStatement;
 }
 
-/* }}} */
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */

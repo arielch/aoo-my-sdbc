@@ -91,7 +91,6 @@ const sal_Char* getSTR_DELIMITER()                    { return "/"; }
 
 
 
-/* {{{ OPropertyMap::~OPropertyMap() -I- */
 OPropertyMap::~OPropertyMap()
 {
     ::std::map<sal_Int32 , rtl_uString*>::iterator aIter = m_aPropertyMap.begin();
@@ -101,10 +100,8 @@ OPropertyMap::~OPropertyMap()
         }
     }
 }
-/* }}} */
 
 
-/* {{{ OPropertyMap::getNameByIndex() -I- */
 OUString OPropertyMap::getNameByIndex(sal_Int32 idx) const
 {
     OUString sRet;
@@ -116,7 +113,6 @@ OUString OPropertyMap::getNameByIndex(sal_Int32 idx) const
     }
     return sRet;
 }
-/* }}} */
 
 typedef const sal_Char * (*property_callback)();
 
@@ -179,7 +175,6 @@ static const property_callback property_callbacks[PROPERTY_ID_LAST] =
 };
 
 
-/* {{{ OPropertyMap::fillValue() -I- */
 OUString OPropertyMap::fillValue(sal_Int32 idx)
 {
     rtl_uString* pStr = NULL;
@@ -187,16 +182,6 @@ OUString OPropertyMap::fillValue(sal_Int32 idx)
     m_aPropertyMap[idx] = pStr;
     return pStr;
 }
-/* }}} */
 
 } /* mysqlc */
 } /* connectivity */
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */

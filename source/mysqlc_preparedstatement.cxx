@@ -52,7 +52,6 @@ using mysqlc_sdbc_driver::getStringFromAny;
 IMPLEMENT_SERVICE_INFO(OPreparedStatement,"com.sun.star.sdbcx.mysqlc.PreparedStatement","com.sun.star.sdbc.PreparedStatement");
 
 
-/* {{{ OPreparedStatement::OPreparedStatement() -I- */
 OPreparedStatement::OPreparedStatement(OConnection* _pConnection, sql::PreparedStatement * _cppPrepStmt)
     :OCommonStatement(_pConnection, _cppPrepStmt)
 {
@@ -66,38 +65,30 @@ OPreparedStatement::OPreparedStatement(OConnection* _pConnection, sql::PreparedS
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::~OPreparedStatement() -I- */
 OPreparedStatement::~OPreparedStatement()
 {
     OSL_TRACE("mysqlc::OPreparedStatement::~OPreparedStatement");
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::acquire() -I- */
 void SAL_CALL OPreparedStatement::acquire()
     throw()
 {
     OSL_TRACE("mysqlc::OPreparedStatement::acquire");
     OCommonStatement::acquire();
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::release() -I- */
 void SAL_CALL OPreparedStatement::release()
     throw()
 {
     OSL_TRACE("mysqlc::OPreparedStatement::release");
     OCommonStatement::release();
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::queryInterface() -I- */
 Any SAL_CALL OPreparedStatement::queryInterface(const Type & rType)
     throw(RuntimeException)
 {
@@ -108,20 +99,16 @@ Any SAL_CALL OPreparedStatement::queryInterface(const Type & rType)
     }
     return (aRet);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::getPropertySetInfo() -I- */
 Sequence< Type > SAL_CALL OPreparedStatement::getTypes()
     throw(RuntimeException)
 {
     OSL_TRACE("mysqlc::OPreparedStatement::getTypes");
     return concatSequences(OPreparedStatement_BASE::getTypes(), OCommonStatement::getTypes());
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::getMetaData() -I- */
 Reference< XResultSetMetaData > SAL_CALL OPreparedStatement::getMetaData()
     throw(SQLException, RuntimeException)
 {
@@ -143,10 +130,8 @@ Reference< XResultSetMetaData > SAL_CALL OPreparedStatement::getMetaData()
     }
     return m_xMetaData;
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::close() -I- */
 void SAL_CALL OPreparedStatement::close()
     throw(SQLException, RuntimeException)
 {
@@ -166,10 +151,8 @@ void SAL_CALL OPreparedStatement::close()
     // Remove this Statement object from the Connection object's
     // list
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::execute() -I- */
 sal_Bool SAL_CALL OPreparedStatement::execute()
     throw(SQLException, RuntimeException)
 {
@@ -185,10 +168,8 @@ sal_Bool SAL_CALL OPreparedStatement::execute()
     }
     return success;
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::executeUpdate() -I- */
 sal_Int32 SAL_CALL OPreparedStatement::executeUpdate()
     throw(SQLException, RuntimeException)
 {
@@ -204,10 +185,8 @@ sal_Int32 SAL_CALL OPreparedStatement::executeUpdate()
     }
     return affectedRows;
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::getPropertySetInfo() -I- */
 void SAL_CALL OPreparedStatement::setString(sal_Int32 parameter, const OUString& x)
     throw(SQLException, RuntimeException)
 {
@@ -225,10 +204,8 @@ void SAL_CALL OPreparedStatement::setString(sal_Int32 parameter, const OUString&
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::getConnection() -I- */
 Reference< XConnection > SAL_CALL OPreparedStatement::getConnection()
     throw(SQLException, RuntimeException)
 {
@@ -238,7 +215,6 @@ Reference< XConnection > SAL_CALL OPreparedStatement::getConnection()
 
     return (Reference< XConnection >)m_pConnection;
 }
-/* }}} */
 
 Reference< XResultSet > SAL_CALL OPreparedStatement::executeQuery(const OUString& sql)
     throw(SQLException, RuntimeException)
@@ -258,7 +234,6 @@ sal_Bool SAL_CALL OPreparedStatement::execute( const OUString& sql )
     return OCommonStatement::execute( sql );
 }
 
-/* {{{ OPreparedStatement::executeQuery() -I- */
 Reference< XResultSet > SAL_CALL OPreparedStatement::executeQuery()
     throw(SQLException, RuntimeException)
 {
@@ -275,10 +250,8 @@ Reference< XResultSet > SAL_CALL OPreparedStatement::executeQuery()
     }
     return xResultSet;
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setBoolean() -I- */
 void SAL_CALL OPreparedStatement::setBoolean(sal_Int32 parameter, sal_Bool x)
     throw(SQLException, RuntimeException)
 {
@@ -295,10 +268,8 @@ void SAL_CALL OPreparedStatement::setBoolean(sal_Int32 parameter, sal_Bool x)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setByte() -I- */
 void SAL_CALL OPreparedStatement::setByte(sal_Int32 parameter, sal_Int8 x)
     throw(SQLException, RuntimeException)
 {
@@ -315,10 +286,8 @@ void SAL_CALL OPreparedStatement::setByte(sal_Int32 parameter, sal_Int8 x)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setDate() -I- */
 void SAL_CALL OPreparedStatement::setDate(sal_Int32 parameter, const Date& aData)
     throw(SQLException, RuntimeException)
 {
@@ -344,10 +313,8 @@ void SAL_CALL OPreparedStatement::setDate(sal_Int32 parameter, const Date& aData
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setTime() -I- */
 void SAL_CALL OPreparedStatement::setTime(sal_Int32 parameter, const Time& aVal)
     throw(SQLException, RuntimeException)
 {
@@ -373,10 +340,8 @@ void SAL_CALL OPreparedStatement::setTime(sal_Int32 parameter, const Time& aVal)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setTimestamp() -I- */
 void SAL_CALL OPreparedStatement::setTimestamp(sal_Int32 parameter, const DateTime& aVal)
     throw(SQLException, RuntimeException)
 {
@@ -412,10 +377,8 @@ void SAL_CALL OPreparedStatement::setTimestamp(sal_Int32 parameter, const DateTi
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setDouble() -I- */
 void SAL_CALL OPreparedStatement::setDouble(sal_Int32 parameter, double x)
     throw(SQLException, RuntimeException)
 {
@@ -432,10 +395,8 @@ void SAL_CALL OPreparedStatement::setDouble(sal_Int32 parameter, double x)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setFloat() -I- */
 void SAL_CALL OPreparedStatement::setFloat(sal_Int32 parameter, float x)
     throw(SQLException, RuntimeException)
 {
@@ -452,10 +413,8 @@ void SAL_CALL OPreparedStatement::setFloat(sal_Int32 parameter, float x)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setInt() -I- */
 void SAL_CALL OPreparedStatement::setInt(sal_Int32 parameter, sal_Int32 x)
     throw(SQLException, RuntimeException)
 {
@@ -472,10 +431,8 @@ void SAL_CALL OPreparedStatement::setInt(sal_Int32 parameter, sal_Int32 x)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setLong() -I- */
 void SAL_CALL OPreparedStatement::setLong(sal_Int32 parameter, sal_Int64 aVal)
     throw(SQLException, RuntimeException)
 {
@@ -492,10 +449,8 @@ void SAL_CALL OPreparedStatement::setLong(sal_Int32 parameter, sal_Int64 aVal)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setNull() -I- */
 void SAL_CALL OPreparedStatement::setNull(sal_Int32 parameter, sal_Int32 sqlType)
     throw(SQLException, RuntimeException)
 {
@@ -512,10 +467,8 @@ void SAL_CALL OPreparedStatement::setNull(sal_Int32 parameter, sal_Int32 sqlType
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setClob() -U- */
 void SAL_CALL OPreparedStatement::setClob(sal_Int32 parameter, const Reference< XClob >& /* x */)
     throw(SQLException, RuntimeException)
 {
@@ -526,10 +479,8 @@ void SAL_CALL OPreparedStatement::setClob(sal_Int32 parameter, const Reference< 
 
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::setClob", *this);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setBlob() -U- */
 void SAL_CALL OPreparedStatement::setBlob(sal_Int32 parameter, const Reference< XBlob >& /* x */)
     throw(SQLException, RuntimeException)
 {
@@ -540,10 +491,8 @@ void SAL_CALL OPreparedStatement::setBlob(sal_Int32 parameter, const Reference< 
 
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::setBlob", *this);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setArray() -U- */
 void SAL_CALL OPreparedStatement::setArray(sal_Int32 parameter, const Reference< XArray >& /* x */)
     throw(SQLException, RuntimeException)
 {
@@ -554,10 +503,8 @@ void SAL_CALL OPreparedStatement::setArray(sal_Int32 parameter, const Reference<
 
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::setArray", *this);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setRef() -U- */
 void SAL_CALL OPreparedStatement::setRef(sal_Int32 parameter, const Reference< XRef >& /* x */)
     throw(SQLException, RuntimeException)
 {
@@ -568,7 +515,6 @@ void SAL_CALL OPreparedStatement::setRef(sal_Int32 parameter, const Reference< X
 
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::setRef", *this);
 }
-/* }}} */
 
 namespace
 {
@@ -599,7 +545,6 @@ namespace
     }
 }
 
-/* {{{ OPreparedStatement::setObjectWithInfo() -U- */
 void SAL_CALL OPreparedStatement::setObjectWithInfo(sal_Int32 _parameterIndex, const Any& _value, sal_Int32 _targetSqlType, sal_Int32 /* scale */)
     throw(SQLException, RuntimeException)
 {
@@ -733,10 +678,8 @@ void SAL_CALL OPreparedStatement::setObjectWithInfo(sal_Int32 _parameterIndex, c
         break;
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setObjectNull() -U- */
 void SAL_CALL OPreparedStatement::setObjectNull(sal_Int32 parameter, sal_Int32 /* sqlType */, const OUString& /* typeName */)
     throw(SQLException, RuntimeException)
 {
@@ -747,10 +690,8 @@ void SAL_CALL OPreparedStatement::setObjectNull(sal_Int32 parameter, sal_Int32 /
 
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::setObjectNull", *this);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setObject() -U- */
 void SAL_CALL OPreparedStatement::setObject(sal_Int32 parameter, const Any& /* x */)
     throw(SQLException, RuntimeException)
 {
@@ -761,10 +702,8 @@ void SAL_CALL OPreparedStatement::setObject(sal_Int32 parameter, const Any& /* x
 
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::setObject", *this);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setShort() -I- */
 void SAL_CALL OPreparedStatement::setShort(sal_Int32 parameter, sal_Int16 x)
     throw(SQLException, RuntimeException)
 {
@@ -781,10 +720,8 @@ void SAL_CALL OPreparedStatement::setShort(sal_Int32 parameter, sal_Int16 x)
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setBytes() -I- */
 void SAL_CALL OPreparedStatement::setBytes(sal_Int32 parameter, const Sequence< sal_Int8 >& x)
     throw(SQLException, RuntimeException)
 {
@@ -802,10 +739,8 @@ void SAL_CALL OPreparedStatement::setBytes(sal_Int32 parameter, const Sequence< 
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setCharacterStream() -U- */
 void SAL_CALL OPreparedStatement::setCharacterStream(sal_Int32 parameter,
                                                     const Reference< XInputStream >& /* x */,
                                                     sal_Int32 /* length */)
@@ -818,10 +753,8 @@ void SAL_CALL OPreparedStatement::setCharacterStream(sal_Int32 parameter,
 
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::setCharacterStream", *this);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setBinaryStream() -U- */
 void SAL_CALL OPreparedStatement::setBinaryStream(sal_Int32 parameter,
                                                 const Reference< XInputStream >& /* x */,
                                                 sal_Int32 /* length */)
@@ -834,10 +767,8 @@ void SAL_CALL OPreparedStatement::setBinaryStream(sal_Int32 parameter,
 
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::setBinaryStream", *this);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::clearParameters() -I- */
 void SAL_CALL OPreparedStatement::clearParameters()
     throw(SQLException, RuntimeException)
 {
@@ -853,30 +784,24 @@ void SAL_CALL OPreparedStatement::clearParameters()
         mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::clearBatch() -U- */
 void SAL_CALL OPreparedStatement::clearBatch()
     throw(SQLException, RuntimeException)
 {
     OSL_TRACE("mysqlc::OPreparedStatement::clearBatch");
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::clearBatch", *this);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::addBatch() -U- */
 void SAL_CALL OPreparedStatement::addBatch()
     throw(SQLException, RuntimeException)
 {
     OSL_TRACE("mysqlc::OPreparedStatement::addBatch");
     mysqlc_sdbc_driver::throwFeatureNotImplementedException("OPreparedStatement::addBatch", *this);
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::executeBatch() -I- */
 Sequence< sal_Int32 > SAL_CALL OPreparedStatement::executeBatch()
     throw(SQLException, RuntimeException)
 {
@@ -884,10 +809,8 @@ Sequence< sal_Int32 > SAL_CALL OPreparedStatement::executeBatch()
     Sequence< sal_Int32 > aRet= Sequence< sal_Int32 > ();
     return aRet;
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::setFastPropertyValue_NoBroadcast() -I- */
 void OPreparedStatement::setFastPropertyValue_NoBroadcast(sal_Int32 nHandle,const Any& rValue)
     throw(Exception)
 {
@@ -907,10 +830,8 @@ void OPreparedStatement::setFastPropertyValue_NoBroadcast(sal_Int32 nHandle,cons
             OPreparedStatement::setFastPropertyValue_NoBroadcast(nHandle,rValue);
     }
 }
-/* }}} */
 
 
-/* {{{ OPreparedStatement::checkParameterIndex() -I- */
 void OPreparedStatement::checkParameterIndex(sal_Int32 column)
 {
     OSL_TRACE("mysqlc::OPreparedStatement::checkColumnIndex");
@@ -919,14 +840,4 @@ void OPreparedStatement::checkParameterIndex(sal_Int32 column)
         throw SQLException(buf, *this, OUString(), 1, Any ());
     }
 }
-/* }}} */
 
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */

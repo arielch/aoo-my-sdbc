@@ -35,10 +35,8 @@ using ::rtl::OUString;
 OResultSetMetaData::~OResultSetMetaData()
 {
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getColumnDisplaySize() -I- */
 sal_Int32 SAL_CALL OResultSetMetaData::getColumnDisplaySize(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -53,10 +51,8 @@ sal_Int32 SAL_CALL OResultSetMetaData::getColumnDisplaySize(sal_Int32 column)
     }
     return 0; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getColumnType() -I- */
 sal_Int32 SAL_CALL OResultSetMetaData::getColumnType(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -72,14 +68,12 @@ sal_Int32 SAL_CALL OResultSetMetaData::getColumnType(sal_Int32 column)
     }
     return 0; // fool compiler
 }
-/* }}} */
 
 /*
   XXX: This method doesn't throw exceptions at all.
   Should it declare that it throws ?? What if throw() is removed?
   Does it change the API, the open-close principle?
 */
-/* {{{ OResultSetMetaData::getColumnCount() -I- */
 sal_Int32 SAL_CALL OResultSetMetaData::getColumnCount()
     throw(SQLException, RuntimeException)
 {
@@ -93,10 +87,8 @@ sal_Int32 SAL_CALL OResultSetMetaData::getColumnCount()
     }
     return 0; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::isCaseSensitive() -I- */
 sal_Bool SAL_CALL OResultSetMetaData::isCaseSensitive(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -112,10 +104,8 @@ sal_Bool SAL_CALL OResultSetMetaData::isCaseSensitive(sal_Int32 column)
     }
     return sal_False; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getSchemaName() -I- */
 OUString SAL_CALL OResultSetMetaData::getSchemaName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -131,10 +121,8 @@ OUString SAL_CALL OResultSetMetaData::getSchemaName(sal_Int32 column)
     }
     return OUString(); // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getColumnName() -I- */
 OUString SAL_CALL OResultSetMetaData::getColumnName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -150,10 +138,8 @@ OUString SAL_CALL OResultSetMetaData::getColumnName(sal_Int32 column)
     }
     return OUString(); // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getTableName() -I- */
 OUString SAL_CALL OResultSetMetaData::getTableName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -169,10 +155,8 @@ OUString SAL_CALL OResultSetMetaData::getTableName(sal_Int32 column)
     }
     return OUString(); // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getCatalogName() -I- */
 OUString SAL_CALL OResultSetMetaData::getCatalogName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -188,10 +172,8 @@ OUString SAL_CALL OResultSetMetaData::getCatalogName(sal_Int32 column)
     }
     return OUString(); // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getColumnTypeName() -I- */
 OUString SAL_CALL OResultSetMetaData::getColumnTypeName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -207,10 +189,8 @@ OUString SAL_CALL OResultSetMetaData::getColumnTypeName(sal_Int32 column)
     }
     return OUString(); // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getColumnLabel() -I- */
 OUString SAL_CALL OResultSetMetaData::getColumnLabel(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -226,10 +206,8 @@ OUString SAL_CALL OResultSetMetaData::getColumnLabel(sal_Int32 column)
     }
     return OUString(); // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getColumnServiceName() -I- */
 OUString SAL_CALL OResultSetMetaData::getColumnServiceName(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -239,10 +217,8 @@ OUString SAL_CALL OResultSetMetaData::getColumnServiceName(sal_Int32 column)
     OUString aRet = OUString();
     return aRet;
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::isCurrency() -I- */
 sal_Bool SAL_CALL OResultSetMetaData::isCurrency(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -258,10 +234,8 @@ sal_Bool SAL_CALL OResultSetMetaData::isCurrency(sal_Int32 column)
     }
     return sal_False; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::isAutoIncrement() -I- */
 sal_Bool SAL_CALL OResultSetMetaData::isAutoIncrement(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -277,10 +251,8 @@ sal_Bool SAL_CALL OResultSetMetaData::isAutoIncrement(sal_Int32 column)
     }
     return sal_False; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::isSigned() -I- */
 sal_Bool SAL_CALL OResultSetMetaData::isSigned(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -296,10 +268,8 @@ sal_Bool SAL_CALL OResultSetMetaData::isSigned(sal_Int32 column)
     }
     return sal_False; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getPrecision() -I- */
 sal_Int32 SAL_CALL OResultSetMetaData::getPrecision(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -315,10 +285,8 @@ sal_Int32 SAL_CALL OResultSetMetaData::getPrecision(sal_Int32 column)
     }
     return 0; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::getScale() -I- */
 sal_Int32 SAL_CALL OResultSetMetaData::getScale(sal_Int32 column)
     throw(::com::sun::star::sdbc::SQLException, ::com::sun::star::uno::RuntimeException)
 {
@@ -333,10 +301,8 @@ sal_Int32 SAL_CALL OResultSetMetaData::getScale(sal_Int32 column)
     }
     return 0; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::isNullable() -I- */
 sal_Int32 SAL_CALL OResultSetMetaData::isNullable(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -352,10 +318,8 @@ sal_Int32 SAL_CALL OResultSetMetaData::isNullable(sal_Int32 column)
     }
     return sal_False; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::isSearchable() -I- */
 sal_Bool SAL_CALL OResultSetMetaData::isSearchable(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -371,10 +335,8 @@ sal_Bool SAL_CALL OResultSetMetaData::isSearchable(sal_Int32 column)
     }
     return sal_False; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::isReadOnly() -I- */
 sal_Bool SAL_CALL OResultSetMetaData::isReadOnly(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -390,10 +352,8 @@ sal_Bool SAL_CALL OResultSetMetaData::isReadOnly(sal_Int32 column)
     }
     return sal_False; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::isDefinitelyWritable() -I- */
 sal_Bool SAL_CALL OResultSetMetaData::isDefinitelyWritable(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -409,10 +369,8 @@ sal_Bool SAL_CALL OResultSetMetaData::isDefinitelyWritable(sal_Int32 column)
     }
     return sal_False; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::isWritable() -I- */
 sal_Bool SAL_CALL OResultSetMetaData::isWritable(sal_Int32 column)
     throw(SQLException, RuntimeException)
 {
@@ -428,10 +386,8 @@ sal_Bool SAL_CALL OResultSetMetaData::isWritable(sal_Int32 column)
     }
     return sal_False; // fool compiler
 }
-/* }}} */
 
 
-/* {{{ OResultSetMetaData::checkColumnIndex() -I- */
 void OResultSetMetaData::checkColumnIndex(sal_Int32 columnIndex)
     throw (SQLException, RuntimeException)
 {
@@ -447,7 +403,6 @@ void OResultSetMetaData::checkColumnIndex(sal_Int32 columnIndex)
         throw SQLException( buf.makeStringAndClear(), *this, OUString(), 1, Any() );
     }
 }
-/* }}} */
 
 /*
  * Local variables:

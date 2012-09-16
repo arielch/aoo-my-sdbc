@@ -83,7 +83,6 @@ struct ProviderRequest
     {
     }
 
-    /* {{{ CREATE_PROVIDER -I- */
     inline sal_Bool CREATE_PROVIDER(
                 const OUString& Implname,
                 const Sequence< OUString > & Services,
@@ -102,10 +101,8 @@ struct ProviderRequest
 
     void* getProvider() const { return xRet.get(); }
 };
-/* }}} */
 
 
-/* {{{ component_getImplementationEnvironment -I- */
 extern "C" SAL_DLLPUBLIC_EXPORT void SAL_CALL component_getImplementationEnvironment(
                 const sal_Char    **ppEnvTypeName,
                 uno_Environment    ** /* ppEnv */
@@ -113,10 +110,8 @@ extern "C" SAL_DLLPUBLIC_EXPORT void SAL_CALL component_getImplementationEnviron
 {
     *ppEnvTypeName = CPPU_CURRENT_LANGUAGE_BINDING_NAME;
 }
-/* }}} */
 
 
-/* {{{ component_writeInfo -I- */
 extern "C" SAL_DLLPUBLIC_EXPORT sal_Bool SAL_CALL component_writeInfo(void * /* pServiceManager */, void * pRegistryKey)
 {
     if (pRegistryKey) {
@@ -134,10 +129,8 @@ extern "C" SAL_DLLPUBLIC_EXPORT sal_Bool SAL_CALL component_writeInfo(void * /* 
     }
     return sal_False;
 }
-/* }}} */
 
 
-/* {{{ component_getFactory -I- */
 extern "C" SAL_DLLPUBLIC_EXPORT void* SAL_CALL component_getFactory(
                     const sal_Char * pImplementationName,
                     void * pServiceManager,
@@ -162,14 +155,4 @@ extern "C" SAL_DLLPUBLIC_EXPORT void* SAL_CALL component_getFactory(
 
     return pRet;
 };
-/* }}} */
 
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */

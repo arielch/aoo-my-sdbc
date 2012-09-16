@@ -39,7 +39,6 @@ using ::rtl::OUString;
 #include <postextstl.h>
 
 
-/* {{{ MysqlCDriver::MysqlCDriver() -I- */
 MysqlCDriver::MysqlCDriver(const Reference< XMultiServiceFactory >& _rxFactory)
     : ODriver_BASE(m_aMutex)
     ,m_xFactory(_rxFactory)
@@ -51,10 +50,8 @@ MysqlCDriver::MysqlCDriver(const Reference< XMultiServiceFactory >& _rxFactory)
     OSL_TRACE("mysqlc::MysqlCDriver::MysqlCDriver");
     cppDriver = NULL;
 }
-/* }}} */
 
 
-/* {{{ MysqlCDriver::disposing() -I- */
 void MysqlCDriver::disposing()
 {
     OSL_TRACE("mysqlc::MysqlCDriver::disposing");
@@ -72,21 +69,17 @@ void MysqlCDriver::disposing()
 
     ODriver_BASE::disposing();
 }
-/* }}} */
 
 
 // static ServiceInfo
-/* {{{ MysqlCDriver::getImplementationName_Static() -I- */
 OUString MysqlCDriver::getImplementationName_Static()
     throw(RuntimeException)
 {
     OSL_TRACE("mysqlc::MysqlCDriver::getImplementationName_Static");
     return ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "com.sun.star.comp.sdbc.mysqlc.MysqlCDriver" ) );
 }
-/* }}} */
 
 
-/* {{{ MysqlCDriver::getSupportedServiceNames_Static() -I- */
 Sequence< OUString > MysqlCDriver::getSupportedServiceNames_Static()
     throw(RuntimeException)
 {
@@ -97,20 +90,16 @@ Sequence< OUString > MysqlCDriver::getSupportedServiceNames_Static()
     aSNS[0] = OUString(RTL_CONSTASCII_USTRINGPARAM("com.sun.star.sdbc.Driver"));
     return aSNS;
 }
-/* }}} */
 
 
-/* {{{ MysqlCDriver::getImplementationName() -I- */
 OUString SAL_CALL MysqlCDriver::getImplementationName()
     throw(RuntimeException)
 {
     OSL_TRACE("mysqlc::MysqlCDriver::getImplementationName");
     return getImplementationName_Static();
 }
-/* }}} */
 
 
-/* {{{ MysqlCDriver::supportsService() -I- */
 sal_Bool SAL_CALL MysqlCDriver::supportsService(const OUString& _rServiceName)
     throw(RuntimeException)
 {
@@ -122,17 +111,14 @@ sal_Bool SAL_CALL MysqlCDriver::supportsService(const OUString& _rServiceName)
 
     return (pSupported != pEnd);
 }
-/* }}} */
 
 
-/* {{{ MysqlCDriver::getSupportedServiceNames() -I- */
 Sequence< OUString > SAL_CALL MysqlCDriver::getSupportedServiceNames()
     throw(RuntimeException)
 {
     OSL_TRACE("mysqlc::MysqlCDriver::getSupportedServiceNames");
     return getSupportedServiceNames_Static();
 }
-/* }}} */
 
 
 extern "C" { static void SAL_CALL thisModule() {} }
@@ -193,7 +179,6 @@ void MysqlCDriver::impl_initCppConn_lck_throw()
     }
 }
 
-/* {{{ MysqlCDriver::connect() -I- */
 Reference< XConnection > SAL_CALL MysqlCDriver::connect(const OUString& url, const Sequence< PropertyValue >& info)
     throw(SQLException, RuntimeException)
 {
@@ -227,20 +212,16 @@ Reference< XConnection > SAL_CALL MysqlCDriver::connect(const OUString& url, con
     }
     return xConn;
 }
-/* }}} */
 
 
-/* {{{ MysqlCDriver::acceptsURL() -I- */
 sal_Bool SAL_CALL MysqlCDriver::acceptsURL(const OUString& url)
         throw(SQLException, RuntimeException)
 {
     OSL_TRACE("mysqlc::MysqlCDriver::acceptsURL");
     return (!url.compareToAscii( RTL_CONSTASCII_STRINGPARAM("sdbc:mysqlc:") ));
 }
-/* }}} */
 
 
-/* {{{ MysqlCDriver::getPropertyInfo() -I- */
 Sequence< DriverPropertyInfo > SAL_CALL MysqlCDriver::getPropertyInfo(const OUString& url, const Sequence< PropertyValue >& /* info */)
     throw(SQLException, RuntimeException)
 {
@@ -267,27 +248,22 @@ Sequence< DriverPropertyInfo > SAL_CALL MysqlCDriver::getPropertyInfo(const OUSt
 
     return Sequence< DriverPropertyInfo >();
 }
-/* }}} */
 
 
-/* {{{ MysqlCDriver::getMajorVersion() -I- */
 sal_Int32 SAL_CALL MysqlCDriver::getMajorVersion()
     throw(RuntimeException)
 {
     OSL_TRACE("mysqlc::MysqlCDriver::getMajorVersion");
     return MYSQLC_VERSION_MAJOR;
 }
-/* }}} */
 
 
-/* {{{ MysqlCDriver::getMinorVersion() -I- */
 sal_Int32 SAL_CALL MysqlCDriver::getMinorVersion()
     throw(RuntimeException)
 {
     OSL_TRACE("mysqlc::MysqlCDriver::getMinorVersion");
     return MYSQLC_VERSION_MINOR;
 }
-/* }}} */
 
 
 namespace connectivity
@@ -301,7 +277,6 @@ Reference< XInterface >  SAL_CALL MysqlCDriver_CreateInstance(const Reference< X
     return(*(new MysqlCDriver(_rxFactory)));
 }
 
-/* {{{ connectivity::mysqlc::release() -I- */
 void release(oslInterlockedCount& _refCount,
              ::cppu::OBroadcastHelper& rBHelper,
              Reference< XInterface >& _xInterface,
@@ -335,11 +310,9 @@ void release(oslInterlockedCount& _refCount,
         osl_incrementInterlockedCount(&_refCount);
     }
 }
-/* }}} */
 
 
 
-/* {{{ connectivity::mysqlc::checkDisposed() -I- */
 void checkDisposed(sal_Bool _bThrow)
     throw (DisposedException)
 {
@@ -347,16 +320,6 @@ void checkDisposed(sal_Bool _bThrow)
         throw DisposedException();
     }
 }
-/* }}} */
 
 } /* mysqlc */
 } /* connectivity */
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */
