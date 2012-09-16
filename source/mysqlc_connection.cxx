@@ -219,6 +219,14 @@ void OConnection::construct(const OUString& url, const Sequence< PropertyValue >
 #else
                 aBuff.appendAscii( RTL_CONSTASCII_STRINGPARAM( "pipe://" ) );
                 connProps["pipe"] = socket_str;
+
+                // Set connection timeout explicitly to 0 when using a named pipe
+                // mysql_init() sets connection timeout to CONNECT_TIMEOUT
+                // which is 20 ifdef __WIN__ (see libmysql/client.c)
+                // This fails to connect via named pipe with error
+                // "Lost connection to MySQL server at
+                // 'waiting for initial communication packet', system error: 0"
+                connProps["OPT_CONNECT_TIMEOUT"] = static_cast<long>( 0 );
 #endif
                 aBuff.append( sSocketOrPipe );
                 aHostName = aBuff.makeStringAndClear();
