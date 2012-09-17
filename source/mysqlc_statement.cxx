@@ -40,7 +40,7 @@
 
 #define USE_CPP_CONN 1
 
-using namespace connectivity::mysqlc;
+using namespace mysqlc;
 //------------------------------------------------------------------------------
 using namespace com::sun::star::uno;
 using namespace com::sun::star::lang;
@@ -55,15 +55,15 @@ using ::rtl::OUString;
 
 #include <stdio.h>
 
-OCommonStatement::OCommonStatement(OConnection* _pConnection, sql::Statement *_cppStatement)
-    :OCommonStatement_IBase(m_aMutex)
-    ,OPropertySetHelper(OCommonStatement_IBase::rBHelper)
-    ,OStatement_CBase( (::cppu::OWeakObject*)_pConnection, this )
-    ,m_pConnection(_pConnection)
-    ,cppStatement(_cppStatement)
-    ,rBHelper(OCommonStatement_IBase::rBHelper)
+OCommonStatement::OCommonStatement( OConnection *_pConnection, sql::Statement *_cppStatement )
+    : OCommonStatement_IBase( m_aMutex )
+    , OPropertySetHelper( OCommonStatement_IBase::rBHelper )
+    , OStatement_CBase( ( ::cppu::OWeakObject * )_pConnection, this )
+    , m_pConnection( _pConnection )
+    , cppStatement( _cppStatement )
+    , rBHelper( OCommonStatement_IBase::rBHelper )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::OCommonStatement");
+    OSL_TRACE( "mysqlc::OCommonStatement::OCommonStatement" );
     m_pConnection->acquire();
 }
 
@@ -71,13 +71,13 @@ OCommonStatement::OCommonStatement(OConnection* _pConnection, sql::Statement *_c
 /* {{{ OConnection::~OCommonStatement() -I- */
 OCommonStatement::~OCommonStatement()
 {
-    OSL_TRACE("mysqlc::OCommonStatement::~OCommonStatement");
+    OSL_TRACE( "mysqlc::OCommonStatement::~OCommonStatement" );
 }
 
 
 void OCommonStatement::disposeResultSet()
 {
-    OSL_TRACE("mysqlc::OCommonStatement::disposeResultSet");
+    OSL_TRACE( "mysqlc::OCommonStatement::disposeResultSet" );
     // free the cursor if alive
     delete cppStatement;
     cppStatement = NULL;
@@ -86,12 +86,13 @@ void OCommonStatement::disposeResultSet()
 
 void OCommonStatement::disposing()
 {
-    OSL_TRACE("mysqlc::OCommonStatement::disposing");
-    MutexGuard aGuard(m_aMutex);
+    OSL_TRACE( "mysqlc::OCommonStatement::disposing" );
+    MutexGuard aGuard( m_aMutex );
 
     disposeResultSet();
 
-    if (m_pConnection) {
+    if ( m_pConnection )
+    {
         m_pConnection->release();
         m_pConnection = NULL;
     }
@@ -102,278 +103,293 @@ void OCommonStatement::disposing()
 }
 
 
-Any SAL_CALL OCommonStatement::queryInterface(const Type & rType)
-    throw(RuntimeException)
+Any SAL_CALL OCommonStatement::queryInterface( const Type &rType )
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::queryInterface");
-    Any aRet = OCommonStatement_IBase::queryInterface(rType);
-    if (!aRet.hasValue()) {
-        aRet = OPropertySetHelper::queryInterface(rType);
+    OSL_TRACE( "mysqlc::OCommonStatement::queryInterface" );
+    Any aRet = OCommonStatement_IBase::queryInterface( rType );
+    if ( !aRet.hasValue() )
+    {
+        aRet = OPropertySetHelper::queryInterface( rType );
     }
     return aRet;
 }
 
 
 Sequence< Type > SAL_CALL OCommonStatement::getTypes()
-    throw(RuntimeException)
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::getTypes");
-    ::cppu::OTypeCollection aTypes(    ::getCppuType( (const Reference< XMultiPropertySet > *)0 ),
-                                    ::getCppuType( (const Reference< XFastPropertySet > *)0 ),
-                                    ::getCppuType( (const Reference< XPropertySet > *)0 ));
+    OSL_TRACE( "mysqlc::OCommonStatement::getTypes" );
+    ::cppu::OTypeCollection aTypes(    ::getCppuType( ( const Reference< XMultiPropertySet > * )0 ),
+                                       ::getCppuType( ( const Reference< XFastPropertySet > * )0 ),
+                                       ::getCppuType( ( const Reference< XPropertySet > * )0 ) );
 
-    return concatSequences(aTypes.getTypes(), OCommonStatement_IBase::getTypes());
+    return concatSequences( aTypes.getTypes(), OCommonStatement_IBase::getTypes() );
 }
 
 
 void SAL_CALL OCommonStatement::cancel()
-    throw(RuntimeException)
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::cancel");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
+    OSL_TRACE( "mysqlc::OCommonStatement::cancel" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
     // cancel the current sql statement
 }
 
 
 void SAL_CALL OCommonStatement::close()
-    throw(SQLException, RuntimeException)
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::close");
+    OSL_TRACE( "mysqlc::OCommonStatement::close" );
     /*
       We need a block for the checkDisposed call.
       After the check we can call dispose() as we are not under lock ??
     */
     {
-        MutexGuard aGuard(m_aMutex);
-        checkDisposed(rBHelper.bDisposed);
+        MutexGuard aGuard( m_aMutex );
+        checkDisposed( rBHelper.bDisposed );
     }
     dispose();
 }
 
 
 void SAL_CALL OStatement::clearBatch()
-    throw(SQLException, RuntimeException)
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("OStatement::clearBatch");
+    OSL_TRACE( "OStatement::clearBatch" );
     // if you support batches clear it here
 }
 
 
-sal_Bool SAL_CALL OCommonStatement::execute(const OUString& sql)
-    throw(SQLException, RuntimeException)
+sal_Bool SAL_CALL OCommonStatement::execute( const OUString &sql )
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::execute");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
+    OSL_TRACE( "mysqlc::OCommonStatement::execute" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
     const ::rtl::OUString sSqlStatement = m_pConnection->transFormPreparedStatement( sql );
 
     sal_Bool success = false;
-    try {
-        success = cppStatement->execute(OUStringToOString(sSqlStatement, m_pConnection->getConnectionSettings().encoding).getStr())? sal_True:sal_False;
-    } catch (sql::SQLException &e) {
-        mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
+    try
+    {
+        success = cppStatement->execute( OUStringToOString( sSqlStatement, m_pConnection->getConnectionSettings().encoding ).getStr() ) ? sal_True : sal_False;
+    }
+    catch ( sql::SQLException &e )
+    {
+        mysqlc::translateAndThrow( e, *this, m_pConnection->getConnectionEncoding() );
     }
     return success;
 }
 
 
-Reference< XResultSet > SAL_CALL OCommonStatement::executeQuery(const OUString& sql)
-    throw(SQLException, RuntimeException)
+Reference< XResultSet > SAL_CALL OCommonStatement::executeQuery( const OUString &sql )
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::executeQuery");
+    OSL_TRACE( "mysqlc::OCommonStatement::executeQuery" );
 
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
-    const ::rtl::OUString sSqlStatement = m_pConnection->transFormPreparedStatement(sql);
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
+    const ::rtl::OUString sSqlStatement = m_pConnection->transFormPreparedStatement( sql );
 
     Reference< XResultSet > xResultSet;
-    try {
-        std::auto_ptr< sql::ResultSet > rset(cppStatement->executeQuery(OUStringToOString(sSqlStatement, m_pConnection->getConnectionEncoding()).getStr()));
-        xResultSet = new OResultSet(this, rset.get(), m_pConnection->getConnectionEncoding());
+    try
+    {
+        std::auto_ptr< sql::ResultSet > rset( cppStatement->executeQuery( OUStringToOString( sSqlStatement, m_pConnection->getConnectionEncoding() ).getStr() ) );
+        xResultSet = new OResultSet( this, rset.get(), m_pConnection->getConnectionEncoding() );
         rset.release();
-    } catch (sql::SQLException &e) {
-        mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
+    }
+    catch ( sql::SQLException &e )
+    {
+        mysqlc::translateAndThrow( e, *this, m_pConnection->getConnectionEncoding() );
     }
     return xResultSet;
 }
 
 
 Reference< XConnection > SAL_CALL OCommonStatement::getConnection()
-    throw(SQLException, RuntimeException)
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::getConnection");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
+    OSL_TRACE( "mysqlc::OCommonStatement::getConnection" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
 
     // just return(our connection here
-    return ((Reference< XConnection >)m_pConnection);
+    return ( ( Reference< XConnection > )m_pConnection );
 }
 
 
 sal_Int32 SAL_CALL OCommonStatement::getUpdateCount()
-    throw(SQLException, RuntimeException)
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::getUpdateCount");
+    OSL_TRACE( "mysqlc::OCommonStatement::getUpdateCount" );
     return 0;
 }
 
 
-Any SAL_CALL OStatement::queryInterface(const Type & rType)
-    throw(RuntimeException)
+Any SAL_CALL OStatement::queryInterface( const Type &rType )
+throw( RuntimeException )
 {
-    OSL_TRACE("OStatement::queryInterface");
-    Any aRet = ::cppu::queryInterface(rType,static_cast< XBatchExecution*> (this));
-    if (!aRet.hasValue()) {
-        aRet = OCommonStatement::queryInterface(rType);
+    OSL_TRACE( "OStatement::queryInterface" );
+    Any aRet = ::cppu::queryInterface( rType, static_cast< XBatchExecution *> ( this ) );
+    if ( !aRet.hasValue() )
+    {
+        aRet = OCommonStatement::queryInterface( rType );
     }
-    return (aRet);
+    return ( aRet );
 }
 
 
-void SAL_CALL OStatement::addBatch(const OUString& sql)
-    throw(SQLException, RuntimeException)
+void SAL_CALL OStatement::addBatch( const OUString &sql )
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("OStatement::addBatch");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
+    OSL_TRACE( "OStatement::addBatch" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
 
-    m_aBatchList.push_back(sql);
+    m_aBatchList.push_back( sql );
 }
 
 
 Sequence< sal_Int32 > SAL_CALL OStatement::executeBatch()
-    throw(SQLException, RuntimeException)
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("OStatement::executeBatch");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
+    OSL_TRACE( "OStatement::executeBatch" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
 
     Sequence< sal_Int32 > aRet = Sequence< sal_Int32 >();
     return aRet;
 }
 
 
-sal_Int32 SAL_CALL OCommonStatement::executeUpdate(const OUString& sql)
-    throw(SQLException, RuntimeException)
+sal_Int32 SAL_CALL OCommonStatement::executeUpdate( const OUString &sql )
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::executeUpdate");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
-    const ::rtl::OUString sSqlStatement = m_pConnection->transFormPreparedStatement(sql);
+    OSL_TRACE( "mysqlc::OCommonStatement::executeUpdate" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
+    const ::rtl::OUString sSqlStatement = m_pConnection->transFormPreparedStatement( sql );
 
     sal_Int32 affectedRows = 0;
-    try {
-        affectedRows = cppStatement->executeUpdate(OUStringToOString(sSqlStatement, m_pConnection->getConnectionEncoding()).getStr());
-    } catch (sql::SQLException &e) {
-        mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
+    try
+    {
+        affectedRows = cppStatement->executeUpdate( OUStringToOString( sSqlStatement, m_pConnection->getConnectionEncoding() ).getStr() );
+    }
+    catch ( sql::SQLException &e )
+    {
+        mysqlc::translateAndThrow( e, *this, m_pConnection->getConnectionEncoding() );
     }
     return affectedRows;
 }
 
 
 Reference< XResultSet > SAL_CALL OCommonStatement::getResultSet()
-    throw(SQLException, RuntimeException)
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::getResultSet");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
+    OSL_TRACE( "mysqlc::OCommonStatement::getResultSet" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
 
     Reference< XResultSet > xResultSet;
-    try {
-        std::auto_ptr< sql::ResultSet > rset(cppStatement->getResultSet());
-        xResultSet = new OResultSet(this, rset.get(), m_pConnection->getConnectionEncoding());
+    try
+    {
+        std::auto_ptr< sql::ResultSet > rset( cppStatement->getResultSet() );
+        xResultSet = new OResultSet( this, rset.get(), m_pConnection->getConnectionEncoding() );
         rset.release();
-    } catch (sql::SQLException &e) {
-        mysqlc_sdbc_driver::translateAndThrow(e, *this, m_pConnection->getConnectionEncoding());
+    }
+    catch ( sql::SQLException &e )
+    {
+        mysqlc::translateAndThrow( e, *this, m_pConnection->getConnectionEncoding() );
     }
     return xResultSet;
 }
 
 
 sal_Bool SAL_CALL OCommonStatement::getMoreResults()
-    throw(SQLException, RuntimeException)
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::getMoreResults");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
+    OSL_TRACE( "mysqlc::OCommonStatement::getMoreResults" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
 
     // if your driver supports more than only one resultset
     // and has one more at this moment return(true
-    return (sal_False);
+    return ( sal_False );
 }
 
 
 Any SAL_CALL OCommonStatement::getWarnings()
-    throw(SQLException, RuntimeException)
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::getWarnings");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
+    OSL_TRACE( "mysqlc::OCommonStatement::getWarnings" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
 
-    return makeAny(m_aLastWarning);
+    return makeAny( m_aLastWarning );
 }
 
 
 void SAL_CALL OCommonStatement::clearWarnings()
-    throw(SQLException, RuntimeException)
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::clearWarnings");
-    MutexGuard aGuard(m_aMutex);
-    checkDisposed(rBHelper.bDisposed);
+    OSL_TRACE( "mysqlc::OCommonStatement::clearWarnings" );
+    MutexGuard aGuard( m_aMutex );
+    checkDisposed( rBHelper.bDisposed );
 
     m_aLastWarning = SQLWarning();
 }
 
 
-::cppu::IPropertyArrayHelper* OCommonStatement::createArrayHelper( ) const
+::cppu::IPropertyArrayHelper *OCommonStatement::createArrayHelper( ) const
 {
-    OSL_TRACE("mysqlc::OCommonStatement::createArrayHelper");
+    OSL_TRACE( "mysqlc::OCommonStatement::createArrayHelper" );
     // this properties are define by the service statement
     // they must in alphabetic order
-    Sequence< Property > aProps(10);
-    Property* pProperties = aProps.getArray();
+    Sequence< Property > aProps( 10 );
+    Property *pProperties = aProps.getArray();
     sal_Int32 nPos = 0;
-    DECL_PROP0(CURSORNAME,    OUString);
-    DECL_BOOL_PROP0(ESCAPEPROCESSING);
-    DECL_PROP0(FETCHDIRECTION,sal_Int32);
-    DECL_PROP0(FETCHSIZE,    sal_Int32);
-    DECL_PROP0(MAXFIELDSIZE,sal_Int32);
-    DECL_PROP0(MAXROWS,        sal_Int32);
-    DECL_PROP0(QUERYTIMEOUT,sal_Int32);
-    DECL_PROP0(RESULTSETCONCURRENCY,sal_Int32);
-    DECL_PROP0(RESULTSETTYPE,sal_Int32);
-    DECL_BOOL_PROP0(USEBOOKMARKS);
+    DECL_PROP0( CURSORNAME,    OUString );
+    DECL_BOOL_PROP0( ESCAPEPROCESSING );
+    DECL_PROP0( FETCHDIRECTION, sal_Int32 );
+    DECL_PROP0( FETCHSIZE,    sal_Int32 );
+    DECL_PROP0( MAXFIELDSIZE, sal_Int32 );
+    DECL_PROP0( MAXROWS,        sal_Int32 );
+    DECL_PROP0( QUERYTIMEOUT, sal_Int32 );
+    DECL_PROP0( RESULTSETCONCURRENCY, sal_Int32 );
+    DECL_PROP0( RESULTSETTYPE, sal_Int32 );
+    DECL_BOOL_PROP0( USEBOOKMARKS );
 
-    return new ::cppu::OPropertyArrayHelper(aProps);
+    return new ::cppu::OPropertyArrayHelper( aProps );
 }
 
 
-::cppu::IPropertyArrayHelper & OCommonStatement::getInfoHelper()
+::cppu::IPropertyArrayHelper &OCommonStatement::getInfoHelper()
 {
-    OSL_TRACE("mysqlc::OCommonStatement::getInfoHelper");
-    return(*const_cast<OCommonStatement*>(this)->getArrayHelper());
+    OSL_TRACE( "mysqlc::OCommonStatement::getInfoHelper" );
+    return( *const_cast<OCommonStatement *>( this )->getArrayHelper() );
 }
 
 
 sal_Bool OCommonStatement::convertFastPropertyValue(
-        Any & /* rConvertedValue */, Any & /* rOldValue */,
-        sal_Int32 /* nHandle */, const Any& /* rValue */)
-    throw (IllegalArgumentException)
+    Any & /* rConvertedValue */, Any & /* rOldValue */,
+    sal_Int32 /* nHandle */, const Any & /* rValue */ )
+throw ( IllegalArgumentException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::convertFastPropertyValue");
+    OSL_TRACE( "mysqlc::OCommonStatement::convertFastPropertyValue" );
     sal_Bool bConverted = sal_False;
     // here we have to try to convert
     return bConverted;
 }
 
 
-void OCommonStatement::setFastPropertyValue_NoBroadcast(sal_Int32 nHandle, const Any& /* rValue */)
-    throw (Exception)
+void OCommonStatement::setFastPropertyValue_NoBroadcast( sal_Int32 nHandle, const Any & /* rValue */ )
+throw ( Exception )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::setFastPropertyValue_NoBroadcast");
+    OSL_TRACE( "mysqlc::OCommonStatement::setFastPropertyValue_NoBroadcast" );
     // set the value to what ever is nescessary
-    switch (nHandle) {
+    switch ( nHandle )
+    {
         case PROPERTY_ID_QUERYTIMEOUT:
         case PROPERTY_ID_MAXFIELDSIZE:
         case PROPERTY_ID_MAXROWS:
@@ -390,10 +406,11 @@ void OCommonStatement::setFastPropertyValue_NoBroadcast(sal_Int32 nHandle, const
 }
 
 
-void OCommonStatement::getFastPropertyValue(Any& _rValue, sal_Int32 nHandle) const
+void OCommonStatement::getFastPropertyValue( Any &_rValue, sal_Int32 nHandle ) const
 {
-    OSL_TRACE("mysqlc::OCommonStatement::getFastPropertyValue");
-    switch (nHandle)    {
+    OSL_TRACE( "mysqlc::OCommonStatement::getFastPropertyValue" );
+    switch ( nHandle )
+    {
         case PROPERTY_ID_QUERYTIMEOUT:
         case PROPERTY_ID_MAXFIELDSIZE:
         case PROPERTY_ID_MAXROWS:
@@ -412,44 +429,44 @@ void OCommonStatement::getFastPropertyValue(Any& _rValue, sal_Int32 nHandle) con
     }
 }
 
-IMPLEMENT_SERVICE_INFO(OStatement,"com.sun.star.sdbcx.OStatement","com.sun.star.sdbc.Statement");
+IMPLEMENT_SERVICE_INFO( OStatement, "com.sun.star.sdbcx.OStatement", "com.sun.star.sdbc.Statement" );
 
 void SAL_CALL OCommonStatement::acquire()
-    throw()
+throw()
 {
-    OSL_TRACE("mysqlc::OCommonStatement::acquire");
+    OSL_TRACE( "mysqlc::OCommonStatement::acquire" );
     OCommonStatement_IBase::acquire();
 }
 
 
 void SAL_CALL OCommonStatement::release()
-    throw()
+throw()
 {
-    OSL_TRACE("mysqlc::OCommonStatement::release");
+    OSL_TRACE( "mysqlc::OCommonStatement::release" );
     relase_ChildImpl();
 }
 
 
 void SAL_CALL OStatement::acquire()
-    throw()
+throw()
 {
-    OSL_TRACE("OStatement::acquire");
+    OSL_TRACE( "OStatement::acquire" );
     OCommonStatement::acquire();
 }
 
 
 void SAL_CALL OStatement::release()
-    throw()
+throw()
 {
-    OSL_TRACE("OStatement::release");
+    OSL_TRACE( "OStatement::release" );
     OCommonStatement::release();
 }
 
 
 Reference< ::com::sun::star::beans::XPropertySetInfo > SAL_CALL OCommonStatement::getPropertySetInfo()
-    throw(RuntimeException)
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::OCommonStatement::getPropertySetInfo");
-    return(::cppu::OPropertySetHelper::createPropertySetInfo(getInfoHelper()));
+    OSL_TRACE( "mysqlc::OCommonStatement::getPropertySetInfo" );
+    return( ::cppu::OPropertySetHelper::createPropertySetInfo( getInfoHelper() ) );
 }
 

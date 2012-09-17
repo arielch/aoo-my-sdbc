@@ -22,7 +22,8 @@
 #ifndef MYSQLC_TYPES_HXX
 #define MYSQLC_TYPES_HXX
 
-struct TypeInfoDef {
+struct TypeInfoDef
+{
     const char *typeName;
     sal_Int32 dataType;
     sal_Int32 precision;

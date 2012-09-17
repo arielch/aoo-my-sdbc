@@ -29,32 +29,32 @@
 #include <cppconn/exception.h>
 #include <postextstl.h>
 
-namespace mysqlc_sdbc_driver
+namespace mysqlc
 {
-    rtl::OUString getStringFromAny(const ::com::sun::star::uno::Any& _rAny);
+    rtl::OUString getStringFromAny( const ::com::sun::star::uno::Any &_rAny );
 
     void throwFeatureNotImplementedException(
-            const sal_Char* _pAsciiFeatureName,
-            const ::com::sun::star::uno::Reference< ::com::sun::star::uno::XInterface >& _rxContext,
-            const ::com::sun::star::uno::Any* _pNextException = NULL
-        )
-        throw (::com::sun::star::sdbc::SQLException);
+        const sal_Char *_pAsciiFeatureName,
+        const ::com::sun::star::uno::Reference< ::com::sun::star::uno::XInterface > &_rxContext,
+        const ::com::sun::star::uno::Any *_pNextException = NULL
+    )
+    throw ( ::com::sun::star::sdbc::SQLException );
 
     void throwInvalidArgumentException(
-            const sal_Char* _pAsciiFeatureName,
-            const ::com::sun::star::uno::Reference< ::com::sun::star::uno::XInterface >& _rxContext,
-            const ::com::sun::star::uno::Any* _pNextException = NULL
-        )
-        throw (::com::sun::star::sdbc::SQLException);
+        const sal_Char *_pAsciiFeatureName,
+        const ::com::sun::star::uno::Reference< ::com::sun::star::uno::XInterface > &_rxContext,
+        const ::com::sun::star::uno::Any *_pNextException = NULL
+    )
+    throw ( ::com::sun::star::sdbc::SQLException );
 
-    void translateAndThrow(const ::sql::SQLException& _error, const ::com::sun::star::uno::Reference< ::com::sun::star::uno::XInterface >& _context, const rtl_TextEncoding encoding);
+    void translateAndThrow( const ::sql::SQLException &_error, const ::com::sun::star::uno::Reference< ::com::sun::star::uno::XInterface > &_context, const rtl_TextEncoding encoding );
 
-    int mysqlToOOOType(int mysqlType) throw ();
+    int mysqlToOOOType( int mysqlType ) throw ();
 
 
-    ::rtl::OUString convert(const ::ext_std::string& _string, const rtl_TextEncoding encoding);
+    ::rtl::OUString convert( const ::ext_std::string &_string, const rtl_TextEncoding encoding );
 
-    ::ext_std::string convert(const ::rtl::OUString& _string, const rtl_TextEncoding encoding);
+    ::ext_std::string convert( const ::rtl::OUString &_string, const rtl_TextEncoding encoding );
 }
 
 #endif

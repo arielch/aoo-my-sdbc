@@ -33,73 +33,78 @@
 #include <postextstl.h>
 #include <osl/module.h>
 
-namespace connectivity
+
+namespace mysqlc
 {
-    namespace mysqlc
+    using ::rtl::OUString;
+    using ::com::sun::star::sdbc::SQLException;
+    using ::com::sun::star::uno::RuntimeException;
+    using ::com::sun::star::uno::Exception;
+    using ::com::sun::star::uno::Reference;
+    using ::com::sun::star::uno::Sequence;
+    Reference< ::com::sun::star::uno::XInterface > SAL_CALL MysqlCDriver_CreateInstance( const Reference< ::com::sun::star::lang::XMultiServiceFactory > &_rxFactory ) throw( Exception );
+
+    typedef ::cppu::WeakComponentImplHelper2 <    ::com::sun::star::sdbc::XDriver,
+            ::com::sun::star::lang::XServiceInfo > ODriver_BASE;
+
+    typedef void *( SAL_CALL *OMysqlCConnection_CreateInstanceFunction )( void *_pDriver );
+
+    class MysqlCDriver : public ODriver_BASE
     {
-        using ::rtl::OUString;
-        using ::com::sun::star::sdbc::SQLException;
-        using ::com::sun::star::uno::RuntimeException;
-        using ::com::sun::star::uno::Exception;
-        using ::com::sun::star::uno::Reference;
-        using ::com::sun::star::uno::Sequence;
-        Reference< ::com::sun::star::uno::XInterface > SAL_CALL MysqlCDriver_CreateInstance(const Reference< ::com::sun::star::lang::XMultiServiceFactory >& _rxFactory) throw(Exception);
-
-        typedef ::cppu::WeakComponentImplHelper2<    ::com::sun::star::sdbc::XDriver,
-                                                    ::com::sun::star::lang::XServiceInfo > ODriver_BASE;
-
-        typedef void* (SAL_CALL * OMysqlCConnection_CreateInstanceFunction)(void* _pDriver);
-
-        class MysqlCDriver : public ODriver_BASE
-        {
         protected:
             Reference< ::com::sun::star::lang::XMultiServiceFactory > m_xFactory;
             ::osl::Mutex    m_aMutex;        // mutex is need to control member access
             OWeakRefArray    m_xConnections;    // vector containing a list
-                                            // of all the Connection objects
-                                            // for this Driver
+            // of all the Connection objects
+            // for this Driver
 #ifndef SYSTEM_MYSQL_CPPCONN
             oslModule       m_hCppConnModule;
             bool            m_bAttemptedLoadCppConn;
 #endif
 
-            sql::Driver * cppDriver;
+            sql::Driver *cppDriver;
 
         public:
 
-            MysqlCDriver(const Reference< ::com::sun::star::lang::XMultiServiceFactory >& _rxFactory);
+            MysqlCDriver( const Reference< ::com::sun::star::lang::XMultiServiceFactory > &_rxFactory );
 
             // OComponentHelper
-            void SAL_CALL disposing(void);
+            void SAL_CALL disposing( void );
             // XInterface
-            static OUString getImplementationName_Static()                    throw(RuntimeException);
-            static Sequence< OUString > getSupportedServiceNames_Static()    throw(RuntimeException);
+            static OUString getImplementationName_Static()                    throw( RuntimeException );
+            static Sequence< OUString > getSupportedServiceNames_Static()    throw( RuntimeException );
 
             // XServiceInfo
-            OUString SAL_CALL getImplementationName()                        throw(RuntimeException);
-            sal_Bool SAL_CALL supportsService(const OUString& ServiceName)    throw(RuntimeException);
-            Sequence< OUString > SAL_CALL getSupportedServiceNames()        throw(RuntimeException);
+            OUString SAL_CALL getImplementationName()                        throw( RuntimeException );
+            sal_Bool SAL_CALL supportsService( const OUString &ServiceName )    throw( RuntimeException );
+            Sequence< OUString > SAL_CALL getSupportedServiceNames()        throw( RuntimeException );
 
             // XDriver
-            Reference< ::com::sun::star::sdbc::XConnection > SAL_CALL connect(const OUString& url, const Sequence< ::com::sun::star::beans::PropertyValue >& info)
-                                                                            throw(SQLException, RuntimeException);
+            Reference< ::com::sun::star::sdbc::XConnection > SAL_CALL connect( const OUString &url, const Sequence< ::com::sun::star::beans::PropertyValue > &info )
+            throw( SQLException, RuntimeException );
 
-            sal_Bool SAL_CALL acceptsURL(const OUString& url) throw(SQLException, RuntimeException);
-            Sequence< ::com::sun::star::sdbc::DriverPropertyInfo > SAL_CALL getPropertyInfo(const OUString& url, const Sequence< ::com::sun::star::beans::PropertyValue >& info)
-                                                                            throw(SQLException, RuntimeException);
+            sal_Bool SAL_CALL acceptsURL( const OUString &url ) throw( SQLException, RuntimeException );
+            Sequence< ::com::sun::star::sdbc::DriverPropertyInfo > SAL_CALL getPropertyInfo( const OUString &url, const Sequence< ::com::sun::star::beans::PropertyValue > &info )
+            throw( SQLException, RuntimeException );
 
-            sal_Int32 SAL_CALL getMajorVersion()                            throw(RuntimeException);
-            sal_Int32 SAL_CALL getMinorVersion()                            throw(RuntimeException);
+            sal_Int32 SAL_CALL getMajorVersion()                            throw( RuntimeException );
+            sal_Int32 SAL_CALL getMinorVersion()                            throw( RuntimeException );
 
-            inline Reference< ::com::sun::star::lang::XMultiServiceFactory > getFactory() const { return m_xFactory; }
+            inline Reference< ::com::sun::star::lang::XMultiServiceFactory > getFactory() const
+            {
+                return m_xFactory;
+            }
 
-            rtl_TextEncoding getDefaultEncoding() { return RTL_TEXTENCODING_UTF8; }
+            rtl_TextEncoding getDefaultEncoding()
+            {
+                return RTL_TEXTENCODING_UTF8;
+            }
 
         private:
             void    impl_initCppConn_lck_throw();
-        };
-    } /* mysqlc */
-} /* connectivity */
+    };
+} /* mysqlc */
+
 
 #endif // MYSQLC_SDRIVER_HXX
 

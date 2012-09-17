@@ -27,7 +27,8 @@
 
 using namespace com::sun::star::sdbc;
 
-TypeInfoDef mysqlc_types[] = {
+TypeInfoDef mysqlc_types[] =
+{
 
     // ------------- MySQL-Type: BIT. SDBC-Type: Bit -------------
     {
@@ -49,7 +50,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ------------ MySQL-Type: BOOL. SDBC-Type: Bit -------------
     {
@@ -71,7 +72,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // --------- MySQL-Type: TINYINT SDBC-Type: TINYINT ----------
     {
@@ -93,7 +94,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: BIGINT SDBC-Type: BIGINT ----------
     {
@@ -115,7 +116,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: LONG VARBINARY SDBC-Type: LONGVARBINARY ----------
     {
@@ -137,7 +138,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: MEDIUMBLOB SDBC-Type: LONGVARBINARY ----------
     {
@@ -159,7 +160,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: LONGBLOB SDBC-Type: LONGVARBINARY ----------
     {
@@ -181,7 +182,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: BLOB SDBC-Type: LONGVARBINARY ----------
     {
@@ -203,7 +204,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: TINYBLOB SDBC-Type: LONGVARBINARY ----------
     {
@@ -225,7 +226,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: VARBINARY SDBC-Type: VARBINARY ----------
     {
@@ -247,7 +248,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: BINARY SDBC-Type: BINARY ----------
     {
@@ -269,7 +270,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: LONG VARCHAR SDBC-Type: LONG VARCHAR ----------
     {
@@ -291,7 +292,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: MEDIUMTEXT SDBC-Type: LONG VARCHAR ----------
     {
@@ -313,7 +314,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: LONGTEXT SDBC-Type: LONG VARCHAR ----------
     {
@@ -335,7 +336,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: TEXT SDBC-Type: LONG VARCHAR ----------
     {
@@ -357,7 +358,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: TINYTEXT SDBC-Type: LONG VARCHAR ----------
     {
@@ -379,7 +380,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: CHAR SDBC-Type: CHAR ----------
     {
@@ -401,7 +402,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: DECIMAL SDBC-Type: DECIMAL ----------
     {
@@ -423,7 +424,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: NUMERIC SDBC-Type: NUMERIC ----------
     {
@@ -445,7 +446,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: INTEGER SDBC-Type: INTEGER ----------
     {
@@ -467,7 +468,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: INT SDBC-Type: INTEGER ----------
     {
@@ -489,13 +490,13 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: MEDIUMINT SDBC-Type: INTEGER ----------
     {
         "MEDIUMINT",                                 // Typename
         com::sun::star::sdbc::DataType::INTEGER,     // sdbc-type
-         7,                                          // Precision
+        7,                                          // Precision
         "",                                          // Literal prefix
         "",                                          // Literal suffix
         "[(M)] [UNSIGNED] [ZEROFILL]",               // Create params
@@ -511,13 +512,13 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: SMALLINT SDBC-Type: INTEGER ----------
     {
         "SMALLINT",                                  // Typename
         com::sun::star::sdbc::DataType::SMALLINT,    // sdbc-type
-         5,                                          // Precision
+        5,                                          // Precision
         "",                                          // Literal prefix
         "",                                          // Literal suffix
         "[(M)] [UNSIGNED] [ZEROFILL]",               // Create params
@@ -533,7 +534,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: FLOAT SDBC-Type: REAL ----------
     {
@@ -555,7 +556,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: DOUBLE SDBC-Type: DOUBLE ----------
     {
@@ -577,7 +578,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: DOUBLE PRECISION SDBC-Type: DOUBLE ----------
     {
@@ -599,7 +600,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: REAL SDBC-Type: DOUBLE ----------
     {
@@ -621,7 +622,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: VARCHAR SDBC-Type: VARCHAR ----------
     {
@@ -643,7 +644,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: ENUM SDBC-Type: VARCHAR ----------
     {
@@ -665,7 +666,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: SET SDBC-Type: VARCHAR ----------
     {
@@ -687,7 +688,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: DATE SDBC-Type: DATE ----------
     {
@@ -709,7 +710,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: TIME SDBC-Type: TIME ----------
     {
@@ -731,7 +732,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: DATETIME SDBC-Type: TIMESTAMP ----------
     {
@@ -753,7 +754,7 @@ TypeInfoDef mysqlc_types[] = {
         0,                                           // sql data type (unsued)
         0,                                           // sql datetime sub (unsued)
         10                                           // num prec radix
-     },
+    },
 
     // ----------- MySQL-Type: TIMESTAMP SDBC-Type: TIMESTAMP ----------
     {

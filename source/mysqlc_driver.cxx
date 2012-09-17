@@ -27,41 +27,42 @@ using namespace com::sun::star::uno;
 using namespace com::sun::star::lang;
 using namespace com::sun::star::beans;
 using namespace com::sun::star::sdbc;
-using namespace connectivity::mysqlc;
+using namespace mysqlc;
 using ::rtl::OUString;
 #include <stdio.h>
 
 #include <preextstl.h>
 #include <cppconn/exception.h>
 #ifdef SYSTEM_MYSQL_CPPCONN
-    #include <mysql_driver.h>
+#include <mysql_driver.h>
 #endif
 #include <postextstl.h>
 
 
-MysqlCDriver::MysqlCDriver(const Reference< XMultiServiceFactory >& _rxFactory)
-    : ODriver_BASE(m_aMutex)
-    ,m_xFactory(_rxFactory)
+MysqlCDriver::MysqlCDriver( const Reference< XMultiServiceFactory > &_rxFactory )
+    : ODriver_BASE( m_aMutex )
+    , m_xFactory( _rxFactory )
 #ifndef SYSTEM_MYSQL_CPPCONN
-    ,m_hCppConnModule( NULL )
-    ,m_bAttemptedLoadCppConn( false )
+    , m_hCppConnModule( NULL )
+    , m_bAttemptedLoadCppConn( false )
 #endif
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::MysqlCDriver");
+    OSL_TRACE( "mysqlc::MysqlCDriver::MysqlCDriver" );
     cppDriver = NULL;
 }
 
 
 void MysqlCDriver::disposing()
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::disposing");
-    ::osl::MutexGuard aGuard(m_aMutex);
+    OSL_TRACE( "mysqlc::MysqlCDriver::disposing" );
+    ::osl::MutexGuard aGuard( m_aMutex );
 
     // when driver will be destroied so all our connections have to be destroied as well
-    for (OWeakRefArray::iterator i = m_xConnections.begin(); m_xConnections.end() != i; ++i)
+    for ( OWeakRefArray::iterator i = m_xConnections.begin(); m_xConnections.end() != i; ++i )
     {
-        Reference< XComponent > xComp(i->get(), UNO_QUERY);
-        if (xComp.is()) {
+        Reference< XComponent > xComp( i->get(), UNO_QUERY );
+        if ( xComp.is() )
+        {
             xComp->dispose();
         }
     }
@@ -73,55 +74,57 @@ void MysqlCDriver::disposing()
 
 // static ServiceInfo
 OUString MysqlCDriver::getImplementationName_Static()
-    throw(RuntimeException)
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::getImplementationName_Static");
+    OSL_TRACE( "mysqlc::MysqlCDriver::getImplementationName_Static" );
     return ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "com.sun.star.comp.sdbc.mysqlc.MysqlCDriver" ) );
 }
 
 
 Sequence< OUString > MysqlCDriver::getSupportedServiceNames_Static()
-    throw(RuntimeException)
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::getSupportedServiceNames_Static");
+    OSL_TRACE( "mysqlc::MysqlCDriver::getSupportedServiceNames_Static" );
     // which service is supported
     // for more information @see com.sun.star.sdbc.Driver
-    Sequence< OUString > aSNS(1);
-    aSNS[0] = OUString(RTL_CONSTASCII_USTRINGPARAM("com.sun.star.sdbc.Driver"));
+    Sequence< OUString > aSNS( 1 );
+    aSNS[0] = OUString( RTL_CONSTASCII_USTRINGPARAM( "com.sun.star.sdbc.Driver" ) );
     return aSNS;
 }
 
 
 OUString SAL_CALL MysqlCDriver::getImplementationName()
-    throw(RuntimeException)
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::getImplementationName");
+    OSL_TRACE( "mysqlc::MysqlCDriver::getImplementationName" );
     return getImplementationName_Static();
 }
 
 
-sal_Bool SAL_CALL MysqlCDriver::supportsService(const OUString& _rServiceName)
-    throw(RuntimeException)
+sal_Bool SAL_CALL MysqlCDriver::supportsService( const OUString &_rServiceName )
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::supportsService");
-    Sequence< OUString > aSupported(getSupportedServiceNames());
-    const OUString* pSupported = aSupported.getConstArray();
-    const OUString* pEnd = pSupported + aSupported.getLength();
-    for (;pSupported != pEnd && !pSupported->equals(_rServiceName); ++pSupported){}
+    OSL_TRACE( "mysqlc::MysqlCDriver::supportsService" );
+    Sequence< OUString > aSupported( getSupportedServiceNames() );
+    const OUString *pSupported = aSupported.getConstArray();
+    const OUString *pEnd = pSupported + aSupported.getLength();
+    for ( ; pSupported != pEnd && !pSupported->equals( _rServiceName ); ++pSupported ) {}
 
-    return (pSupported != pEnd);
+    return ( pSupported != pEnd );
 }
 
 
 Sequence< OUString > SAL_CALL MysqlCDriver::getSupportedServiceNames()
-    throw(RuntimeException)
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::getSupportedServiceNames");
+    OSL_TRACE( "mysqlc::MysqlCDriver::getSupportedServiceNames" );
     return getSupportedServiceNames_Static();
 }
 
 
-extern "C" { static void SAL_CALL thisModule() {} }
+extern "C" {
+    static void SAL_CALL thisModule() {}
+}
 
 void MysqlCDriver::impl_initCppConn_lck_throw()
 {
@@ -138,7 +141,7 @@ void MysqlCDriver::impl_initCppConn_lck_throw()
     // attempted to load - was it successful?
     if ( !m_hCppConnModule )
     {
-        OSL_ENSURE( false, "MysqlCDriver::impl_initCppConn_lck_throw: could not load the " CPPCONN_LIB " library!");
+        OSL_ENSURE( false, "MysqlCDriver::impl_initCppConn_lck_throw: could not load the " CPPCONN_LIB " library!" );
         throw SQLException(
             ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "Unable to load the " CPPCONN_LIB " library." ) ),
             *this,
@@ -150,12 +153,12 @@ void MysqlCDriver::impl_initCppConn_lck_throw()
 
     // find the factory symbol
     const ::rtl::OUString sSymbolName = ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "sql_mysql_get_driver_instance" ) );
-    typedef void* (* FGetMySQLDriver)();
+    typedef void* ( * FGetMySQLDriver )();
 
-    const FGetMySQLDriver pFactoryFunction = (FGetMySQLDriver)( osl_getFunctionSymbol( m_hCppConnModule, sSymbolName.pData ) );
+    const FGetMySQLDriver pFactoryFunction = ( FGetMySQLDriver )( osl_getFunctionSymbol( m_hCppConnModule, sSymbolName.pData ) );
     if ( !pFactoryFunction )
     {
-        OSL_ENSURE( false, "MysqlCDriver::impl_initCppConn_lck_throw: could not find the factory symbol in " CPPCONN_LIB "!");
+        OSL_ENSURE( false, "MysqlCDriver::impl_initCppConn_lck_throw: could not find the factory symbol in " CPPCONN_LIB "!" );
         throw SQLException(
             ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( CPPCONN_LIB " is invalid: missing the driver factory function." ) ),
             *this,
@@ -165,7 +168,7 @@ void MysqlCDriver::impl_initCppConn_lck_throw()
         );
     }
 
-    cppDriver = static_cast< sql::Driver* >( (*pFactoryFunction)() );
+    cppDriver = static_cast< sql::Driver * >( ( *pFactoryFunction )() );
 #endif
     if ( !cppDriver )
     {
@@ -179,13 +182,14 @@ void MysqlCDriver::impl_initCppConn_lck_throw()
     }
 }
 
-Reference< XConnection > SAL_CALL MysqlCDriver::connect(const OUString& url, const Sequence< PropertyValue >& info)
-    throw(SQLException, RuntimeException)
+Reference< XConnection > SAL_CALL MysqlCDriver::connect( const OUString &url, const Sequence< PropertyValue > &info )
+throw( SQLException, RuntimeException )
 {
     ::osl::MutexGuard aGuard( m_aMutex );
 
-    OSL_TRACE("mysqlc::MysqlCDriver::connect");
-    if (!acceptsURL(url)) {
+    OSL_TRACE( "mysqlc::MysqlCDriver::connect" );
+    if ( !acceptsURL( url ) )
+    {
         return NULL;
     }
 
@@ -199,51 +203,53 @@ Reference< XConnection > SAL_CALL MysqlCDriver::connect(const OUString& url, con
 
     Reference< XConnection > xConn;
     // create a new connection with the given properties and append it to our vector
-    try {
-        OConnection* pCon = new OConnection(*this, cppDriver);
+    try
+    {
+        OConnection *pCon = new OConnection( *this, cppDriver );
         xConn = pCon;
 
-        pCon->construct(url,info);
-        m_xConnections.push_back(WeakReferenceHelper(*pCon));
+        pCon->construct( url, info );
+        m_xConnections.push_back( WeakReferenceHelper( *pCon ) );
     }
-    catch (sql::SQLException &e)
+    catch ( sql::SQLException &e )
     {
-        mysqlc_sdbc_driver::translateAndThrow(e, *this, getDefaultEncoding());
+        mysqlc::translateAndThrow( e, *this, getDefaultEncoding() );
     }
     return xConn;
 }
 
 
-sal_Bool SAL_CALL MysqlCDriver::acceptsURL(const OUString& url)
-        throw(SQLException, RuntimeException)
+sal_Bool SAL_CALL MysqlCDriver::acceptsURL( const OUString &url )
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::acceptsURL");
-    return (!url.compareToAscii( RTL_CONSTASCII_STRINGPARAM("sdbc:mysqlc:") ));
+    OSL_TRACE( "mysqlc::MysqlCDriver::acceptsURL" );
+    return ( !url.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "sdbc:mysqlc:" ) ) );
 }
 
 
-Sequence< DriverPropertyInfo > SAL_CALL MysqlCDriver::getPropertyInfo(const OUString& url, const Sequence< PropertyValue >& /* info */)
-    throw(SQLException, RuntimeException)
+Sequence< DriverPropertyInfo > SAL_CALL MysqlCDriver::getPropertyInfo( const OUString &url, const Sequence< PropertyValue > & /* info */ )
+throw( SQLException, RuntimeException )
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::getPropertyInfo");
-    if (acceptsURL(url)) {
+    OSL_TRACE( "mysqlc::MysqlCDriver::getPropertyInfo" );
+    if ( acceptsURL( url ) )
+    {
         ::std::vector< DriverPropertyInfo > aDriverInfo;
 
-        aDriverInfo.push_back(DriverPropertyInfo(
-                OUString(RTL_CONSTASCII_USTRINGPARAM("Hostname"))
-                ,OUString(RTL_CONSTASCII_USTRINGPARAM("Name of host"))
-                ,sal_True
-                ,OUString(RTL_CONSTASCII_USTRINGPARAM("localhost"))
-                ,Sequence< OUString >())
-            );
-        aDriverInfo.push_back(DriverPropertyInfo(
-                OUString(RTL_CONSTASCII_USTRINGPARAM("Port"))
-                ,OUString(RTL_CONSTASCII_USTRINGPARAM("Port"))
-                ,sal_True
-                ,OUString(RTL_CONSTASCII_USTRINGPARAM("3306"))
-                ,Sequence< OUString >())
-            );
-        return Sequence< DriverPropertyInfo >(&(aDriverInfo[0]),aDriverInfo.size());
+        aDriverInfo.push_back( DriverPropertyInfo(
+                                   OUString( RTL_CONSTASCII_USTRINGPARAM( "Hostname" ) )
+                                   , OUString( RTL_CONSTASCII_USTRINGPARAM( "Name of host" ) )
+                                   , sal_True
+                                   , OUString( RTL_CONSTASCII_USTRINGPARAM( "localhost" ) )
+                                   , Sequence< OUString >() )
+                             );
+        aDriverInfo.push_back( DriverPropertyInfo(
+                                   OUString( RTL_CONSTASCII_USTRINGPARAM( "Port" ) )
+                                   , OUString( RTL_CONSTASCII_USTRINGPARAM( "Port" ) )
+                                   , sal_True
+                                   , OUString( RTL_CONSTASCII_USTRINGPARAM( "3306" ) )
+                                   , Sequence< OUString >() )
+                             );
+        return Sequence< DriverPropertyInfo >( &( aDriverInfo[0] ), aDriverInfo.size() );
     }
 
     return Sequence< DriverPropertyInfo >();
@@ -251,75 +257,81 @@ Sequence< DriverPropertyInfo > SAL_CALL MysqlCDriver::getPropertyInfo(const OUSt
 
 
 sal_Int32 SAL_CALL MysqlCDriver::getMajorVersion()
-    throw(RuntimeException)
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::getMajorVersion");
+    OSL_TRACE( "mysqlc::MysqlCDriver::getMajorVersion" );
     return MYSQLC_VERSION_MAJOR;
 }
 
 
 sal_Int32 SAL_CALL MysqlCDriver::getMinorVersion()
-    throw(RuntimeException)
+throw( RuntimeException )
 {
-    OSL_TRACE("mysqlc::MysqlCDriver::getMinorVersion");
+    OSL_TRACE( "mysqlc::MysqlCDriver::getMinorVersion" );
     return MYSQLC_VERSION_MINOR;
 }
 
 
 namespace connectivity
 {
-namespace mysqlc
-{
+    namespace mysqlc
+    {
 
-Reference< XInterface >  SAL_CALL MysqlCDriver_CreateInstance(const Reference< XMultiServiceFactory >& _rxFactory)
-    throw(::com::sun::star::uno::Exception)
-{
-    return(*(new MysqlCDriver(_rxFactory)));
-}
+        Reference< XInterface >  SAL_CALL MysqlCDriver_CreateInstance( const Reference< XMultiServiceFactory > &_rxFactory )
+        throw( ::com::sun::star::uno::Exception )
+        {
+            return( *( new MysqlCDriver( _rxFactory ) ) );
+        }
 
-void release(oslInterlockedCount& _refCount,
-             ::cppu::OBroadcastHelper& rBHelper,
-             Reference< XInterface >& _xInterface,
-             ::com::sun::star::lang::XComponent* _pObject)
-{
-    if (osl_decrementInterlockedCount(&_refCount) == 0) {
-        osl_incrementInterlockedCount(&_refCount);
-
-        if (!rBHelper.bDisposed && !rBHelper.bInDispose) {
-            // remember the parent
-            Reference< XInterface > xParent;
+        void release( oslInterlockedCount &_refCount,
+                      ::cppu::OBroadcastHelper &rBHelper,
+                      Reference< XInterface > &_xInterface,
+                      ::com::sun::star::lang::XComponent *_pObject )
+        {
+            if ( osl_decrementInterlockedCount( &_refCount ) == 0 )
             {
-                ::osl::MutexGuard aGuard(rBHelper.rMutex);
-                xParent = _xInterface;
-                _xInterface = NULL;
+                osl_incrementInterlockedCount( &_refCount );
+
+                if ( !rBHelper.bDisposed && !rBHelper.bInDispose )
+                {
+                    // remember the parent
+                    Reference< XInterface > xParent;
+                    {
+                        ::osl::MutexGuard aGuard( rBHelper.rMutex );
+                        xParent = _xInterface;
+                        _xInterface = NULL;
+                    }
+
+                    // First dispose
+                    _pObject->dispose();
+
+                    // only the alive ref holds the object
+                    OSL_ASSERT( _refCount == 1 );
+
+                    // release the parent in the destructor
+                    if ( xParent.is() )
+                    {
+                        ::osl::MutexGuard aGuard( rBHelper.rMutex );
+                        _xInterface = xParent;
+                    }
+                }
             }
-
-            // First dispose
-            _pObject->dispose();
-
-            // only the alive ref holds the object
-            OSL_ASSERT(_refCount == 1);
-
-            // release the parent in the destructor
-            if (xParent.is()) {
-                ::osl::MutexGuard aGuard(rBHelper.rMutex);
-                _xInterface = xParent;
+            else
+            {
+                osl_incrementInterlockedCount( &_refCount );
             }
         }
-    } else {
-        osl_incrementInterlockedCount(&_refCount);
-    }
-}
 
 
 
-void checkDisposed(sal_Bool _bThrow)
-    throw (DisposedException)
-{
-    if (_bThrow) {
-        throw DisposedException();
-    }
-}
+        void checkDisposed( sal_Bool _bThrow )
+        throw ( DisposedException )
+        {
+            if ( _bThrow )
+            {
+                throw DisposedException();
+            }
+        }
 
-} /* mysqlc */
+    } /* mysqlc */
 } /* connectivity */
