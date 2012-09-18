@@ -1330,9 +1330,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTypeInfo()
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getTypeInfo" );
-    Reference< XResultSet > xResultSet(
-        m_xContext->getServiceManager()->createInstanceWithContext(
-            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
 
     std::vector< std::vector< Any > > rRows;
 
@@ -1875,9 +1873,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getIndexInfo(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getIndexInfo" );
-    Reference< XResultSet > xResultSet(
-        m_xContext->getServiceManager()->createInstanceWithContext(
-            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -1927,9 +1923,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getBestRowIdentifier(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getBestRowIdentifier" );
-    Reference< XResultSet > xResultSet(
-        m_xContext->getServiceManager()->createInstanceWithContext(
-            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -1977,9 +1971,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTablePrivileges(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getTablePrivileges" );
-    Reference< XResultSet > xResultSet(
-        m_xContext->getServiceManager()->createInstanceWithContext(
-            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -2057,9 +2049,7 @@ throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getCrossReference" );
 
-    Reference< XResultSet > xResultSet(
-        m_xContext->getServiceManager()->createInstanceWithContext(
-            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
 
     std::vector< std::vector< Any > > rRows;
 
