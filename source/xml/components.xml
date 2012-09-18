@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <components xmlns="http://openoffice.org/2010/uno-components">
   <component loader="com.sun.star.loader.SharedLibrary" uri="#UNOPKG_PLATFORM#/#COMP_IMPL_NAME#">
-    <implementation name="com.sun.star.comp.sdbc.mysqlc.MysqlCDriver">
+    <implementation name="org.aoo-my-sdbc.comp.MysqlDCDriver">
       <service name="com.sun.star.sdbc.Driver"/>
     </implementation>
   </component>

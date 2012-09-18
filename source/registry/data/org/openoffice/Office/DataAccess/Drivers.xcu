@@ -20,75 +20,75 @@
  * 
  ***********************************************************-->
 <oor:component-data oor:name="Drivers" oor:package="org.openoffice.Office.DataAccess" xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <node oor:name="Installed">
-    <node oor:name="sdbc:mysqlc:*" oor:op="replace">
-      <prop oor:name="Driver">
-        <value>com.sun.star.comp.sdbc.mysqlc.MysqlCDriver</value>
-      </prop>
-      <prop oor:name="DriverTypeDisplayName" oor:type="xs:string">
-        <value xml:lang="en-US">MySQL (Connector/OOo)</value>
-      </prop>
-      <node oor:name="Properties">
-        <node oor:name="CharSet" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:string">
-            <value></value>
-          </prop>
+    <node oor:name="Installed">
+        <node oor:name="sdbc:mysqlc:*" oor:op="replace">
+            <prop oor:name="Driver">
+                <value>org.aoo-my-sdbc.comp.MysqlDCDriver</value>
+            </prop>
+            <prop oor:name="DriverTypeDisplayName" oor:type="xs:string">
+                <value xml:lang="en-US">MySQL (Connector/OOo)</value>
+            </prop>
+            <node oor:name="Properties">
+                <node oor:name="CharSet" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:string">
+                        <value></value>
+                    </prop>
+                </node>
+                <node oor:name="LocalSocket" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:string">
+                        <value></value>
+                    </prop>
+                </node>
+                <node oor:name="NamedPipe" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:string">
+                        <value></value>
+                    </prop>
+                </node>
+            </node>
+            <node oor:name="Features">
+                <node oor:name="UseKeywordAsBeforeAlias" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:boolean">
+                        <value>true</value>
+                    </prop>
+                </node>
+                <node oor:name="IgnoreDriverPrivileges" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:boolean">
+                        <value>true</value>
+                    </prop>
+                </node>
+                <node oor:name="DisplayVersionColumns" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:boolean">
+                        <value>true</value>
+                    </prop>
+                </node>
+                <node oor:name="UseDOSLineEnds" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:boolean">
+                        <value>true</value>
+                    </prop>
+                </node>
+                <node oor:name="BooleanComparisonMode" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:boolean">
+                        <value>true</value>
+                    </prop>
+                </node>
+                <node oor:name="FormsCheckRequiredFields" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:boolean">
+                        <value>true</value>
+                    </prop>
+                </node>
+            </node>
+            <node oor:name="MetaData">
+                <node oor:name="SupportsTableCreation" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:boolean">
+                        <value>true</value>
+                    </prop>
+                </node>
+                <node oor:name="Authentication" oor:op="replace">
+                    <prop oor:name="Value" oor:type="xs:string">
+                        <value>UserPassword</value>
+                    </prop>
+                </node>
+            </node>
         </node>
-        <node oor:name="LocalSocket" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:string">
-            <value></value>
-          </prop>
-        </node>
-        <node oor:name="NamedPipe" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:string">
-            <value></value>
-          </prop>
-        </node>
-      </node>
-      <node oor:name="Features">
-        <node oor:name="UseKeywordAsBeforeAlias" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:boolean">
-            <value>true</value>
-          </prop>
-        </node>
-        <node oor:name="IgnoreDriverPrivileges" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:boolean">
-            <value>true</value>
-          </prop>
-        </node>
-        <node oor:name="DisplayVersionColumns" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:boolean">
-            <value>true</value>
-          </prop>
-        </node>
-        <node oor:name="UseDOSLineEnds" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:boolean">
-            <value>true</value>
-          </prop>
-        </node>
-        <node oor:name="BooleanComparisonMode" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:boolean">
-            <value>true</value>
-          </prop>
-        </node>
-        <node oor:name="FormsCheckRequiredFields" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:boolean">
-            <value>true</value>
-          </prop>
-        </node>
-      </node>
-      <node oor:name="MetaData">
-        <node oor:name="SupportsTableCreation" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:boolean">
-            <value>true</value>
-          </prop>
-        </node>
-        <node oor:name="Authentication" oor:op="replace">
-          <prop oor:name="Value" oor:type="xs:string">
-            <value>UserPassword</value>
-          </prop>
-        </node>
-      </node>
-    </node>
-  </node>
+     </node>
 </oor:component-data>
