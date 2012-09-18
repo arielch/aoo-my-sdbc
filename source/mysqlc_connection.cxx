@@ -21,8 +21,6 @@
 
 #include "mysqlc_connection.hxx"
 #include "mysqlc_databasemetadata.hxx"
-
-
 #include "mysqlc_driver.hxx"
 #include "mysqlc_statement.hxx"
 #include "mysqlc_preparedstatement.hxx"
@@ -44,51 +42,210 @@
 
 #include <osl/module.hxx>
 #include <osl/thread.h>
-#include <osl/file.h>
+#include <osl/file.hxx>
 #include <rtl/uri.hxx>
 #include <rtl/ustrbuf.hxx>
 
-using namespace mysqlc;
 
-#include <stdio.h>
-
-//------------------------------------------------------------------------------
 using namespace com::sun::star::uno;
 using namespace com::sun::star::container;
 using namespace com::sun::star::lang;
 using namespace com::sun::star::beans;
 using namespace com::sun::star::sdbc;
+using namespace mysqlc;
+
 using ::osl::MutexGuard;
 using ::rtl::OUString;
 using ::rtl::OUStringToOString;
 
 
-#define MYSQLC_URI_PREFIX "sdbc:mysqlc:"
+bool lcl_CheckSocket( const OUString &sSock )
+{
+    OUString sSockUrl;
+    osl::FileBase::RC nError;
+    nError = osl::FileBase::getFileURLFromSystemPath( sSock, sSockUrl );
+    if ( nError != osl::FileBase::E_None )
+        return false;
+
+    osl::DirectoryItem aItem;
+    nError = osl::DirectoryItem::get( sSock, aItem );
+    if ( nError != osl::FileBase::E_None )
+        return false;
+
+    osl::FileStatus aStatus( FileStatusMask_Type );
+    nError = aItem.getFileStatus( aStatus );
+    if ( nError != osl::FileBase::E_None || !aStatus.isValid( FileStatusMask_Type ) )
+        return false;
+
+    return aStatus.getFileType() == osl::FileStatus::Socket;
+}
 
 
-OConnection::OConnection( MysqlCDriver &_rDriver, sql::Driver *_cppDriver )
+OConnection::OConnection(
+    const Reference< XComponentContext > &rxContext, const OUString &rURL, MysqlCDriver &_rDriver, sql::Driver *cppDriver )
     : OMetaConnection_BASE( m_aMutex )
     , OSubComponent<OConnection, OConnection_BASE>( ( ::cppu::OWeakObject * )&_rDriver, this )
+    , m_xContext( rxContext )
+    , m_aSettings( new ConnectionSettings )
     , m_xMetaData( NULL )
     , m_rDriver( _rDriver )
-    , cppDriver( _cppDriver )
+    , cppDriver( cppDriver )
     , m_bClosed( sal_False )
     , m_bUseCatalog( sal_False )
     , m_bUseOldDateFormat( sal_False )
 {
     OSL_TRACE( "mysqlc::OConnection::OConnection" );
     m_rDriver.acquire();
+
+    m_aSettings->connectionURL = rURL;
 }
 
 
 OConnection::~OConnection()
 {
     OSL_TRACE( "mysqlc::OConnection::~OConnection" );
+
     if ( !isClosed() )
     {
         close();
     }
     m_rDriver.release();
+}
+
+
+bool OConnection::parseURL()
+{
+    // parse url. Url has the following format:
+    // external server: sdbc:mysqlc:[hostname]:[port]/[dbname]
+
+    // TODO the url should be parsed, and info taken into account!
+    //
+    // The Application should send a well-formed URL when choosing a
+    // socket/named-pipe, actually it sends sdbc:mysqlc:localhost:3306/dbname
+    // and the socket name is sent to the Driver on the property
+    // "LocalSocket"/"NamedPipe" ONLY in the Wizard, but NOT upon connection
+    //
+    // URL Protocols (see MySQL_Connection::init)
+    //
+    //  Unix Socket:        unix://socket_file/schema
+    //  Win Named Pipe:     pipe://pipe_name/schema
+    //  TCP:                tcp://IP[:port]/schema
+    //
+
+    OUString sHostAndPort, sSchema, sURLNoShcema;
+
+    // split "protocols/shcema"
+    sal_Int32 nIndex = m_aSettings->connectionURL.lastIndexOf( sal_Unicode( '/' ) );
+    if ( nIndex == -1 )
+        return false;
+
+    sURLNoShcema = m_aSettings->connectionURL.copy( 0, nIndex );
+    sSchema = m_aSettings->connectionURL.copy( nIndex + 1 );
+
+    // schema is mandatory
+    if ( !sURLNoShcema.getLength() || !sSchema.getLength() )
+        return false;
+
+    m_aSettings->sSchema = sSchema;
+
+    // is it the old sdbc:mysqlc ?
+    m_aSettings->isDeprecatedURL = ( 0 == sURLNoShcema.compareToAscii(
+                                         RTL_CONSTASCII_STRINGPARAM( MYSQLC_URI_PREFIX ) ) );
+
+    if ( m_aSettings->isDeprecatedURL )
+    {
+        // copy "host[:port]"
+        sHostAndPort = sURLNoShcema.copy( sizeof( MYSQLC_URI_PREFIX ) - 1 );
+    }
+    else
+    {
+        sURLNoShcema = sURLNoShcema.copy( sizeof( MYSQLDC_URI_PREFIX ) - 1 );
+        // for the MySQLConn/C++ remove "sdbc:mysqldc:" but leave the schema
+        m_aSettings->sConnCppUri = m_aSettings->connectionURL.copy( sizeof( MYSQLDC_URI_PREFIX ) - 1 );
+
+        // compare the protocols
+        if ( 0 == sURLNoShcema.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_TCP ) ) )
+        {
+            m_aSettings->eProtocol = CP_TCP;
+            m_aSettings->sHostName = sURLNoShcema.copy( sizeof( MYSQLDC_URI_TCP ) - 1 );
+            sHostAndPort = m_aSettings->sHostName;
+        }
+        else if ( 0 == sURLNoShcema.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_SOCKET ) ) )
+        {
+#ifdef UNX
+            m_aSettings->eProtocol = CP_SOCKET;
+            m_aSettings->sSocketOrPipe = sURLNoShcema.copy( sizeof( MYSQLDC_URI_SOCKET ) - 1 );
+            m_aSettings->sHostName = C2U( MYSQLDC_LOCALHOST );
+
+            OSL_ENSURE( lcl_CheckSocket( m_aSettings->sSocketOrPipe ), "Invalid socket!" );
+
+            // TODO return true only if socket exists
+            return true;
+#else
+            return false;
+#endif
+        }
+        else if ( 0 == sURLNoShcema.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_PIPE ) ) )
+        {
+#ifdef WNT
+            m_aSettings->eProtocol = CP_PIPE;
+            m_aSettings->sSocketOrPipe = sURLNoShcema.copy( sizeof( MYSQLDC_URI_PIPE ) - 1 );
+            m_aSettings->sHostName = C2U( "." );
+
+            return m_aSettings->sSocketOrPipe.getLength();
+#else
+            return false;
+#endif
+        }
+        else
+        {
+            m_aSettings->eProtocol = CP_INVALID;
+            return false;
+        }
+    }
+
+    if ( sHostAndPort.getLength() )
+    {
+        OUString sHostName, sPort;
+        int nPort = 3306;
+        int nIndex = 0;
+
+        // slplit "host:port"
+        nIndex = 0;
+        sHostName = sHostAndPort.getToken( 0, sal_Unicode( ':' ), nIndex ) ;
+        if ( nIndex != -1 )
+        {
+            sPort = sHostAndPort.copy( nIndex );
+            // if ':' is given, then it must be a valid port
+            if ( !sHostName.getLength()
+                    || !sPort.getLength()
+                    || !( nPort = sPort.toInt32() ) )
+                return false;
+
+            m_aSettings->sHostName = sHostName;
+        }
+        else
+            m_aSettings->sHostName = sHostAndPort;
+
+        // TODO we shouldn't convert "localhost" to "127.0.0.1"
+        // this will hide errors in Base because it will connect via
+        // TCP/IP with default port even if a socket/named pipe was set
+        // but ignored by Base
+        if ( m_aSettings->sHostName.equalsAsciiL( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_LOCALHOST ) ) )
+            m_aSettings->sHostName = C2U( MYSQLDC_LOCALHOSTIP );
+
+        m_aSettings->nPort = nPort;
+
+        return true;
+    }
+
+    return false;
+}
+
+
+rtl_TextEncoding OConnection::getConnectionEncoding()
+{
+    return m_aSettings->encoding;
 }
 
 
@@ -105,79 +262,25 @@ extern "C" {
 }
 #endif
 
-void OConnection::construct( const OUString &url, const Sequence< PropertyValue > &info )
+void OConnection::connect( const Sequence< PropertyValue > &info )
 throw( SQLException )
 {
     OSL_TRACE( "mysqlc::OConnection::construct" );
     MutexGuard aGuard( m_aMutex );
 
-    sal_Int32 nIndex;
-    sal_Bool  bEmbedded = sal_False;
-    OUString token;
-    OUString aHostName( RTL_CONSTASCII_USTRINGPARAM( "localhost" ) );
-    sal_Int32 nPort = 3306;
-    OUString aDbName;
+    if ( !parseURL() )
+        throw SQLException(
+            C2U( "Malformed connection URL" ), *this, OUString(), 0, Any() );
 
-    m_settings.encoding = m_rDriver.getDefaultEncoding();
-    m_settings.quoteIdentifier = OUString();
-
-    // parse url. Url has the following format:
-    // external server: sdbc:mysqlc:[hostname]:[port]/[dbname]
-
-    // TODO the url should be parsed, and info taken into account!
-    //
-    // The Application should send a well-formed URL when choosing a
-    // socket/named-pipe, actually it sends sdbc:mysqlc:localhost:3306/dbname
-    // and the socket name is sent to the Driver on the property
-    // "LocalSocket"/"NamedPipe" ONLY in the Wizard, but NOT upon connection
-    //
-    // URL Protocols (see MySQL_Connection::init)
-    //
-    //  Unix Socket:        unix://
-    //  Win Named Pipe:     pipe://
-    //  TCP:                tcp://
-    //
-    // See also our Properties and Features in Drivers.xcu
-
-    // TODO this makes no sense
-    if ( !url.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLC_URI_PREFIX ) ) )
-    {
-        nIndex = 12;
-    }
-    else
-    {
-        bEmbedded = sal_True;
-        nIndex = 20;
-        mysqlc::throwFeatureNotImplementedException( "OConnection::construct (embedded MySQL)", *this );
-    }
-
-    token = url.getToken( 0, '/', nIndex );
-    if ( token.getLength() )
-    {
-        sal_Int32 nIndex1 = 0;
-        OUString hostandport = token.getToken( 0, ':', nIndex1 );
-        if ( hostandport.getLength() )
-        {
-            aHostName = hostandport;
-            hostandport = token.getToken( 0, ':', nIndex1 );
-            if ( hostandport.getLength() && nIndex1 )
-            {
-                nPort = hostandport.toInt32();
-            }
-            token = url.getToken( 0, '/', nIndex );
-            if ( token.getLength() && nIndex )
-            {
-                aDbName = token;
-            }
-        }
-    }
+    m_aSettings->encoding = m_rDriver.getDefaultEncoding();
+    m_aSettings->quoteIdentifier = OUString();
 
     // get user and password for mysql connection
-    const PropertyValue *pIter    = info.getConstArray();
-    const PropertyValue *pEnd    = pIter + info.getLength();
     OUString aUser, aPass, sSocketOrPipe;
+    bool bSocketOrPipe = false;
+    const PropertyValue *pIter = info.getConstArray();
+    const PropertyValue *pEnd  = pIter + info.getLength();
 
-    m_settings.connectionURL = url;
     for ( ; pIter != pEnd; ++pIter )
     {
         if ( !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "user" ) ) )
@@ -189,132 +292,118 @@ throw( SQLException )
             OSL_VERIFY( pIter->Value >>= aPass );
 #ifdef UNX
         }
-        else if ( !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "LocalSocket" ) ) )
+        else if ( m_aSettings->isDeprecatedURL &&
+                  !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "LocalSocket" ) ) )
         {
-            OSL_VERIFY( pIter->Value >>= sSocketOrPipe );
+            bSocketOrPipe = ( pIter->Value >>= sSocketOrPipe ) && sSocketOrPipe.getLength();
 #else
         }
-        else if ( !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "NamedPipe" ) ) )
+        else if ( m_aSettings->isDeprecatedURL &&
+                  !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "NamedPipe" ) ) )
         {
-            OSL_VERIFY( pIter->Value >>= sSocketOrPipe );
+            bSocketOrPipe = ( pIter->Value >>= sSocketOrPipe ) && sSocketOrPipe.getLength();
 #endif
         }
-        else if ( !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "PublicConnectionURL" ) ) )
+        else if ( m_aSettings->isDeprecatedURL &&
+                  !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "PublicConnectionURL" ) ) )
         {
-            OSL_VERIFY( pIter->Value >>= m_settings.connectionURL );
-        }
-        else if ( !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "NewURL" ) ) )   // legacy name for "PublicConnectionURL"
-        {
-            OSL_VERIFY( pIter->Value >>= m_settings.connectionURL );
+            // sdbc:mysql:mysqlc:
+            OUString sPublicConnURL;
+            OSL_VERIFY( pIter->Value >>= sPublicConnURL );
+            if (sPublicConnURL.getLength())
+                m_aSettings->connectionURL = sPublicConnURL;
         }
     }
 
-    if ( bEmbedded == sal_False )
+    if ( bSocketOrPipe )
+        m_aSettings->sSocketOrPipe = sSocketOrPipe;
+
+    if ( !aUser.getLength() || !aPass.getLength() )
+        throw SQLException(
+            C2U( "User and password are mandatory" ), *this, OUString(), 0, Any() );
+
+    try
     {
-        try
+        sql::ConnectOptionsMap connProps;
+
+        ext_std::string user_str   = OUStringToOString( aUser, m_aSettings->encoding ).getStr();
+        ext_std::string pass_str   = OUStringToOString( aPass, m_aSettings->encoding ).getStr();
+        ext_std::string schema_str = OUStringToOString( m_aSettings->sSchema, m_aSettings->encoding ).getStr();
+
+        connProps["userName"] = sql::ConnectPropertyVal( user_str );
+        connProps["password"] = sql::ConnectPropertyVal( pass_str );
+        connProps["schema"]   = sql::ConnectPropertyVal( schema_str );
+
+        OUString aHostName;
+        ext_std::string host_str;
+        sql::SQLString socket_str;
+
+        if ( m_aSettings->sSocketOrPipe.getLength() )
         {
-            sql::ConnectOptionsMap connProps;
-
-            // TODO check OUString length
-            ext_std::string user_str   = OUStringToOString( aUser, m_settings.encoding ).getStr();
-            ext_std::string pass_str   = OUStringToOString( aPass, m_settings.encoding ).getStr();
-            ext_std::string schema_str = OUStringToOString( aDbName, m_settings.encoding ).getStr();
-
-            ext_std::string host_str;
-            sql::SQLString socket_str;
-
-            connProps["userName"] = sql::ConnectPropertyVal( user_str );
-            connProps["password"] = sql::ConnectPropertyVal( pass_str );
-            connProps["schema"]   = sql::ConnectPropertyVal( schema_str );
-
-            if ( sSocketOrPipe.getLength() )
-            {
-                socket_str = OUStringToOString( sSocketOrPipe, m_settings.encoding ).getStr();
-                rtl::OUStringBuffer aBuff;
+            socket_str = OUStringToOString( m_aSettings->sSocketOrPipe, m_aSettings->encoding ).getStr();
+            rtl::OUStringBuffer aBuff;
 #ifdef UNX
-                aBuff.appendAscii( RTL_CONSTASCII_STRINGPARAM( "socket://" ) );
-                connProps["socket"] = socket_str;
+            aBuff.appendAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_SOCKET ) );
+            connProps["socket"] = socket_str;
 #else
-                aBuff.appendAscii( RTL_CONSTASCII_STRINGPARAM( "pipe://" ) );
-                connProps["pipe"] = socket_str;
+            aBuff.appendAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_PIPE ) );
+            connProps["pipe"] = socket_str;
 
-                // Set connection timeout explicitly to 0 when using a named pipe
-                // mysql_init() sets connection timeout to CONNECT_TIMEOUT
-                // which is 20 ifdef __WIN__ (see libmysql/client.c)
-                // This fails to connect via named pipe with error
-                // "Lost connection to MySQL server at
-                // 'waiting for initial communication packet', system error: 0"
-                connProps["OPT_CONNECT_TIMEOUT"] = static_cast<long>( 0 );
+            // Set connection timeout explicitly to 0 when using a named pipe
+            // mysql_init() sets connection timeout to CONNECT_TIMEOUT
+            // which is 20 ifdef __WIN__ (see libmysql/client.c)
+            // This fails to connect via named pipe with error
+            // "Lost connection to MySQL server at
+            // 'waiting for initial communication packet', system error: 0"
+            connProps["OPT_CONNECT_TIMEOUT"] = static_cast<long>( 0 );
 #endif
-                aBuff.append( sSocketOrPipe );
-                aHostName = aBuff.makeStringAndClear();
-                host_str = OUStringToOString( aHostName, m_settings.encoding ).getStr();
-                connProps["hostName"] = sql::ConnectPropertyVal( host_str );
-            }
-            else
-            {
-                // TODO we shouldn't convert "localhost" to "127.0.0.1"
-                // this will hide errors in Base because it will connect via
-                // TCP/IP with default port even if a socket/named pipe was set
-                // but ignored by Base
-                if ( aHostName.equalsAsciiL( RTL_CONSTASCII_STRINGPARAM( "localhost" ) ) )
-                    aHostName = rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "127.0.0.1" ) );
-
-                host_str   = OUStringToOString( aHostName, m_settings.encoding ).getStr();
-                connProps["hostName"] = sql::ConnectPropertyVal( host_str );
-                connProps["port"]     = sql::ConnectPropertyVal( ( int )( nPort ) );
-            }
+            aBuff.append( m_aSettings->sSocketOrPipe );
+            aHostName = aBuff.makeStringAndClear();
+            host_str = OUStringToOString( aHostName, m_aSettings->encoding ).getStr();
+            connProps["hostName"] = sql::ConnectPropertyVal( host_str );
+        }
+        else
+        {
+            host_str   = OUStringToOString( m_aSettings->sHostName, m_aSettings->encoding ).getStr();
+            connProps["hostName"] = sql::ConnectPropertyVal( host_str );
+            connProps["port"]     = sql::ConnectPropertyVal( ( int )( m_aSettings->nPort ) );
+        }
 
 #ifndef SYSTEM_MYSQL
-            ::rtl::OUString sMySQLClientLib( RTL_CONSTASCII_USTRINGPARAM( MYSQL_LIB ) );
+        ::rtl::OUString sMySQLClientLib( RTL_CONSTASCII_USTRINGPARAM( MYSQL_LIB ) );
 
-            ::rtl::OUString moduleBase;
-            OSL_VERIFY( ::osl::Module::getUrlFromAddress( &thisModule, moduleBase ) );
-            ::rtl::OUString sMySQLClientLibURL;
-            try
-            {
-                sMySQLClientLibURL = ::rtl::Uri::convertRelToAbs( moduleBase, sMySQLClientLib.pData );
-            }
-            catch ( const ::rtl::MalformedUriException &e )
-            {
-                ( void )e; // silence compiler
-#if OSL_DEBUG_LEVEL > 0
-                ::rtl::OString sMessage( "OConnection::construct: malformed URI: " );
-                sMessage += ::rtl::OUStringToOString( e.getMessage(), osl_getThreadTextEncoding() );
-                OSL_ENSURE( false, sMessage.getStr() );
-#endif
-            }
-
-            ::rtl::OUString sMySQLClientLibPath;
-            osl_getSystemPathFromFileURL( sMySQLClientLibURL.pData, &sMySQLClientLibPath.pData );
-
-            sql::SQLString mysqlLib = ::rtl::OUStringToOString( sMySQLClientLibPath, osl_getThreadTextEncoding() ).getStr();
-            connProps["clientlib"] = mysqlLib;
-
-            OSL_TRACE( "clientlib=%s", mysqlLib.c_str() );
-#endif
-            // TODO add host and socket/pipe
-            OSL_TRACE( "hostName=%s", host_str.c_str() );
-            OSL_TRACE( "port=%i", int( nPort ) );
-            OSL_TRACE( "socket/pipe=%s", socket_str.c_str() );
-            OSL_TRACE( "userName=%s", user_str.c_str() );
-            OSL_TRACE( "password=%s", pass_str.c_str() );
-            OSL_TRACE( "schema=%s", schema_str.c_str() );
-
-            m_settings.cppConnection.reset( cppDriver->connect( connProps ) );
-        }
-        catch ( sql::SQLException &e )
+        ::rtl::OUString moduleBase;
+        OSL_VERIFY( ::osl::Module::getUrlFromAddress( &thisModule, moduleBase ) );
+        ::rtl::OUString sMySQLClientLibURL;
+        try
         {
-            mysqlc::translateAndThrow( e, *this, getConnectionEncoding() );
+            sMySQLClientLibURL = ::rtl::Uri::convertRelToAbs( moduleBase, sMySQLClientLib.pData );
         }
-    }
-    else
-    {
-        // TODO: support for embedded server
-    }
+        catch ( const ::rtl::MalformedUriException &e )
+        {
+            ( void )e; // silence compiler
+#if OSL_DEBUG_LEVEL > 0
+            ::rtl::OString sMessage( "OConnection::construct: malformed URI: " );
+            sMessage += ::rtl::OUStringToOString( e.getMessage(), osl_getThreadTextEncoding() );
+            OSL_ENSURE( false, sMessage.getStr() );
+#endif
+        }
 
-    m_settings.schema = aDbName;
-    OSL_TRACE( OUStringToOString( m_settings.schema, getConnectionEncoding() ).getStr() );
+        ::rtl::OUString sMySQLClientLibPath;
+        osl_getSystemPathFromFileURL( sMySQLClientLibURL.pData, &sMySQLClientLibPath.pData );
+
+        sql::SQLString mysqlLib = ::rtl::OUStringToOString( sMySQLClientLibPath, osl_getThreadTextEncoding() ).getStr();
+        connProps["clientlib"] = mysqlLib;
+
+        OSL_TRACE( "clientlib=%s", mysqlLib.c_str() );
+#endif
+
+        m_aSettings->cppConnection.reset( cppDriver->connect( connProps ) );
+    }
+    catch ( sql::SQLException &e )
+    {
+        mysqlc::translateAndThrow( e, *this, getConnectionEncoding() );
+    }
 
     // Check if the server is 4.1 or above
     if ( this->getMysqlVersion() < 40100 )
@@ -326,7 +415,7 @@ throw( SQLException )
             0,
             Any() );
     }
-    std::auto_ptr<sql::Statement> stmt( m_settings.cppConnection->createStatement() );
+    std::auto_ptr<sql::Statement> stmt( m_aSettings->cppConnection->createStatement() );
     stmt->executeUpdate( "SET session sql_mode='ANSI_QUOTES'" );
     stmt->executeUpdate( "SET NAMES utf8" );
 }
@@ -348,7 +437,7 @@ throw( SQLException, RuntimeException )
     // the statement can only be executed once
     try
     {
-        xReturn = new OStatement( this, m_settings.cppConnection->createStatement() );
+        xReturn = new OStatement( this, m_aSettings->cppConnection->createStatement() );
         m_aStatements.push_back( WeakReferenceHelper( xReturn ) );
         return xReturn;
     }
@@ -374,7 +463,7 @@ throw( SQLException, RuntimeException )
         // create a statement
         // the statement can only be executed more than once
         xStatement = new OPreparedStatement( this,
-                                             m_settings.cppConnection->prepareStatement( OUStringToOString( sSqlStatement, getConnectionEncoding() ).getStr() ) );
+                                             m_aSettings->cppConnection->prepareStatement( OUStringToOString( sSqlStatement, getConnectionEncoding() ).getStr() ) );
         m_aStatements.push_back( WeakReferenceHelper( xStatement ) );
     }
     catch ( sql::SQLException &e )
@@ -407,8 +496,8 @@ throw( SQLException, RuntimeException )
     ::rtl::OUString sNativeSQL;
     try
     {
-        sNativeSQL = mysqlc::convert( m_settings.cppConnection->nativeSQL( mysqlc::convert( sSqlStatement, getConnectionEncoding() ) ),
-                     getConnectionEncoding() );
+        sNativeSQL = mysqlc::convert( m_aSettings->cppConnection->nativeSQL( mysqlc::convert( sSqlStatement, getConnectionEncoding() ) ),
+                                      getConnectionEncoding() );
     }
     catch ( sql::SQLException &e )
     {
@@ -426,7 +515,7 @@ throw( SQLException, RuntimeException )
     checkDisposed( OConnection_BASE::rBHelper.bDisposed );
     try
     {
-        m_settings.cppConnection->setAutoCommit( autoCommit == sal_True ? true : false );
+        m_aSettings->cppConnection->setAutoCommit( autoCommit == sal_True ? true : false );
     }
     catch ( sql::SQLException &e )
     {
@@ -448,7 +537,7 @@ throw( SQLException, RuntimeException )
     sal_Bool autoCommit = sal_False;
     try
     {
-        autoCommit = m_settings.cppConnection->getAutoCommit() == true ? sal_True : sal_False;
+        autoCommit = m_aSettings->cppConnection->getAutoCommit() == true ? sal_True : sal_False;
     }
     catch ( sql::SQLException &e )
     {
@@ -466,7 +555,7 @@ throw( SQLException, RuntimeException )
     checkDisposed( OConnection_BASE::rBHelper.bDisposed );
     try
     {
-        m_settings.cppConnection->commit();
+        m_aSettings->cppConnection->commit();
     }
     catch ( sql::SQLException &e )
     {
@@ -483,7 +572,7 @@ throw( SQLException, RuntimeException )
     checkDisposed( OConnection_BASE::rBHelper.bDisposed );
     try
     {
-        m_settings.cppConnection->rollback();
+        m_aSettings->cppConnection->rollback();
     }
     catch ( sql::SQLException &e )
     {
@@ -515,7 +604,7 @@ throw( SQLException, RuntimeException )
     {
         try
         {
-            xMetaData = new ODatabaseMetaData( *this ); // need the connection because it can return it
+            xMetaData = new ODatabaseMetaData( m_xContext, *this ); // need the connection because it can return it
         }
         catch ( sql::SQLException &e )
         {
@@ -535,7 +624,7 @@ throw( SQLException, RuntimeException )
     MutexGuard aGuard( m_aMutex );
     checkDisposed( OConnection_BASE::rBHelper.bDisposed );
 
-    m_settings.readOnly = readOnly;
+    m_aSettings->isReadOnly = readOnly;
 }
 
 
@@ -547,7 +636,7 @@ throw( SQLException, RuntimeException )
     checkDisposed( OConnection_BASE::rBHelper.bDisposed );
 
     // return if your connection to readonly
-    return ( m_settings.readOnly );
+    return ( m_aSettings->isReadOnly );
 }
 
 
@@ -560,8 +649,8 @@ throw( SQLException, RuntimeException )
 
     try
     {
-        //        m_settings.cppConnection->setCatalog(OUStringToOString(catalog, m_settings.encoding).getStr());
-        m_settings.cppConnection->setSchema( OUStringToOString( catalog, getConnectionEncoding() ).getStr() );
+        //        m_aSettings->cppConnection->setCatalog(OUStringToOString(catalog, m_aSettings->encoding).getStr());
+        m_aSettings->cppConnection->setSchema( OUStringToOString( catalog, getConnectionEncoding() ).getStr() );
     }
     catch ( sql::SQLException &e )
     {
@@ -580,7 +669,7 @@ throw( SQLException, RuntimeException )
     OUString catalog;
     try
     {
-        catalog = mysqlc::convert( m_settings.cppConnection->getSchema(), getConnectionEncoding() );
+        catalog = mysqlc::convert( m_aSettings->cppConnection->getSchema(), getConnectionEncoding() );
     }
     catch ( sql::SQLException &e )
     {
@@ -621,7 +710,7 @@ throw( SQLException, RuntimeException )
     }
     try
     {
-        m_settings.cppConnection->setTransactionIsolation( cpplevel );
+        m_aSettings->cppConnection->setTransactionIsolation( cpplevel );
     }
     catch ( sql::SQLException &e )
     {
@@ -639,7 +728,7 @@ throw( SQLException, RuntimeException )
 
     try
     {
-        switch ( m_settings.cppConnection->getTransactionIsolation() )
+        switch ( m_aSettings->cppConnection->getTransactionIsolation() )
         {
             case sql::TRANSACTION_SERIALIZABLE:        return TransactionIsolation::SERIALIZABLE;
             case sql::TRANSACTION_REPEATABLE_READ:    return TransactionIsolation::REPEATABLE_READ;
@@ -768,7 +857,7 @@ throw( SQLException, RuntimeException )
 
     try
     {
-        XStatement *stmt = new OStatement( this, m_settings.cppConnection->createStatement() );
+        XStatement *stmt = new OStatement( this, m_aSettings->cppConnection->createStatement() );
         Reference< XResultSet > rs = stmt->executeQuery( aStatement.makeStringAndClear() );
         if ( rs.is() && rs->next() )
         {
@@ -795,9 +884,9 @@ throw( SQLException, RuntimeException )
     sal_Int32 version( 0 );
     try
     {
-        version = 10000 * m_settings.cppConnection->getMetaData()->getDatabaseMajorVersion();
-        version += 100 * m_settings.cppConnection->getMetaData()->getDatabaseMinorVersion();
-        version += m_settings.cppConnection->getMetaData()->getDatabasePatchVersion();
+        version = 10000 * m_aSettings->cppConnection->getMetaData()->getDatabaseMajorVersion();
+        version += 100 * m_aSettings->cppConnection->getMetaData()->getDatabaseMinorVersion();
+        version += m_aSettings->cppConnection->getMetaData()->getDatabasePatchVersion();
     }
     catch ( sql::SQLException &e )
     {
@@ -833,9 +922,13 @@ throw( SQLException, RuntimeException )
         {
             Sequence< Any > aArgs( 1 );
             Reference< XConnection> xCon = this;
-            aArgs[0] <<= NamedValue( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "ActiveConnection" ) ), makeAny( xCon ) );
+            aArgs[0] <<= NamedValue( OUString( RTL_CONSTASCII_USTRINGPARAM( "ActiveConnection" ) ), makeAny( xCon ) );
 
-            m_xParameterSubstitution.set( m_rDriver.getFactory()->createInstanceWithArguments( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.ParameterSubstitution" ) ), aArgs ), UNO_QUERY );
+            m_xParameterSubstitution.set(
+                m_xContext->getServiceManager()->createInstanceWithArgumentsAndContext(
+                    OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.ParameterSubstitution" ) ),
+                    aArgs,
+                    m_xContext ), UNO_QUERY );
         }
         catch ( const Exception & ) {}
     }

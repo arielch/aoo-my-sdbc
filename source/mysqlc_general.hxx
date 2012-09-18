@@ -29,6 +29,32 @@
 #include <cppconn/exception.h>
 #include <postextstl.h>
 
+
+/*
+ * creates a unicode-string from an ASCII string
+ */
+#define C2U( constAsciiStr ) \
+    ( rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( constAsciiStr ) ) )
+/*
+ * creates an ASCII string from a unicode-string
+ */
+#define U2C( ouString ) \
+    ( rtl::OUStringToOString( ouString, RTL_TEXTENCODING_ASCII_US ).getStr() )
+
+#define MYSQLC_URI_PREFIX           "sdbc:mysqlc:"
+#define MYSQLDC_URI_PREFIX          "sdbc:mysqldc:"
+#define MYSQLDC_URI_TCP             "tcp://"
+#define MYSQLDC_URI_SOCKET          "unix://"
+#define MYSQLDC_URI_PIPE            "pipe://"
+#define MYSQLDC_LOCALHOST           "localhost"
+#define MYSQLDC_LOCALHOSTIP         "127.0.0.1"
+#define MYSQLDC_DEFAULT_PIPENAME    "MySQL"
+
+
+#ifndef MYSQLDC_IMPLEMENTATION_NAME
+#define MYSQLDC_IMPLEMENTATION_NAME "org.aoo-my-sdbc.comp.MysqlDCDriver"
+#endif
+
 namespace mysqlc
 {
     rtl::OUString getStringFromAny( const ::com::sun::star::uno::Any &_rAny );

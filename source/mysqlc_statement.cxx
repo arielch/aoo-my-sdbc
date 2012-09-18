@@ -40,8 +40,7 @@
 
 #define USE_CPP_CONN 1
 
-using namespace mysqlc;
-//------------------------------------------------------------------------------
+
 using namespace com::sun::star::uno;
 using namespace com::sun::star::lang;
 using namespace com::sun::star::beans;
@@ -50,10 +49,11 @@ using namespace com::sun::star::sdbcx;
 using namespace com::sun::star::container;
 using namespace com::sun::star::io;
 using namespace com::sun::star::util;
-using ::osl::MutexGuard;
-using ::rtl::OUString;
+using namespace mysqlc;
 
-#include <stdio.h>
+using osl::MutexGuard;
+using rtl::OUString;
+using rtl::OUStringToOString;
 
 OCommonStatement::OCommonStatement( OConnection *_pConnection, sql::Statement *_cppStatement )
     : OCommonStatement_IBase( m_aMutex )
@@ -173,7 +173,7 @@ throw( SQLException, RuntimeException )
     sal_Bool success = false;
     try
     {
-        success = cppStatement->execute( OUStringToOString( sSqlStatement, m_pConnection->getConnectionSettings().encoding ).getStr() ) ? sal_True : sal_False;
+        success = cppStatement->execute( OUStringToOString( sSqlStatement, m_pConnection->getConnectionSettings()->encoding ).getStr() ) ? sal_True : sal_False;
     }
     catch ( sql::SQLException &e )
     {

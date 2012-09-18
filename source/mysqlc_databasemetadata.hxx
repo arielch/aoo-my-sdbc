@@ -22,18 +22,15 @@
 #ifndef CONNECTIVITY_SDATABASEMETADATA_HXX
 #define CONNECTIVITY_SDATABASEMETADATA_HXX
 
-#include "mysqlc_connection.hxx"
-
-#ifndef _COM_SUN_STAR_SDBC_XDATABASEMETADATA_HPP_
 #include <com/sun/star/sdbc/XDatabaseMetaData.hpp>
-#endif
-#ifndef _CPPUHELPER_IMPLBASE1_HXX_
+#include <com/sun/star/uno/XComponentContext.hpp>
 #include <cppuhelper/implbase1.hxx>
-#endif
 
 #include <preextstl.h>
 #include <cppconn/metadata.h>
 #include <postextstl.h>
+
+#include "mysqlc_connection.hxx"
 
 
 namespace mysqlc
@@ -60,6 +57,7 @@ namespace mysqlc
             bool            identifier_quote_string_set;
 
         private:
+            com::sun::star::uno::Reference< com::sun::star::uno::XComponentContext > m_xContext;
             OUString impl_getStringMetaData( const sal_Char *_methodName, const ext_std::string & ( sql::DatabaseMetaData::*_Method )() );
             OUString impl_getStringMetaData( const sal_Char *_methodName, ext_std::string ( sql::DatabaseMetaData::*_Method )() );
             OUString impl_getStringMetaData( const sal_Char *_methodName, const sql::SQLString & ( sql::DatabaseMetaData::*_Method )() );
@@ -75,7 +73,7 @@ namespace mysqlc
                 return m_rConnection;
             }
 
-            ODatabaseMetaData( OConnection &_rCon );
+            ODatabaseMetaData( const com::sun::star::uno::Reference< com::sun::star::uno::XComponentContext > &rContext,             OConnection &_rCon );
             virtual ~ODatabaseMetaData();
 
             // as I mentioned before this interface is really BIG

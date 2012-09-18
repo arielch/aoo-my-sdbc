@@ -42,34 +42,6 @@ typedef Reference< XSingleServiceFactory > ( SAL_CALL *createFactoryFunc )
     rtl_ModuleCount *_pTemp
 );
 
-//***************************************************************************************
-//
-// Die vorgeschriebene C-API muss erfuellt werden!
-// Sie besteht aus drei Funktionen, die von dem Modul exportiert werden muessen.
-//
-
-//---------------------------------------------------------------------------------------
-void REGISTER_PROVIDER(
-    const OUString &aServiceImplName,
-    const Sequence< OUString> &Services,
-    const Reference< XRegistryKey > &xKey )
-{
-    ::rtl::OUStringBuffer aMainKeyName;
-    aMainKeyName.append( sal_Unicode( '/' ) );
-    aMainKeyName.append( aServiceImplName );
-    aMainKeyName.appendAscii( "/UNO/SERVICES" );
-
-    Reference< XRegistryKey > xNewKey( xKey->createKey( aMainKeyName.makeStringAndClear() ) );
-    OSL_ENSURE( xNewKey.is(), "SKELETON::component_writeInfo : could not create a registry key !" );
-
-    for ( sal_Int32 i = 0; i < Services.getLength(); ++i )
-    {
-        xNewKey->createKey( Services[i] );
-    }
-}
-
-
-//---------------------------------------------------------------------------------------
 struct ProviderRequest
 {
     Reference< XSingleServiceFactory > xRet;
@@ -111,62 +83,41 @@ struct ProviderRequest
 };
 
 
-extern "C" SAL_DLLPUBLIC_EXPORT void SAL_CALL component_getImplementationEnvironment(
-    const sal_Char    **ppEnvTypeName,
-    uno_Environment    ** /* ppEnv */
-)
+extern "C"
 {
-    *ppEnvTypeName = CPPU_CURRENT_LANGUAGE_BINDING_NAME;
-}
-
-
-extern "C" SAL_DLLPUBLIC_EXPORT sal_Bool SAL_CALL component_writeInfo( void * /* pServiceManager */, void *pRegistryKey )
-{
-    if ( pRegistryKey )
+    SAL_DLLPUBLIC_EXPORT void SAL_CALL component_getImplementationEnvironment(
+        const sal_Char  **ppEnvTypeName,
+        uno_Environment ** /* ppEnv */
+    )
     {
-        try
-        {
-            Reference< XRegistryKey > xKey( reinterpret_cast< XRegistryKey *>( pRegistryKey ) );
-
-            REGISTER_PROVIDER(
-                MysqlCDriver::getImplementationName_Static(),
-                MysqlCDriver::getSupportedServiceNames_Static(), xKey );
-
-            return sal_True;
-        }
-        catch ( ::com::sun::star::registry::InvalidRegistryException & )
-        {
-            OSL_ENSURE( sal_False, "SKELETON::component_writeInfo : could not create a registry key ! ## InvalidRegistryException !" );
-        }
-    }
-    return sal_False;
-}
-
-
-extern "C" SAL_DLLPUBLIC_EXPORT void *SAL_CALL component_getFactory(
-    const sal_Char *pImplementationName,
-    void *pServiceManager,
-    void * /* pRegistryKey */ )
-{
-    void *pRet = 0;
-    if ( pServiceManager )
-    {
-        ProviderRequest aReq( pServiceManager, pImplementationName );
-
-        aReq.CREATE_PROVIDER(
-            MysqlCDriver::getImplementationName_Static(),
-            MysqlCDriver::getSupportedServiceNames_Static(),
-            MysqlCDriver_CreateInstance, ::cppu::createSingleFactory )
-        ;
-
-        if ( aReq.xRet.is() )
-        {
-            aReq.xRet->acquire();
-        }
-
-        pRet = aReq.getProvider();
+        *ppEnvTypeName = CPPU_CURRENT_LANGUAGE_BINDING_NAME;
     }
 
-    return pRet;
-};
+    SAL_DLLPUBLIC_EXPORT void *SAL_CALL component_getFactory(
+        const sal_Char *pImplementationName,
+        void *pServiceManager,
+        void * /* pRegistryKey */ )
+    {
+        void *pRet = 0;
+        if ( pServiceManager )
+        {
+            ProviderRequest aReq( pServiceManager, pImplementationName );
 
+            aReq.CREATE_PROVIDER(
+                MysqlCDriver::getImplementationName_static(),
+                MysqlCDriver::getSupportedServiceNames_static(),
+                MysqlCDriver::CreateInstance,
+                ::cppu::createSingleFactory );
+
+            if ( aReq.xRet.is() )
+            {
+                aReq.xRet->acquire();
+            }
+
+            pRet = aReq.getProvider();
+        }
+
+        return pRet;
+    };
+
+}

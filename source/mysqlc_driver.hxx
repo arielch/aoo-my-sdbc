@@ -26,6 +26,7 @@
 
 #include <com/sun/star/sdbc/XDriver.hpp>
 #include <com/sun/star/lang/XServiceInfo.hpp>
+#include <com/sun/star/uno/XComponentContext.hpp>
 
 #include <cppuhelper/compbase2.hxx>
 #include <preextstl.h>
@@ -42,7 +43,6 @@ namespace mysqlc
     using ::com::sun::star::uno::Exception;
     using ::com::sun::star::uno::Reference;
     using ::com::sun::star::uno::Sequence;
-    Reference< ::com::sun::star::uno::XInterface > SAL_CALL MysqlCDriver_CreateInstance( const Reference< ::com::sun::star::lang::XMultiServiceFactory > &_rxFactory ) throw( Exception );
 
     typedef ::cppu::WeakComponentImplHelper2 <    ::com::sun::star::sdbc::XDriver,
             ::com::sun::star::lang::XServiceInfo > ODriver_BASE;
@@ -52,7 +52,7 @@ namespace mysqlc
     class MysqlCDriver : public ODriver_BASE
     {
         protected:
-            Reference< ::com::sun::star::lang::XMultiServiceFactory > m_xFactory;
+            Reference< ::com::sun::star::uno::XComponentContext > m_xContext;
             ::osl::Mutex    m_aMutex;        // mutex is need to control member access
             OWeakRefArray    m_xConnections;    // vector containing a list
             // of all the Connection objects
@@ -66,13 +66,15 @@ namespace mysqlc
 
         public:
 
-            MysqlCDriver( const Reference< ::com::sun::star::lang::XMultiServiceFactory > &_rxFactory );
+            MysqlCDriver( const Reference< ::com::sun::star::uno::XComponentContext > &rxContext );
 
             // OComponentHelper
             void SAL_CALL disposing( void );
-            // XInterface
-            static OUString getImplementationName_Static()                    throw( RuntimeException );
-            static Sequence< OUString > getSupportedServiceNames_Static()    throw( RuntimeException );
+
+            // XServiceInfo - static versions
+            static ::rtl::OUString SAL_CALL getImplementationName_static(  ) throw ( ::com::sun::star::uno::RuntimeException );
+            static ::com::sun::star::uno::Sequence< ::rtl::OUString > SAL_CALL getSupportedServiceNames_static(  ) throw ( ::com::sun::star::uno::RuntimeException );
+            static ::com::sun::star::uno::Reference< ::com::sun::star::uno::XInterface > SAL_CALL CreateInstance( const ::com::sun::star::uno::Reference< ::com::sun::star::lang::XMultiServiceFactory > &rContext ) throw ( ::com::sun::star::uno::RuntimeException );
 
             // XServiceInfo
             OUString SAL_CALL getImplementationName()                        throw( RuntimeException );
@@ -89,11 +91,6 @@ namespace mysqlc
 
             sal_Int32 SAL_CALL getMajorVersion()                            throw( RuntimeException );
             sal_Int32 SAL_CALL getMinorVersion()                            throw( RuntimeException );
-
-            inline Reference< ::com::sun::star::lang::XMultiServiceFactory > getFactory() const
-            {
-                return m_xFactory;
-            }
 
             rtl_TextEncoding getDefaultEncoding()
             {

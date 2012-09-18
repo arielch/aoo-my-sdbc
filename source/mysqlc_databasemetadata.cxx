@@ -19,7 +19,6 @@
  *
  *************************************************************/
 
-#include "mysqlc_databasemetadata.hxx"
 #include <com/sun/star/sdbc/DataType.hpp>
 #include <com/sun/star/sdbc/ResultSetType.hpp>
 #include <com/sun/star/sdbc/ResultSetConcurrency.hpp>
@@ -31,35 +30,49 @@
 #include <com/sun/star/sdbc/ColumnType.hpp>
 #include <com/sun/star/lang/XInitialization.hpp>
 
+#include <preextstl.h>
+#include <cppconn/resultset.h>
+#include <cppconn/connection.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <postextstl.h>
 
+#include "mysqlc_databasemetadata.hxx"
 #include "mysqlc_general.hxx"
 #include "mysqlc_statement.hxx"
 #include "mysqlc_driver.hxx"
 #include "mysqlc_preparedstatement.hxx"
 
-#include <stdio.h>
 
 using namespace mysqlc;
 using namespace com::sun::star::uno;
 using namespace com::sun::star::lang;
 using namespace com::sun::star::beans;
 using namespace com::sun::star::sdbc;
+
 using ::rtl::OUString;
 using mysqlc::getStringFromAny;
+using ::rtl::OUStringToOString;
 
-#include <preextstl.h>
-#include <cppconn/connection.h>
-#include <cppconn/resultset.h>
-#include <cppconn/metadata.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <postextstl.h>
 
 static ext_std::string wild( "%" );
 
-using ::rtl::OUStringToOString;
 
-// -----------------------------------------------------------------------------
+Reference< XResultSet > lcl_createMetaDataResultSet( const Reference< XComponentContext> &rxContext )
+{
+    Reference< XResultSet > xRet;
+    try
+    {
+        xRet.set(
+            rxContext->getServiceManager()->createInstanceWithContext(
+                C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), rxContext ), UNO_QUERY );
+    }
+    catch ( ... ) {}
+
+    return xRet;
+}
+
+
 void lcl_setRows_throw( const Reference< XResultSet > &_xResultSet, sal_Int32 _nType, const std::vector< std::vector< Any > > &_rRows )
 {
     Reference< XInitialization> xIni( _xResultSet, UNO_QUERY );
@@ -84,10 +97,13 @@ void lcl_setRows_throw( const Reference< XResultSet > &_xResultSet, sal_Int32 _n
 }
 
 
-ODatabaseMetaData::ODatabaseMetaData( OConnection &_rCon )
-    : m_rConnection( _rCon )
+ODatabaseMetaData::ODatabaseMetaData(
+    const Reference< XComponentContext > &rContext,
+    OConnection &_rCon )
+    : m_xContext( rContext )
+    , m_rConnection( _rCon )
     , m_bUseCatalog( sal_True )
-    , meta( _rCon.getConnectionSettings().cppConnection->getMetaData() )
+    , meta( _rCon.getConnectionSettings()->cppConnection->getMetaData() )
     , identifier_quote_string_set( false )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::ODatabaseMetaData" );
@@ -957,7 +973,7 @@ OUString SAL_CALL ODatabaseMetaData::getURL()
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getURL" );
-    return m_rConnection.getConnectionSettings().connectionURL;
+    return m_rConnection.getConnectionSettings()->connectionURL;
 }
 
 
@@ -1292,7 +1308,7 @@ throw( SQLException, RuntimeException )
     const char *table_types[] = {"TABLE", "VIEW"};
     sal_Int32 requiredVersion[] = {0, 50000};
 
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
     rtl_TextEncoding encoding = m_rConnection.getConnectionEncoding();
 
@@ -1314,7 +1330,9 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTypeInfo()
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getTypeInfo" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet(
+        m_xContext->getServiceManager()->createInstanceWithContext(
+            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
 
     std::vector< std::vector< Any > > rRows;
 
@@ -1357,7 +1375,7 @@ throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getCatalogs" );
 
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
     try
@@ -1399,13 +1417,11 @@ throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getSchemas" );
 
-    Reference< XResultSet > xResultSet;
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
     try
     {
-        xResultSet.set( getOwnConnection().getDriver().getFactory()->createInstance(
-                            ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
         OUString sCatalog = m_rConnection.getCatalog();
         // MySQL_Connection::getSchema() queries "SELECT DATABASE()"
         sql::SQLString sOwnSchema = meta->getConnection()->getSchema();
@@ -1459,7 +1475,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getColumnPrivileges(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getColumnPrivileges" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -1509,7 +1525,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getColumns(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getColumns" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sPattern( OUStringToOString( schemaPattern, m_rConnection.getConnectionEncoding() ).getStr() ),
@@ -1569,13 +1585,10 @@ throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getTables" );
 
-    Reference< XResultSet > xResultSet;
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
     try
     {
-        xResultSet.set( getOwnConnection().getDriver().getFactory()->createInstance(
-                            ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
-
         ext_std::string cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
                 sPattern( OUStringToOString( schemaPattern, m_rConnection.getConnectionEncoding() ).getStr() ),
                 tNamePattern( OUStringToOString( tableNamePattern, m_rConnection.getConnectionEncoding() ).getStr() );
@@ -1650,7 +1663,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getProcedures(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getProcedures" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -1702,7 +1715,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getVersionColumns(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getVersionColumns" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
     lcl_setRows_throw( xResultSet, 16, rRows );
     return xResultSet;
@@ -1716,7 +1729,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getExportedKeys(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getExportedKeys" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sch( OUStringToOString( schema, m_rConnection.getConnectionEncoding() ).getStr() ),
@@ -1764,7 +1777,7 @@ throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getImportedKeys" );
 
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -1812,7 +1825,7 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getPrimaryKeys(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getPrimaryKeys" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -1862,7 +1875,9 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getIndexInfo(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getIndexInfo" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet(
+        m_xContext->getServiceManager()->createInstanceWithContext(
+            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -1912,7 +1927,9 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getBestRowIdentifier(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getBestRowIdentifier" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet(
+        m_xContext->getServiceManager()->createInstanceWithContext(
+            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -1960,7 +1977,9 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getTablePrivileges(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getTablePrivileges" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+    Reference< XResultSet > xResultSet(
+        m_xContext->getServiceManager()->createInstanceWithContext(
+            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
@@ -2037,7 +2056,11 @@ Reference< XResultSet > SAL_CALL ODatabaseMetaData::getCrossReference(
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getCrossReference" );
-    Reference< XResultSet > xResultSet( getOwnConnection().getDriver().getFactory()->createInstance( ::rtl::OUString( RTL_CONSTASCII_USTRINGPARAM( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ) ) ), UNO_QUERY );
+
+    Reference< XResultSet > xResultSet(
+        m_xContext->getServiceManager()->createInstanceWithContext(
+            C2U( "org.openoffice.comp.helper.DatabaseMetaDataResultSet" ), m_xContext ), UNO_QUERY );
+
     std::vector< std::vector< Any > > rRows;
 
     ext_std::string    primaryCat( primaryCatalog.hasValue() ? OUStringToOString( getStringFromAny( primaryCatalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),

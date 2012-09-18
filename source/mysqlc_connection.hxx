@@ -37,6 +37,7 @@
 #include <com/sun/star/sdbc/XConnection.hpp>
 #include <com/sun/star/sdbc/XWarningsSupplier.hpp>
 #include <com/sun/star/util/XStringSubstitution.hpp>
+#include <com/sun/star/uno/XComponentContext.hdl>
 
 #include <preextstl.h>
 #include <cppconn/driver.h>
@@ -46,8 +47,6 @@
 #include <rtl/string.hxx>
 
 #include <map>
-
-#define UNUSED_PARAM __attribute__((unused))
 
 namespace sql
 {
@@ -60,6 +59,38 @@ namespace mysqlc
     using ::com::sun::star::sdbc::SQLWarning;
     using ::com::sun::star::sdbc::SQLException;
     using ::com::sun::star::uno::RuntimeException;
+
+    enum ConnectionProtocol
+    {
+        CP_TCP,
+        CP_SOCKET,
+        CP_PIPE,
+        CP_INVALID
+    };
+
+    struct ConnectionSettings
+    {
+        bool isReadOnly;
+        bool isDeprecatedURL;
+        int nPort;
+        ConnectionProtocol eProtocol;
+        OUString quoteIdentifier;
+        OUString connectionURL;
+        OUString sConnCppUri;
+        OUString sSchema;
+        OUString sHostName;
+        OUString sSocketOrPipe;
+        rtl_TextEncoding encoding;
+        std::auto_ptr<sql::Connection> cppConnection;
+
+        ConnectionSettings() :
+            isReadOnly( false ),
+            isDeprecatedURL( false ),
+            nPort( 3306 ),
+            eProtocol( CP_INVALID )
+        {}
+    };
+
     typedef ::com::sun::star::uno::Reference< ::com::sun::star::sdbc::XStatement > my_XStatementRef;
     typedef ::com::sun::star::uno::Reference< ::com::sun::star::sdbc::XPreparedStatement > my_XPreparedStatementRef;
     typedef ::com::sun::star::uno::Reference< ::com::sun::star::container::XNameAccess > my_XNameAccessRef;
@@ -69,15 +100,6 @@ namespace mysqlc
             ::com::sun::star::sdbc::XWarningsSupplier,
             ::com::sun::star::lang::XServiceInfo
             > OMetaConnection_BASE;
-    struct ConnectionSettings
-    {
-        rtl_TextEncoding encoding;
-        std::auto_ptr<sql::Connection> cppConnection;
-        OUString schema;
-        OUString quoteIdentifier;
-        OUString connectionURL;
-        sal_Bool readOnly;
-    };
 
     class MysqlCDriver;
 
@@ -92,11 +114,13 @@ namespace mysqlc
             friend class mysqlc::OSubComponent<OConnection, OConnection_BASE>;
 
         private:
-            ConnectionSettings  m_settings;
-
-        private:
+            ::com::sun::star::uno::Reference< com::sun::star::uno::XComponentContext > m_xContext;
+            boost::shared_ptr< ConnectionSettings > m_aSettings;
             ::com::sun::star::uno::Reference< com::sun::star::container::XNameAccess > m_typeMap;
             ::com::sun::star::uno::Reference< com::sun::star::util::XStringSubstitution > m_xParameterSubstitution;
+
+            bool parseURL(  );
+
         protected:
 
             //====================================================================
@@ -121,26 +145,21 @@ namespace mysqlc
 
             void        buildTypeInfo() throw( SQLException );
         public:
-            OUString getMysqlVariable( const char *varname )
-            throw( SQLException, RuntimeException );
-
-            sal_Int32 getMysqlVersion()
-            throw( SQLException, RuntimeException );
-
-            virtual void construct( const OUString &url, const ::com::sun::star::uno::Sequence< ::com::sun::star::beans::PropertyValue > &info )
-            throw( SQLException );
-
-            OConnection( MysqlCDriver &_rDriver, sql::Driver *cppDriver );
+            OConnection(
+                const ::com::sun::star::uno::Reference< com::sun::star::uno::XComponentContext > &xContext
+                , const OUString &rURL
+                , MysqlCDriver &_rDriver
+                , sql::Driver *cppDriver );
             virtual ~OConnection();
 
+            OUString getMysqlVariable( const char *varname )  throw( SQLException, RuntimeException );
+
+            sal_Int32 getMysqlVersion() throw( SQLException, RuntimeException );
+
+            void connect( const com::sun::star::uno::Sequence< com::sun::star::beans::PropertyValue > &info )
+            throw( SQLException );
+
             void closeAllStatements ()                            throw( SQLException );
-
-
-            rtl_TextEncoding getConnectionEncoding()
-            {
-                return m_settings.encoding;
-            }
-
 
             // OComponentHelper
             virtual void SAL_CALL disposing( void );
@@ -151,82 +170,38 @@ namespace mysqlc
             // XServiceInfo
             DECLARE_SERVICE_INFO();
             // XConnection
-            my_XStatementRef SAL_CALL createStatement()
-            throw( SQLException, RuntimeException );
-
-            my_XPreparedStatementRef SAL_CALL prepareStatement( const OUString &sql )
-            throw( SQLException, RuntimeException );
-
-            my_XPreparedStatementRef SAL_CALL prepareCall( const OUString &sql )
-            throw( SQLException, RuntimeException );
-
-            OUString SAL_CALL nativeSQL( const OUString &sql )
-            throw( SQLException, RuntimeException );
-
-            void SAL_CALL setAutoCommit( sal_Bool autoCommit )
-            throw( SQLException, RuntimeException );
-
-            sal_Bool SAL_CALL getAutoCommit()
-            throw( SQLException, RuntimeException );
-
-            void SAL_CALL commit()
-            throw( SQLException, RuntimeException );
-
-            void SAL_CALL rollback()
-            throw( SQLException, RuntimeException );
-
-            sal_Bool SAL_CALL isClosed()
-            throw( SQLException, RuntimeException );
-
-            my_XDatabaseMetaDataRef SAL_CALL getMetaData()
-            throw( SQLException, RuntimeException );
-
-            void SAL_CALL setReadOnly( sal_Bool readOnly )
-            throw( SQLException, RuntimeException );
-
-            sal_Bool SAL_CALL isReadOnly()
-            throw( SQLException, RuntimeException );
-
-            void SAL_CALL setCatalog( const OUString &catalog )
-            throw( SQLException, RuntimeException );
-
-            OUString SAL_CALL getCatalog()
-            throw( SQLException, RuntimeException );
-
-            void SAL_CALL setTransactionIsolation( sal_Int32 level )
-            throw( SQLException, RuntimeException );
-
-            sal_Int32 SAL_CALL getTransactionIsolation()
-            throw( SQLException, RuntimeException );
-
-            my_XNameAccessRef SAL_CALL getTypeMap()
-            throw( SQLException, RuntimeException );
-
-            void SAL_CALL setTypeMap( const my_XNameAccessRef &typeMap )
-            throw( SQLException, RuntimeException );
+            my_XStatementRef SAL_CALL createStatement()            throw( SQLException, RuntimeException );
+            my_XPreparedStatementRef SAL_CALL prepareStatement( const OUString &sql )            throw( SQLException, RuntimeException );
+            my_XPreparedStatementRef SAL_CALL prepareCall( const OUString &sql )            throw( SQLException, RuntimeException );
+            OUString SAL_CALL nativeSQL( const OUString &sql )            throw( SQLException, RuntimeException );
+            void SAL_CALL setAutoCommit( sal_Bool autoCommit )            throw( SQLException, RuntimeException );
+            sal_Bool SAL_CALL getAutoCommit()            throw( SQLException, RuntimeException );
+            void SAL_CALL commit()            throw( SQLException, RuntimeException );
+            void SAL_CALL rollback()            throw( SQLException, RuntimeException );
+            sal_Bool SAL_CALL isClosed()            throw( SQLException, RuntimeException );
+            my_XDatabaseMetaDataRef SAL_CALL getMetaData()            throw( SQLException, RuntimeException );
+            void SAL_CALL setReadOnly( sal_Bool readOnly )            throw( SQLException, RuntimeException );
+            sal_Bool SAL_CALL isReadOnly()            throw( SQLException, RuntimeException );
+            void SAL_CALL setCatalog( const OUString &catalog )            throw( SQLException, RuntimeException );
+            OUString SAL_CALL getCatalog()            throw( SQLException, RuntimeException );
+            void SAL_CALL setTransactionIsolation( sal_Int32 level )            throw( SQLException, RuntimeException );
+            sal_Int32 SAL_CALL getTransactionIsolation()            throw( SQLException, RuntimeException );
+            my_XNameAccessRef SAL_CALL getTypeMap()            throw( SQLException, RuntimeException );
+            void SAL_CALL setTypeMap( const my_XNameAccessRef &typeMap )            throw( SQLException, RuntimeException );
             // XCloseable
-            void SAL_CALL close()
-            throw( SQLException, RuntimeException );
+            void SAL_CALL close()            throw( SQLException, RuntimeException );
             // XWarningsSupplier
-            ::com::sun::star::uno::Any SAL_CALL getWarnings()
-            throw( SQLException, RuntimeException );
-            void SAL_CALL clearWarnings()
-            throw( SQLException, RuntimeException );
+            ::com::sun::star::uno::Any SAL_CALL getWarnings()            throw( SQLException, RuntimeException );
+            void SAL_CALL clearWarnings()            throw( SQLException, RuntimeException );
 
-            // TODO: Not used
-            //sal_Int32 sdbcColumnType(OUString typeName);
-            inline const ConnectionSettings &getConnectionSettings() const
-            {
-                return m_settings;
-            }
             ::rtl::OUString transFormPreparedStatement( const ::rtl::OUString &_sSQL );
 
             // should we use the catalog on filebased databases
-            inline sal_Bool                isCatalogUsed()     const
+            inline sal_Bool  isCatalogUsed()  const
             {
                 return m_bUseCatalog;
             }
-            inline OUString                getUserName()       const
+            inline OUString getUserName() const
             {
                 return m_sUser;
             }
@@ -234,10 +209,13 @@ namespace mysqlc
             {
                 return m_rDriver;
             }
-            inline rtl_TextEncoding        getTextEncoding()    const
+            inline const boost::shared_ptr<ConnectionSettings>  &getConnectionSettings() const
             {
-                return m_settings.encoding;
+                return m_aSettings;
             }
+
+            rtl_TextEncoding getConnectionEncoding();
+
 
     }; /* OConnection */
     // TODO: Not used.
