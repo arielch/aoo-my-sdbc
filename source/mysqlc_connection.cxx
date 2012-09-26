@@ -148,60 +148,49 @@ bool OConnection::parseURL()
 
     m_aSettings->sSchema = sSchema;
 
-    // is it the old sdbc:mysqlc ?
-    m_aSettings->isDeprecatedURL = ( 0 == sURLNoShcema.compareToAscii(
-                                         RTL_CONSTASCII_STRINGPARAM( MYSQLC_URI_PREFIX ) ) );
+    // remove "sdbc:mysqldc:"
+    sURLNoShcema = sURLNoShcema.copy( sizeof( MYSQLC_URI_PREFIX ) - 1 );
+    // for the MySQLConn/C++ remove "sdbc:mysqldc:" but leave the schema
+    m_aSettings->sConnCppUri = m_aSettings->connectionURL.copy( sizeof( MYSQLC_URI_PREFIX ) - 1 );
 
-    if ( m_aSettings->isDeprecatedURL )
+    // compare the protocols
+    if ( 0 == sURLNoShcema.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_TCP ) ) )
     {
-        // copy "host[:port]"
-        sHostAndPort = sURLNoShcema.copy( sizeof( MYSQLC_URI_PREFIX ) - 1 );
+        m_aSettings->eProtocol = CP_TCP;
+        m_aSettings->sHostName = sURLNoShcema.copy( sizeof( MYSQLDC_URI_TCP ) - 1 );
+        sHostAndPort = m_aSettings->sHostName;
+    }
+    else if ( 0 == sURLNoShcema.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_SOCKET ) ) )
+    {
+#ifdef UNX
+        m_aSettings->eProtocol = CP_SOCKET;
+        m_aSettings->sSocketOrPipe = sURLNoShcema.copy( sizeof( MYSQLDC_URI_SOCKET ) - 1 );
+        m_aSettings->sHostName = C2U( MYSQLDC_LOCALHOST );
+
+        OSL_ENSURE( lcl_CheckSocket( m_aSettings->sSocketOrPipe ), "Invalid socket!" );
+
+        // TODO return true only if socket exists
+        return true;
+#else
+        return false;
+#endif
+    }
+    else if ( 0 == sURLNoShcema.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_PIPE ) ) )
+    {
+#ifdef WNT
+        m_aSettings->eProtocol = CP_PIPE;
+        m_aSettings->sSocketOrPipe = sURLNoShcema.copy( sizeof( MYSQLDC_URI_PIPE ) - 1 );
+        m_aSettings->sHostName = C2U( "." );
+
+        return m_aSettings->sSocketOrPipe.getLength();
+#else
+        return false;
+#endif
     }
     else
     {
-        sURLNoShcema = sURLNoShcema.copy( sizeof( MYSQLDC_URI_PREFIX ) - 1 );
-        // for the MySQLConn/C++ remove "sdbc:mysqldc:" but leave the schema
-        m_aSettings->sConnCppUri = m_aSettings->connectionURL.copy( sizeof( MYSQLDC_URI_PREFIX ) - 1 );
-
-        // compare the protocols
-        if ( 0 == sURLNoShcema.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_TCP ) ) )
-        {
-            m_aSettings->eProtocol = CP_TCP;
-            m_aSettings->sHostName = sURLNoShcema.copy( sizeof( MYSQLDC_URI_TCP ) - 1 );
-            sHostAndPort = m_aSettings->sHostName;
-        }
-        else if ( 0 == sURLNoShcema.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_SOCKET ) ) )
-        {
-#ifdef UNX
-            m_aSettings->eProtocol = CP_SOCKET;
-            m_aSettings->sSocketOrPipe = sURLNoShcema.copy( sizeof( MYSQLDC_URI_SOCKET ) - 1 );
-            m_aSettings->sHostName = C2U( MYSQLDC_LOCALHOST );
-
-            OSL_ENSURE( lcl_CheckSocket( m_aSettings->sSocketOrPipe ), "Invalid socket!" );
-
-            // TODO return true only if socket exists
-            return true;
-#else
-            return false;
-#endif
-        }
-        else if ( 0 == sURLNoShcema.compareToAscii( RTL_CONSTASCII_STRINGPARAM( MYSQLDC_URI_PIPE ) ) )
-        {
-#ifdef WNT
-            m_aSettings->eProtocol = CP_PIPE;
-            m_aSettings->sSocketOrPipe = sURLNoShcema.copy( sizeof( MYSQLDC_URI_PIPE ) - 1 );
-            m_aSettings->sHostName = C2U( "." );
-
-            return m_aSettings->sSocketOrPipe.getLength();
-#else
-            return false;
-#endif
-        }
-        else
-        {
-            m_aSettings->eProtocol = CP_INVALID;
-            return false;
-        }
+        // URL pre AOO 3.5
+        sHostAndPort = sURLNoShcema;
     }
 
     if ( sHostAndPort.getLength() )
@@ -235,10 +224,12 @@ bool OConnection::parseURL()
             m_aSettings->sHostName = C2U( MYSQLDC_LOCALHOSTIP );
 
         m_aSettings->nPort = nPort;
+        m_aSettings->nPort = CP_TCP;
 
         return true;
     }
 
+    m_aSettings->eProtocol = CP_INVALID;
     return false;
 }
 
@@ -268,9 +259,13 @@ throw( SQLException )
     OSL_TRACE( "mysqlc::OConnection::construct" );
     MutexGuard aGuard( m_aMutex );
 
+    // don't be so strict, for now
+    parseURL();
+#if 0
     if ( !parseURL() )
         throw SQLException(
             C2U( "Malformed connection URL" ), *this, OUString(), 0, Any() );
+#endif
 
     m_aSettings->encoding = m_rDriver.getDefaultEncoding();
     m_aSettings->quoteIdentifier = OUString();
@@ -292,20 +287,17 @@ throw( SQLException )
             OSL_VERIFY( pIter->Value >>= aPass );
 #ifdef UNX
         }
-        else if ( m_aSettings->isDeprecatedURL &&
-                  !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "LocalSocket" ) ) )
+        else if ( !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "LocalSocket" ) ) )
         {
             bSocketOrPipe = ( pIter->Value >>= sSocketOrPipe ) && sSocketOrPipe.getLength();
 #else
         }
-        else if ( m_aSettings->isDeprecatedURL &&
-                  !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "NamedPipe" ) ) )
+        else if ( !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "NamedPipe" ) ) )
         {
             bSocketOrPipe = ( pIter->Value >>= sSocketOrPipe ) && sSocketOrPipe.getLength();
 #endif
         }
-        else if ( m_aSettings->isDeprecatedURL &&
-                  !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "PublicConnectionURL" ) ) )
+        else if ( !pIter->Name.compareToAscii( RTL_CONSTASCII_STRINGPARAM( "PublicConnectionURL" ) ) )
         {
             // sdbc:mysql:mysqlc:
             OUString sPublicConnURL;
