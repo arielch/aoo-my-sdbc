@@ -1,78 +1,46 @@
---- a/mysql-connector-cpp/cppconn/build_config.h	2009-08-13 17:13:46.000000000 +0200
-+++ b/mysql-connector-cpp/cppconn/build_config.h	2009-09-11 09:41:41.150391316 +0200
-@@ -1,36 +1,34 @@
--/*
--   Copyright 2007 - 2008 MySQL AB, 2008 - 2009 Sun Microsystems, Inc.  All rights reserved.
--
--   The MySQL Connector/C++ is licensed under the terms of the GPL
--   <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most
--   MySQL Connectors. There are special exceptions to the terms and
--   conditions of the GPL as it is applied to this software, see the
--   FLOSS License Exception
--   <http://www.mysql.com/about/legal/licensing/foss-exception.html>.
--*/
--
--#ifndef _SQL_BUILD_CONFIG_H_
--#define _SQL_BUILD_CONFIG_H_
--
+diff -uNrp a/mysql-connector-c++-1.1.1/cppconn/build_config.h b/mysql-connector-c++-1.1.1/cppconn/build_config.h
+--- a/mysql-connector-c++-1.1.1/cppconn/build_config.h	2012-08-06 15:19:06.000000000 -0300
++++ b/mysql-connector-c++-1.1.1/cppconn/build_config.h	2012-08-30 19:44:17.574644272 -0300
+@@ -27,25 +27,23 @@ with this program; if not, write to the
+ #ifndef _SQL_BUILD_CONFIG_H_
+ #define _SQL_BUILD_CONFIG_H_
+ 
 -#ifndef CPPCONN_PUBLIC_FUNC
--
++#ifndef _SAL_TYPES_H_
++#include <sal/types.h>
++#endif
+ 
 -#if defined(_WIN32)
 - // mysqlcppconn_EXPORTS is added by cmake and defined for dynamic lib build only
 -  #ifdef mysqlcppconn_EXPORTS
 -    #define CPPCONN_PUBLIC_FUNC __declspec(dllexport)
 -  #else
--    // this is for static build
--    #ifdef CPPCONN_LIB_BUILD
++// mysqlcppconn_EXPORTS is added by cmake and defined for dynamic lib build only
++#ifdef mysqlcppconn_EXPORTS
++    #define CPPCONN_PUBLIC_FUNC SAL_DLLPUBLIC_EXPORT
++#else
+     // this is for static build
+     #ifdef CPPCONN_LIB_BUILD
 -      #define CPPCONN_PUBLIC_FUNC
--    #else
++        #define CPPCONN_PUBLIC_FUNC
+     #else
 -      // this is for clients using dynamic lib
 -      #define CPPCONN_PUBLIC_FUNC __declspec(dllimport)
--    #endif
++        // this is for clients using dynamic lib
++        #define CPPCONN_PUBLIC_FUNC SAL_DLLPUBLIC_IMPORT
+     #endif
 -  #endif
 -#else
 -  #define CPPCONN_PUBLIC_FUNC
--#endif
--
+ #endif
+ 
 -#endif    //#ifndef CPPCONN_PUBLIC_FUNC
--
--#endif    //#ifndef _SQL_BUILD_CONFIG_H_
-+/*
-+   Copyright 2007 - 2008 MySQL AB, 2008 - 2009 Sun Microsystems, Inc.  All rights reserved.
-+
-+   The MySQL Connector/C++ is licensed under the terms of the GPL
-+   <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most
-+   MySQL Connectors. There are special exceptions to the terms and
-+   conditions of the GPL as it is applied to this software, see the
-+   FLOSS License Exception
-+   <http://www.mysql.com/about/legal/licensing/foss-exception.html>.
-+*/
-+
-+#ifndef _SQL_BUILD_CONFIG_H_
-+#define _SQL_BUILD_CONFIG_H_
-+
-+#ifndef _SAL_TYPES_H_
-+#include <sal/types.h>
-+#endif
-+  
-+ // mysqlcppconn_EXPORTS is added by cmake and defined for dynamic lib build only
-+  #ifdef mysqlcppconn_EXPORTS
-+    #define CPPCONN_PUBLIC_FUNC SAL_DLLPUBLIC_EXPORT
-+  #else
-+    // this is for static build
-+    #ifdef CPPCONN_LIB_BUILD
-+      #define CPPCONN_PUBLIC_FUNC
-+    #else
-+      // this is for clients using dynamic lib
-+      #define CPPCONN_PUBLIC_FUNC SAL_DLLPUBLIC_IMPORT
-+    #endif
-+  #endif
-+
-+  #define CPPCONN_PUBLIC_EXCEPTION SAL_EXCEPTION_DLLPUBLIC_EXPORT
-+
-+#endif    //#ifndef _SQL_BUILD_CONFIG_H_
---- a/mysql-connector-cpp/cppconn/config.h	1969-12-31 21:00:00.000000000 -0300
-+++ b/mysql-connector-cpp/cppconn/config.h	2009-08-14 09:56:37.000000000 +0200
++#define CPPCONN_PUBLIC_EXCEPTION SAL_EXCEPTION_DLLPUBLIC_EXPORT
+ 
+ #endif    //#ifndef _SQL_BUILD_CONFIG_H_
+diff -uNrp a/mysql-connector-c++-1.1.1/cppconn/config.h b/mysql-connector-c++-1.1.1/cppconn/config.h
+--- a/mysql-connector-c++-1.1.1/cppconn/config.h	1969-12-31 21:00:00.000000000 -0300
++++ b/mysql-connector-c++-1.1.1/cppconn/config.h	2012-08-30 19:44:17.575644272 -0300
 @@ -0,0 +1,34 @@
 +#include <sal/types.h>
 +
@@ -108,9 +76,10 @@
 +typedef sal_Int64   int64_t;
 +typedef sal_uInt64  uint64_t;
 +#endif // !defined(HAVE_STDINT_H) && !defined(HAVE_INTTYPES_H)
---- a/mysql-connector-cpp/cppconn/connection.h	2009-08-13 17:13:46.000000000 +0200
-+++ b/mysql-connector-cpp/cppconn/connection.h	2009-08-14 09:56:37.000000000 +0200
-@@ -13,7 +13,6 @@
+diff -uNrp a/mysql-connector-c++-1.1.1/cppconn/connection.h b/mysql-connector-c++-1.1.1/cppconn/connection.h
+--- a/mysql-connector-c++-1.1.1/cppconn/connection.h	2012-08-06 15:19:06.000000000 -0300
++++ b/mysql-connector-c++-1.1.1/cppconn/connection.h	2012-08-30 19:44:18.080644232 -0300
+@@ -28,7 +28,6 @@ with this program; if not, write to the
  #define _SQL_CONNECTION_H_
  
  #include <map>
@@ -118,7 +87,7 @@
  
  #include "build_config.h"
  #include "warning.h"
-@@ -22,8 +21,54 @@
+@@ -37,8 +36,54 @@ with this program; if not, write to the
  namespace sql
  {
  
@@ -175,9 +144,10 @@
  
  typedef std::map< sql::SQLString, ConnectPropertyVal > ConnectOptionsMap;
  
---- a/mysql-connector-cpp/cppconn/exception.h	2009-08-20 17:51:23.000000000 +0200
-+++ b/mysql-connector-cpp/cppconn/exception.h	2009-09-11 09:41:41.076379817 +0200
-@@ -37,7 +37,7 @@
+diff -uNrp a/mysql-connector-c++-1.1.1/cppconn/exception.h b/mysql-connector-c++-1.1.1/cppconn/exception.h
+--- a/mysql-connector-c++-1.1.1/cppconn/exception.h	2012-08-06 15:19:06.000000000 -0300
++++ b/mysql-connector-c++-1.1.1/cppconn/exception.h	2012-08-30 19:44:18.260644219 -0300
+@@ -52,7 +52,7 @@ namespace sql
  #pragma warning(push)
  #pragma warning(disable: 4275)
  #endif
@@ -186,7 +156,7 @@
  {
  #ifdef _WIN32
  #pragma warning(pop)
-@@ -83,26 +83,26 @@
+@@ -98,26 +98,26 @@ protected:
  	MEMORY_ALLOC_OPERATORS(SQLException)
  };
  
@@ -217,11 +187,12 @@
  {
  	NonScrollableException(const NonScrollableException& e) : SQLException(e.what(), e.sql_state, e.errNo) { }
  	NonScrollableException(const std::string& reason) : SQLException(reason, "", 0) {}
---- a/mysql-connector-cpp/driver/mysql_connection.cpp	2009-08-13 17:13:46.000000000 +0200
-+++ b/mysql-connector-cpp/driver/mysql_connection.cpp	2009-08-14 09:56:37.015625000 +0200
-@@ -50,6 +50,34 @@
+diff -uNrp a/mysql-connector-c++-1.1.1/driver/mysql_connection.cpp b/mysql-connector-c++-1.1.1/driver/mysql_connection.cpp
+--- a/mysql-connector-c++-1.1.1/driver/mysql_connection.cpp	2012-08-06 15:19:06.000000000 -0300
++++ b/mysql-connector-c++-1.1.1/driver/mysql_connection.cpp	2012-08-30 19:44:18.262644217 -0300
+@@ -68,6 +68,33 @@ with this program; if not, write to the
+ #include "mysql_warning.h"
  #include "mysql_debug.h"
- 
  
 +// part II of the hack to make C/C++ compile in an OOo env which doesn't have boost::variant installed
 +namespace boost
@@ -250,13 +221,22 @@
 +        return &val->valBool;
 +    }
 +}
-+
+ 
  namespace sql
  {
- namespace mysql
---- a/mysql-connector-cpp/driver/mysql_debug.h	2009-08-13 17:13:46.000000000 +0200
-+++ b/mysql-connector-cpp/driver/mysql_debug.h	2009-08-14 09:56:37.015625000 +0200
-@@ -25,16 +25,6 @@
+@@ -425,6 +452,8 @@ void MySQL_Connection::init(ConnectOptio
+ 		}
+ 	}
+ 
++   int default_protocol_tcp = MYSQL_PROTOCOL_TCP;
++   proxy->options(MYSQL_OPT_PROTOCOL, (const char *) &default_protocol_tcp);
+ 
+ 	/* libmysql shouldn't think it is too smart */
+ 	if (tcpProtocol(uri) && !uri.Host().compare(util::LOCALHOST)) {
+diff -uNrp a/mysql-connector-c++-1.1.1/driver/mysql_debug.h b/mysql-connector-c++-1.1.1/driver/mysql_debug.h
+--- a/mysql-connector-c++-1.1.1/driver/mysql_debug.h	2012-08-06 15:19:06.000000000 -0300
++++ b/mysql-connector-c++-1.1.1/driver/mysql_debug.h	2012-08-30 19:44:18.262644217 -0300
+@@ -40,16 +40,6 @@ with this program; if not, write to the
  
  
  
@@ -273,7 +253,7 @@
  	#define CPP_ENTER(msg)
  	#define CPP_ENTER_WL(l, msg)
  	#define CPP_INFO(msg)
-@@ -42,7 +32,6 @@
+@@ -57,7 +47,6 @@ with this program; if not, write to the
  	#define CPP_ENTER_WL(l, msg)
  	static inline void CPP_INFO_FMT(...) {}
  	static inline void CPP_ERR_FMT(...) {}
@@ -281,8 +261,63 @@
  
  #include <stack>
  #include "mysql_util.h"
---- a/mysql-connector-cpp/driver/nativeapi/binding_config.h	1969-12-31 21:00:00.000000000 -0300
-+++ b/mysql-connector-cpp/driver/nativeapi/binding_config.h	2009-08-14 10:13:50.359375000 +0200
-@@ -0,0 +1,2 @@
+diff -uNrp a/mysql-connector-c++-1.1.1/driver/nativeapi/binding_config.h b/mysql-connector-c++-1.1.1/driver/nativeapi/binding_config.h
+--- a/mysql-connector-c++-1.1.1/driver/nativeapi/binding_config.h	1969-12-31 21:00:00.000000000 -0300
++++ b/mysql-connector-c++-1.1.1/driver/nativeapi/binding_config.h	2012-08-30 19:44:18.263644217 -0300
+@@ -0,0 +1,38 @@
++/*
++   Copyright (c) 2009, 2010, Oracle and/or its affiliates. All rights reserved.
++
++   The MySQL Connector/C++ is licensed under the terms of the GPLv2
++   <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most
++   MySQL Connectors. There are special exceptions to the terms and
++   conditions of the GPL as it is applied to this software, see the
++   FLOSS License Exception
++   <http://www.mysql.com/about/legal/licensing/foss-exception.html>.
++
++   This program is free software; you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published
++   by the Free Software Foundation; version 2 of the License.
++
++   This program is distributed in the hope that it will be useful, but
++   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
++   or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
++   for more details.
++
++   You should have received a copy of the GNU General Public License along
++   with this program; if not, write to the Free Software Foundation, Inc.,
++   51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
++*/
++
++
 +#define HAVE_DLFCN_H 1
 +//#define MYSQLCLIENT_STATIC_BINDING 1
++
++
++/*
++#if !defined(_WIN32) && !defined(HAVE_DLFCN_H) && !defined(MYSQLCLIENT_STATIC_BINDING)
++# define MYSQLCLIENT_STATIC_BINDING 1
++#endif
++
++#ifdef HAVE_DLFCN_H
++#include <dlfcn.h>
++#endif
++*/
+diff -uNrp a/mysql-connector-c++-1.1.1/driver/nativeapi/libmysql_dynamic_proxy.cpp b/mysql-connector-c++-1.1.1/driver/nativeapi/libmysql_dynamic_proxy.cpp
+--- a/mysql-connector-c++-1.1.1/driver/nativeapi/libmysql_dynamic_proxy.cpp	2012-08-06 15:19:06.000000000 -0300
++++ b/mysql-connector-c++-1.1.1/driver/nativeapi/libmysql_dynamic_proxy.cpp	2012-08-30 19:49:49.195619764 -0300
+@@ -39,11 +39,11 @@ namespace NativeAPI
+ #if defined(_WIN32)
+ static const char * const baseName = "libmysql.dll";
+ #elif defined(__APPLE__)
+-static const char * const baseName = "libmysqlclient_r.dylib";
++static const char * const baseName = "libmysql.dylib";
+ #elif defined(__hpux) && defined(__hppa)
+-static const char * const baseName = "libmysqlclient_r.sl";
++static const char * const baseName = "libmysql.sl";
+ #else
+-static const char * const baseName = "libmysqlclient_r.so";
++static const char * const baseName = "libmysql.so";
+ #endif
+ 
+ template<typename FunctionType>

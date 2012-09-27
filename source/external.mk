@@ -149,26 +149,27 @@ MYSQLCONNCPP_SLOFILES= \
 	$(MYSQLCONNCPP_BUILD)/driver/mysql_resultset.$(OBJ_EXT) \
 	$(MYSQLCONNCPP_BUILD)/driver/mysql_resultset_metadata.$(OBJ_EXT) \
 	$(MYSQLCONNCPP_BUILD)/driver/mysql_statement.$(OBJ_EXT) \
+	$(MYSQLCONNCPP_BUILD)/driver/mysql_uri.$(OBJ_EXT) \
 	$(MYSQLCONNCPP_BUILD)/driver/mysql_util.$(OBJ_EXT) \
 	$(MYSQLCONNCPP_BUILD)/driver/mysql_warning.$(OBJ_EXT) \
 	\
 	$(MYSQLCONNCPP_BUILD)/driver/nativeapi/library_loader.$(OBJ_EXT) \
 	$(MYSQLCONNCPP_BUILD)/driver/nativeapi/mysql_client_api.$(OBJ_EXT) \
 	$(MYSQLCONNCPP_BUILD)/driver/nativeapi/mysql_native_connection_wrapper.$(OBJ_EXT) \
+	$(MYSQLCONNCPP_BUILD)/driver/nativeapi/mysql_native_driver_wrapper.$(OBJ_EXT) \
 	$(MYSQLCONNCPP_BUILD)/driver/nativeapi/mysql_native_resultset_wrapper.$(OBJ_EXT) \
 	$(MYSQLCONNCPP_BUILD)/driver/nativeapi/mysql_native_statement_wrapper.$(OBJ_EXT)
+
 #	$(MYSQLCONNCPP_BUILD)/driver/nativeapi/libmysql_dynamic_proxy.$(OBJ_EXT) \
 #	$(MYSQLCONNCPP_BUILD)/driver/nativeapi/libmysql_static_proxy.$(OBJ_EXT) \
-#	$(MYSQLCONNCPP_BUILD)/driver/nativeapi/mysql_native_driver_wrapper.$(OBJ_EXT) \
-#	$(MYSQLCONNCPP_BUILD)/driver/mysql_uri.$(OBJ_EXT) \
-
 
 # --------------- MySQL settings ------------------
 
 # Connector C++ OBJ
 $(MYSQLCONNCPP_SLOFILES): $(MYSQLCONNCPP_BUILD)/%.$(OBJ_EXT) : $(SDKTYPEFLAG) $(BOOST_DELIVER_FLAG) $(MYSQLCONNC_DELIVER_FLAG) $(MYSQLCONNCPP_DELIVER_FLAG)
 	$(CC) -Dmysqlcppconn_EXPORTS \
-		$(CC_FLAGS) $(MYSQLCONNCPP_CFLAGS) \
+		$(CC_FLAGS) \
+		$(MYSQLCONNCPP_CFLAGS) \
 		$(CC_INCLUDES) \
 		-I$(OUT_COMP_INC) \
 		$(MYSQLCONNCPP_INC) \
@@ -209,7 +210,6 @@ endif
 
 $(BOOST_UNPACKED_FLAG): $(BOOST_TAR)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-#	$(COPY) $(subst /,$(PS),$<) $(subst /,$(PS),$(@D))
 	cd $(subst /,$(PS),$(@D)) && $(ZCAT) -d  "$(CURDIR)/$<" | $(TAR) xv
 	@echo flagged > $(subst /,$(PS),$@)
 
@@ -260,7 +260,7 @@ $(OUT_COMP_LIB)/$(MYSQLCONNC_LIB): $(MYSQLCONNC_DELIVER_FLAG)
 
 $(MYSQLCONNCPP_UNPACKED_FLAG): $(MYSQLCONNCPP_TAR)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-	cd $(subst /,$(PS),$(@D)) && unzip "$(CURDIR)/$<"
+	cd $(subst /,$(PS),$(@D)) && $(ZCAT) -d  "$(CURDIR)/$<" | $(TAR) xv
 	@echo flagged > $(subst /,$(PS),$@)
 
 $(MYSQLCONNCPP_PATCHED_FLAG) : $(MYSQLCONNCPP_PATCH) $(MYSQLCONNCPP_UNPACKED_FLAG)
