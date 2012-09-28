@@ -197,7 +197,7 @@ bool OConnection::parseURL()
     {
         OUString sHostName, sPort;
         int nPort = 3306;
-        int nIndex = 0;
+        sal_Int32 nIndex = 0;
 
         // slplit "host:port"
         nIndex = 0;
