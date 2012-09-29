@@ -30,6 +30,12 @@
 #include <mysql_driver.h>
 #endif
 
+#include <osl/module.hxx>
+#include <osl/thread.h>
+#include <osl/file.hxx>
+#include <rtl/uri.hxx>
+
+
 using namespace com::sun::star::uno;
 using namespace com::sun::star::lang;
 using namespace com::sun::star::beans;
@@ -130,9 +136,32 @@ void MysqlCDriver::impl_initCppConn_lck_throw()
         );
     }
 
+    rtl::OUString sMySQLClientLib( RTL_CONSTASCII_USTRINGPARAM( MYSQL_LIB ) );
+
+    ::rtl::OUString moduleBase;
+    OSL_VERIFY( ::osl::Module::getUrlFromAddress( &thisModule, moduleBase ) );
+    ::rtl::OUString sMySQLClientLibURL;
+    try
+    {
+        sMySQLClientLibURL = ::rtl::Uri::convertRelToAbs( moduleBase, sMySQLClientLib.pData );
+    }
+    catch ( const ::rtl::MalformedUriException &e )
+    {
+#if OSL_DEBUG_LEVEL > 0
+        ::rtl::OString sMessage( "OConnection::construct: malformed URI: " );
+        sMessage += ::rtl::OUStringToOString( e.getMessage(), osl_getThreadTextEncoding() );
+        OSL_ENSURE( false, sMessage.getStr() );
+#else
+        ( void )e; // silence compiler
+#endif
+    }
+
+    ::rtl::OUString sMySQLClientLibPath;
+    osl_getSystemPathFromFileURL( sMySQLClientLibURL.pData, &sMySQLClientLibPath.pData );
+
     // find the factory symbol
-    const OUString sSymbolName = OUString( RTL_CONSTASCII_USTRINGPARAM( "sql_mysql_get_driver_instance" ) );
-    typedef void* ( * FGetMySQLDriver )();
+    const OUString sSymbolName = OUString( RTL_CONSTASCII_USTRINGPARAM( "get_driver_instance_by_name" ) );
+    typedef void* ( * FGetMySQLDriver )( const char * const );
 
     const FGetMySQLDriver pFactoryFunction = ( FGetMySQLDriver )( osl_getFunctionSymbol( m_hCppConnModule, sSymbolName.pData ) );
     if ( !pFactoryFunction )
@@ -147,7 +176,16 @@ void MysqlCDriver::impl_initCppConn_lck_throw()
         );
     }
 
-    cppDriver = static_cast< sql::Driver * >( ( *pFactoryFunction )() );
+    try
+    {
+        cppDriver = static_cast< sql::Driver * >( ( *pFactoryFunction )(
+            rtl::OUStringToOString( sMySQLClientLibPath, osl_getThreadTextEncoding() ).getStr() ) );
+    }
+    catch ( sql::InvalidArgumentException &e)
+    {
+        mysqlc::translateAndThrow( e, *this, getDefaultEncoding() );
+    }
+
 #endif
     if ( !cppDriver )
     {

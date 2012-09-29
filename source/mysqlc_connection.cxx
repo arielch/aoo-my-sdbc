@@ -40,8 +40,6 @@
 #include <com/sun/star/lang/DisposedException.hpp>
 #include <com/sun/star/beans/NamedValue.hpp>
 
-#include <osl/module.hxx>
-#include <osl/thread.h>
 #include <osl/file.hxx>
 #include <rtl/uri.hxx>
 #include <rtl/ustrbuf.hxx>
@@ -224,7 +222,7 @@ bool OConnection::parseURL()
             m_aSettings->sHostName = C2U( MYSQLDC_LOCALHOSTIP );
 
         m_aSettings->nPort = nPort;
-        m_aSettings->nPort = CP_TCP;
+        m_aSettings->eProtocol = CP_TCP;
 
         return true;
     }
@@ -360,35 +358,6 @@ throw( SQLException )
             connProps["hostName"] = sql::ConnectPropertyVal( host_str );
             connProps["port"]     = sql::ConnectPropertyVal( ( int )( m_aSettings->nPort ) );
         }
-
-#ifndef SYSTEM_MYSQL
-        ::rtl::OUString sMySQLClientLib( RTL_CONSTASCII_USTRINGPARAM( MYSQL_LIB ) );
-
-        ::rtl::OUString moduleBase;
-        OSL_VERIFY( ::osl::Module::getUrlFromAddress( &thisModule, moduleBase ) );
-        ::rtl::OUString sMySQLClientLibURL;
-        try
-        {
-            sMySQLClientLibURL = ::rtl::Uri::convertRelToAbs( moduleBase, sMySQLClientLib.pData );
-        }
-        catch ( const ::rtl::MalformedUriException &e )
-        {
-            ( void )e; // silence compiler
-#if OSL_DEBUG_LEVEL > 0
-            ::rtl::OString sMessage( "OConnection::construct: malformed URI: " );
-            sMessage += ::rtl::OUStringToOString( e.getMessage(), osl_getThreadTextEncoding() );
-            OSL_ENSURE( false, sMessage.getStr() );
-#endif
-        }
-
-        ::rtl::OUString sMySQLClientLibPath;
-        osl_getSystemPathFromFileURL( sMySQLClientLibURL.pData, &sMySQLClientLibPath.pData );
-
-        sql::SQLString mysqlLib = ::rtl::OUStringToOString( sMySQLClientLibPath, osl_getThreadTextEncoding() ).getStr();
-        connProps["clientlib"] = mysqlLib;
-
-        OSL_TRACE( "clientlib=%s", mysqlLib.c_str() );
-#endif
 
         m_aSettings->cppConnection.reset( cppDriver->connect( connProps ) );
     }
