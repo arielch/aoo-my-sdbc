@@ -103,10 +103,8 @@ OConnection::~OConnection()
 {
     OSL_TRACE( "mysqlc::OConnection::~OConnection" );
 
-    if ( !isClosed() )
-    {
-        close();
-    }
+    // the connection should be already closed and disposed
+
     m_rDriver.release();
 }
 
@@ -548,8 +546,7 @@ throw( SQLException, RuntimeException )
     OSL_TRACE( "mysqlc::OConnection::isClosed" );
     MutexGuard aGuard( m_aMutex );
 
-    // just simple -> we are close when we are disposed taht means someone called dispose(); (XComponent)
-    return ( OConnection_BASE::rBHelper.bDisposed );
+    return m_bClosed;
 }
 
 
@@ -738,16 +735,34 @@ void SAL_CALL OConnection::close()
 throw( SQLException, RuntimeException )
 {
     OSL_TRACE( "mysqlc::OConnection::close" );
-    /*
-      we need block, because the mutex is a local variable,
-      which will guard the block
-    */
+
+    MutexGuard aGuard( m_aMutex );
+
+    // first throw if we are already disposed
+    // Client code's workflow should be
+    // 1) xConnection.close()
+    // 2) xConnection.dispose()
+    checkDisposed(OConnection_BASE::rBHelper.bDisposed);
+
+    // XCloseable does not specify to throw if already closed
+    // so we don't throw in this case
+    if ( m_aSettings->cppConnection.get() )
     {
-        // we just dispose us
-        MutexGuard aGuard( m_aMutex );
-        checkDisposed( OConnection_BASE::rBHelper.bDisposed );
+        try
+        {
+            m_aSettings->cppConnection->close();
+            m_aSettings->cppConnection.reset();
+            m_bClosed = sal_True;
+        }
+        catch ( sql::SQLException &e )
+        {
+            mysqlc::translateAndThrow(e, *this, getConnectionEncoding());
+        }
     }
-    dispose();
+
+    // do NOT dispose on close
+    // client code should do it explicitly
+    // dispose();
 }
 
 
@@ -791,9 +806,20 @@ void OConnection::disposing()
             xComp->dispose();
         }
     }
+
     m_aStatements.clear();
 
-    m_bClosed    = sal_True;
+    OSL_ENSURE( m_bClosed, "Disposing a connection that is not closed!" );
+    if ( m_aSettings->cppConnection.get() )
+    {
+        try
+        {
+            m_aSettings->cppConnection->close();
+            m_bClosed = sal_True;
+        }
+        catch (...) {}
+    }
+
     m_xMetaData    = WeakReference< XDatabaseMetaData >();
 
     dispose_ChildImpl();
