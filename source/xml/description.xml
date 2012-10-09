@@ -22,22 +22,7 @@
         </simple-license>
     </registration>
     <extension-description>
-        <src xlink:href="description/description_de.txt" lang="de"/>
         <src xlink:href="description/description_en-US.txt" lang="en-US"/>
-        <src xlink:href="description/description_es.txt" lang="es"/>
-        <src xlink:href="description/description_fr.txt" lang="fr"/>
-        <src xlink:href="description/description_hu.txt" lang="hu"/>
-        <src xlink:href="description/description_it.txt" lang="it"/>
-        <src xlink:href="description/description_ja.txt" lang="ja"/>
-        <src xlink:href="description/description_ko.txt" lang="ko"/>
-        <src xlink:href="description/description_nl.txt" lang="nl"/>
-        <src xlink:href="description/description_pl.txt" lang="pl"/>
-        <src xlink:href="description/description_pt.txt" lang="pt"/>
-        <src xlink:href="description/description_pt-BR.txt" lang="pt-BR"/>
-        <src xlink:href="description/description_ru.txt" lang="ru"/>
-        <src xlink:href="description/description_sv.txt" lang="sv"/>
-        <src xlink:href="description/description_zh-CN.txt" lang="zh-CN"/>
-        <src xlink:href="description/description_zh-TW.txt" lang="zh-TW"/>
     </extension-description>
     <update-information>
         <src xlink:href="#DESCRIPTION_UPDATE#" />
