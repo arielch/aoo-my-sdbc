@@ -46,13 +46,13 @@ EXTENSION_ID=com.sun.star.mysql-connector-ooo-$(EXTENSION_PLATFORM)
 EXTENSION_VERSION=$(MYSQLC_VERSION_MAJOR).$(MYSQLC_VERSION_MINOR).$(MYSQLC_VERSION_MICRO)
 
 # Define non-platform/compiler specific settings
-COMP_NAME=aoo-mysql-connector
+COMP_NAME=aoo-myl-sdbc
 
 ifeq "$(DEBUG)" "yes"
-COMP_NAME=aoo-mysql-connector-debug
+COMP_NAME=aoo-myl-sdbc-debug
 else
 ifneq "$(RELEASESTATUS)" ""
-COMP_NAME=aoo-mysql-connector-$(RELEASESTATUS)
+COMP_NAME=aoo-myl-sdbc-$(RELEASESTATUS)
 endif
 endif
 
@@ -120,7 +120,7 @@ else
 endif
 
 # Targets
-.PHONY: ALL
+.PHONY: ALL update-desc MySQLConnector MySQLConnector.run
 ALL : \
 	MySQLConnector update-desc
 
@@ -188,7 +188,7 @@ $(COMP_UNOPKG_DESCRIPTION) :  xml/description.xml
 
 
 # rule for update description
-$(OUT_COMP_GEN)/$(DESCRIPTION_UPDATE_FILENAME) : xml/update.xml
+$(OUT_COMP_BIN)/$(DESCRIPTION_UPDATE_FILENAME) : xml/update.xml
 	-$(MKDIR) $(subst /,$(PS),$(@D))
 	$(CAT) $< | $(SED) \
 		-e "s/#DESCRIPTION_IDENTIFIER#/$(DESCRIPTION_IDENTIFIER)/" \
@@ -231,7 +231,8 @@ endif
 	$(SDK_ZIP) -ur $@  registry/  images/ description/
 
 
-update-desc : $(OUT_COMP_GEN)/$(DESCRIPTION_UPDATE_FILENAME) 
+update-desc : $(OUT_COMP_BIN)/$(DESCRIPTION_UPDATE_FILENAME)
+	-$(DEL) $(subst \\,\,$(subst /,$(PS),$@))
 
 MySQLConnector : $(COMP_PACKAGE)
 # MySQLConnector : $(OUT_COMP_LIB)/$(COMP_IMPL_NAME)
