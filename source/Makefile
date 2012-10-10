@@ -46,13 +46,13 @@ EXTENSION_ID=com.sun.star.mysql-connector-ooo-$(EXTENSION_PLATFORM)
 EXTENSION_VERSION=$(MYSQLC_VERSION_MAJOR).$(MYSQLC_VERSION_MINOR).$(MYSQLC_VERSION_MICRO)
 
 # Define non-platform/compiler specific settings
-COMP_NAME=aoo-myl-sdbc
+COMP_NAME=aoo-my-sdbc
 
 ifeq "$(DEBUG)" "yes"
-COMP_NAME=aoo-myl-sdbc-debug
+COMP_NAME=aoo-my-sdbc-debug
 else
 ifneq "$(RELEASESTATUS)" ""
-COMP_NAME=aoo-myl-sdbc-$(RELEASESTATUS)
+COMP_NAME=aoo-my-sdbc-$(RELEASESTATUS)
 endif
 endif
 
