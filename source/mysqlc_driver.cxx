@@ -24,6 +24,7 @@
 #include "mysqlc_general.hxx"
 
 #include <com/sun/star/beans/XPropertySet.hpp>
+#include <com/sun/star/logging/XLoggerPool.hpp>
 
 #include <cppconn/exception.h>
 #ifdef SYSTEM_MYSQL_CPPCONN
@@ -38,6 +39,7 @@
 
 using namespace com::sun::star::uno;
 using namespace com::sun::star::lang;
+using namespace com::sun::star::logging;
 using namespace com::sun::star::beans;
 using namespace com::sun::star::sdbc;
 using namespace mysqlc;
@@ -55,6 +57,26 @@ MysqlCDriver::MysqlCDriver( const Reference< XComponentContext > &rxContext )
 {
     OSL_TRACE( "mysqlc::MysqlCDriver::MysqlCDriver" );
     cppDriver = NULL;
+
+    try
+    {
+        Reference< XLoggerPool > xLoggerPool(
+            m_xContext->getValueByName( rtl::OUString(
+                                       RTL_CONSTASCII_USTRINGPARAM( "/singletons/com.sun.star.logging.LoggerPool" ) ) ),
+            UNO_QUERY_THROW );
+        m_xLogger.set( xLoggerPool->getNamedLogger( rtl::OUString(
+                           RTL_CONSTASCII_USTRINGPARAM( MY_SDBC_LOGGER ) ) ),
+                       UNO_QUERY_THROW );
+        if ( m_xLogger->isLoggable( com::sun::star::logging::LogLevel::INFO ) )
+        {
+            mysqlc_driver_log( m_xLogger,
+                               com::sun::star::logging::LogLevel::INFO,
+                               C2U( "mysqlc::MysqlCDriver" ), C2U( "MysqlCDriver" ),
+                               C2U( "driver instantiated" ) );
+        }
+    }
+    catch ( ... )
+    {}
 }
 
 

@@ -24,8 +24,9 @@
 
 #include "mysqlc_connection.hxx"
 
-#include <com/sun/star/sdbc/XDriver.hpp>
 #include <com/sun/star/lang/XServiceInfo.hpp>
+#include <com/sun/star/logging/XLogger.hpp>
+#include <com/sun/star/sdbc/XDriver.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
 
 #include <cppuhelper/compbase2.hxx>
@@ -53,6 +54,7 @@ namespace mysqlc
     {
         protected:
             Reference< ::com::sun::star::uno::XComponentContext > m_xContext;
+            com::sun::star::uno::Reference< com::sun::star::logging::XLogger > m_xLogger;
             ::osl::Mutex    m_aMutex;        // mutex is need to control member access
             OWeakRefArray    m_xConnections;    // vector containing a list
             // of all the Connection objects

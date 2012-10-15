@@ -45,6 +45,8 @@ OUT_DEPLOY=$(OUT)/deploy
 EXTENSION_ID=com.sun.star.mysql-connector-ooo-$(EXTENSION_PLATFORM)
 EXTENSION_VERSION=$(MYSQLC_VERSION_MAJOR).$(MYSQLC_VERSION_MINOR).$(MYSQLC_VERSION_MICRO)
 
+MY_SDBC_LOGGER=org.aoo-my-sdbc.MySDBCDriver
+
 # Define non-platform/compiler specific settings
 COMP_NAME=aoo-my-sdbc
 
@@ -73,6 +75,7 @@ COMP_MAPFILE = $(OUT_COMP_GEN)/$(COMP_NAME).uno.map
 COMP_COMPONENTS = $(OUT_COMP_GEN)/$(COMP_NAME).components
 COMP_TYPEFLAG = $(OUT_COMP_GEN)/cpp_$(COMP_NAME)_types.flag
 COMP_DRIVER_CFG=registry/data/org/openoffice/Office/DataAccess/Drivers.xcu
+COMP_DRIVER_LOGGING_CFG=registry/data/org/openoffice/Office/Logging.xcu
 
 DESCRIPTION_IDENTIFIER=$(EXTENSION_ID)
 DESCRIPTION_PLATFORM=$(TARGET_PLATFORM)
@@ -108,8 +111,10 @@ COMP_CFLAGS += \
 ifeq "$(DEBUG)" "yes"
 	CC_FLAGS += -DOSL_DEBUG_LEVEL=2
 	CMAKE_BUILD_TYPE=Debug
+	MY_SDBC_LOGLEVEL=-2147483648
 else
 	CMAKE_BUILD_TYPE=Release
+	MY_SDBC_LOGLEVEL=2147483647
 endif
 
 # Targets
@@ -126,6 +131,7 @@ COMP_CFLAGS +=-DCPPDBC_EXPORTS -DCPPCONN_LIB_BUILD
 #-DCPPCONN_LIB=\"libmysqlcppconn.so\"
 COMP_CFLAGS += -DCPPCONN_LIB=\"$(MYSQLCONNCPP_LIB)\"
 COMP_CFLAGS += -DMYSQL_LIB=\"$(MYSQLCONNC_LIB)\"
+COMP_CFLAGS += -DMY_SDBC_LOGGER=\"$(MY_SDBC_LOGGER)\"
 
 COMP_CFLAGS += $(BOOST_INC) $(MYSQLCONNCPP_INC)
 
@@ -164,6 +170,18 @@ ifeq "$(OS)" "MACOSX"
 	$(INSTALL_NAME_URELIBS)  $@
 endif
 endif
+
+# rule for Drivers.xcu
+$(OUT_COMP_GEN)/$(COMP_DRIVER_CFG) : $(COMP_DRIVER_CFG)
+	-$(MKDIR) $(subst /,$(PS),$(@D))
+	$(COPY) $< $@
+
+# rule for Logging.xcu
+$(OUT_COMP_GEN)/$(COMP_DRIVER_LOGGING_CFG) : $(COMP_DRIVER_LOGGING_CFG)
+	-$(MKDIR) $(subst /,$(PS),$(@D))
+	$(CAT) $< | $(SED) \
+		-e "s/#MY_SDBC_LOGGER#/$(MY_SDBC_LOGGER)/" \
+		-e "s/#MY_SDBC_LOGLEVEL#/$(MY_SDBC_LOGLEVEL)/" > $@
 
 # rule for extension description.xml
 $(COMP_UNOPKG_DESCRIPTION) :  xml/description.xml
@@ -207,7 +225,7 @@ $(COMP_COMPONENTS) : xml/components.xml
 		-e "s/#COMP_IMPL_NAME#/$(COMP_IMPL_NAME)/" > $@
 
 # rule for component package file
-$(COMP_PACKAGE) : $(OUT_COMP_LIB)/$(COMP_IMPL_NAME) $(OUT_COMP_LIB)/$(MYSQLCONNC_LIB) $(OUT_COMP_LIB)/$(MYSQLCONNCPP_LIB) $(COMP_DRIVER_CFG)  $(COMP_UNOPKG_MANIFEST) $(COMP_COMPONENTS)  $(COMP_UNOPKG_DESCRIPTION)
+$(COMP_PACKAGE) : $(OUT_COMP_LIB)/$(COMP_IMPL_NAME) $(OUT_COMP_LIB)/$(MYSQLCONNC_LIB) $(OUT_COMP_LIB)/$(MYSQLCONNCPP_LIB)  $(OUT_COMP_GEN)/$(COMP_DRIVER_CFG) $(OUT_COMP_GEN)/$(COMP_DRIVER_LOGGING_CFG)   $(COMP_UNOPKG_MANIFEST) $(COMP_COMPONENTS)  $(COMP_UNOPKG_DESCRIPTION)
 	-$(DEL) $(subst \\,\,$(subst /,$(PS),$@))
 	-$(MKDIR) $(subst /,$(PS),$(@D))
 	-$(MKDIR) $(subst /,$(PS),$(OUT_COMP_GEN)/$(UNOPKG_PLATFORM))
@@ -220,8 +238,8 @@ endif
 	-$(MKDIR) $(subst /,$(PS),$(OUT_COMP_GEN)/LICENSE)
 	$(COPY) $(subst /,$(PS),../LICENSE) $(subst /,$(PS),$(OUT_COMP_GEN)/LICENSE/)
 	cd $(subst /,$(PS),$(OUT_COMP_GEN)) && $(SDK_ZIP) -u $(COMP_PACKAGE) $(COMP_NAME).components description.xml
-	cd $(subst /,$(PS),$(OUT_COMP_GEN)) && $(SDK_ZIP) -ur $(COMP_PACKAGE) $(UNOPKG_PLATFORM)/ LICENSE/ META-INF/
-	$(SDK_ZIP) -ur $@  registry/  images/ description/
+	cd $(subst /,$(PS),$(OUT_COMP_GEN)) && $(SDK_ZIP) -ur $(COMP_PACKAGE) $(UNOPKG_PLATFORM)/ LICENSE/ META-INF/  registry/
+	$(SDK_ZIP) -ur $@ images/ description/
 
 
 update-desc : $(OUT_COMP_BIN)/$(DESCRIPTION_UPDATE_FILENAME)

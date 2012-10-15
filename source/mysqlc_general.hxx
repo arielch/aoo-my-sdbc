@@ -22,7 +22,8 @@
 #ifndef _MYSQLC_GENERAL_
 #define _MYSQLC_GENERAL_
 
-#include <com/sun/star/uno/XInterface.hpp>
+#include <com/sun/star/logging/LogLevel.hpp>
+#include <com/sun/star/logging/XLogger.hpp>
 #include <com/sun/star/sdbc/SQLException.hpp>
 
 #include <preextstl.h>
@@ -81,6 +82,19 @@ namespace mysqlc
     ::rtl::OUString convert( const ::ext_std::string &_string, const rtl_TextEncoding encoding );
 
     ::ext_std::string convert( const ::rtl::OUString &_string, const rtl_TextEncoding encoding );
+
+
+    inline void mysqlc_driver_log( const ::com::sun::star::uno::Reference< com::sun::star::logging::XLogger > &rxLogger,
+                                   const sal_Int32 level,
+                                   const rtl::OUString &sClass,
+                                   const rtl::OUString &sMethod,
+                                   const rtl::OUString &sMessage )
+    {
+        if ( rxLogger.is() )
+        {
+            rxLogger->logp( level, sClass, sMethod, sMessage );
+        }
+    }
 }
 
 #endif
