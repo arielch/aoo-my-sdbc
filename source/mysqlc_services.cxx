@@ -22,102 +22,45 @@
 #include "mysqlc_driver.hxx"
 
 #include <cppuhelper/factory.hxx>
-#include <osl/diagnose.h>
-#include <rtl/ustrbuf.hxx>
+#include <cppuhelper/implementationentry.hxx>
 
-using namespace mysqlc;
-using ::rtl::OUString;
-using ::com::sun::star::uno::Reference;
-using ::com::sun::star::uno::Sequence;
-using ::com::sun::star::registry::XRegistryKey;
-using ::com::sun::star::lang::XSingleServiceFactory;
-using ::com::sun::star::lang::XMultiServiceFactory;
 
-typedef Reference< XSingleServiceFactory > ( SAL_CALL *createFactoryFunc )
-(
-    const Reference< XMultiServiceFactory > &rServiceManager,
-    const OUString &rComponentName,
-    ::cppu::ComponentInstantiation pCreateFunction,
-    const Sequence< OUString > &rServiceNames,
-    rtl_ModuleCount *_pTemp
-);
-
-struct ProviderRequest
+namespace mysqlc
 {
-    Reference< XSingleServiceFactory > xRet;
-    Reference< XMultiServiceFactory > const xServiceManager;
-    OUString const sImplementationName;
+    void *SAL_CALL CreateDriverSingleton( void *pServiceManager );
 
-    ProviderRequest(
-        void *pServiceManager,
-        sal_Char const *pImplementationName
-    ) : xServiceManager( reinterpret_cast<XMultiServiceFactory *>( pServiceManager ) )
-        , sImplementationName( OUString::createFromAscii( pImplementationName ) )
+    static struct cppu::ImplementationEntry ImplEntries[] =
     {
-    }
-
-    inline sal_Bool CREATE_PROVIDER(
-        const OUString &Implname,
-        const Sequence< OUString > &Services,
-        ::cppu::ComponentInstantiation Factory,
-        createFactoryFunc creator
-    )
-    {
-        if ( !xRet.is() && ( Implname == sImplementationName ) )
         {
-            try
-            {
-                xRet = creator( xServiceManager, sImplementationName, Factory, Services, 0 );
-            }
-            catch ( ... )
-            {
-            }
-        }
-        return xRet.is();
-    }
-
-    void *getProvider() const
-    {
-        return xRet.get();
-    }
-};
+            MysqlCDriver::CreateInstance,
+            MysqlCDriver::getImplementationName_static,
+            MysqlCDriver::getSupportedServiceNames_static,
+            0 /* cppu::createOneInstanceComponentFactory */,
+            0,
+            0
+        },
+        { 0, 0, 0, 0, 0, 0 }
+    };
+}
 
 
 extern "C"
 {
     SAL_DLLPUBLIC_EXPORT void SAL_CALL component_getImplementationEnvironment(
-        const sal_Char  **ppEnvTypeName,
-        uno_Environment ** /* ppEnv */
-    )
+        const sal_Char **ppEnvTypeName, uno_Environment **ppEnv )
     {
         *ppEnvTypeName = CPPU_CURRENT_LANGUAGE_BINDING_NAME;
     }
 
     SAL_DLLPUBLIC_EXPORT void *SAL_CALL component_getFactory(
-        const sal_Char *pImplementationName,
-        void *pServiceManager,
-        void * /* pRegistryKey */ )
+        const sal_Char *pImplName, void *pServiceManager, void *pRegistryKey )
     {
-        void *pRet = 0;
-        if ( pServiceManager )
-        {
-            ProviderRequest aReq( pServiceManager, pImplementationName );
-
-            aReq.CREATE_PROVIDER(
-                MysqlCDriver::getImplementationName_static(),
-                MysqlCDriver::getSupportedServiceNames_static(),
-                MysqlCDriver::CreateInstance,
-                ::cppu::createSingleFactory );
-
-            if ( aReq.xRet.is() )
-            {
-                aReq.xRet->acquire();
-            }
-
-            pRet = aReq.getProvider();
-        }
-
-        return pRet;
-    };
-
+        if ( mysqlc::MysqlCDriver::getImplementationName_static().compareToAscii( pImplName ) == 0 )
+            return mysqlc::CreateDriverSingleton( pServiceManager );
+        else
+            return ::cppu::component_getFactoryHelper( pImplName,
+                                                       pServiceManager,
+                                                       pRegistryKey ,
+                                                       mysqlc::ImplEntries );
+    }
 }

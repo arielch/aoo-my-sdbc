@@ -332,23 +332,9 @@ throw ( RuntimeException )
 }
 
 
-Reference< XInterface >  SAL_CALL MysqlCDriver::CreateInstance( const Reference< XMultiServiceFactory > &rxMSF )
+Reference< XInterface >  SAL_CALL MysqlCDriver::CreateInstance( const Reference< XComponentContext > &rxContext )
 throw ( RuntimeException )
 {
-    Reference< XComponentContext > rxContext;
-
-    if ( !rxMSF.is() )
-        return NULL;
-    try
-    {
-        Reference< XPropertySet> rxProps( rxMSF, UNO_QUERY );
-        rxContext.set( rxProps->getPropertyValue( C2U( "DefaultContext" ) ), UNO_QUERY );
-        if ( !rxContext.is() )
-            return NULL;
-    }
-    catch ( ... )
-    {}
-
     return( *( new MysqlCDriver( rxContext ) ) );
 }
 
