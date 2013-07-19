@@ -73,7 +73,7 @@ COMP_UNOPKG_MANIFEST    = $(OUT_COMP_GEN)/$(COMPONENT_NAME)/META-INF/manifest.xm
 COMP_UNOPKG_DESCRIPTION = $(OUT_COMP_GEN)/$(COMPONENT_NAME)/description.xml
 COMP_MAPFILE = $(OUT_COMP_GEN)/$(COMP_NAME).uno.map
 COMP_COMPONENTS = $(OUT_COMP_GEN)/$(COMP_NAME).components
-COMP_TYPEFLAG = $(OUT_COMP_GEN)/cpp_$(COMP_NAME)_types.flag
+
 COMP_DRIVER_CFG=registry/data/org/openoffice/Office/DataAccess/Drivers.xcu
 COMP_DRIVER_LOGGING_CFG=registry/data/org/openoffice/Office/Logging.xcu
 
