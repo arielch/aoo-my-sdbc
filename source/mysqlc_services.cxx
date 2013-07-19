@@ -20,6 +20,7 @@
  *************************************************************/
 
 #include "mysqlc_driver.hxx"
+#include "mysqlc_optpages.hxx"
 
 #include <cppuhelper/factory.hxx>
 #include <cppuhelper/implementationentry.hxx>
@@ -31,6 +32,14 @@ namespace mysqlc
 
     static struct cppu::ImplementationEntry ImplEntries[] =
     {
+        {
+            OptionsPagesHandler::CreateInstance,
+            OptionsPagesHandler::GetImplementationName_static,
+            OptionsPagesHandler::GetSupportedServiceNames_static,
+            cppu::createSingleComponentFactory,
+            0,
+            0
+        },
         {
             MysqlCDriver::CreateInstance,
             MysqlCDriver::getImplementationName_static,

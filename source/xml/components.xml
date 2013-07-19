@@ -4,5 +4,8 @@
     <implementation name="org.aoo-my-sdbc.comp.MysqlDCDriver">
       <service name="com.sun.star.sdbc.Driver"/>
     </implementation>
+    <implementation name="org.aoo-my-sdbc.comp.OptionsPageHandler">
+      <service name="org.aoo-my-sdbc.OptionsPageHandler"/>
+    </implementation>
   </component>
 </components>
