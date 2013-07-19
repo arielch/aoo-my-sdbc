@@ -39,9 +39,7 @@
 #include <com/sun/star/util/XStringSubstitution.hpp>
 #include <com/sun/star/uno/XComponentContext.hdl>
 
-#include <preextstl.h>
 #include <cppconn/driver.h>
-#include <postextstl.h>
 #include <cppuhelper/compbase3.hxx>
 #include <cppuhelper/weakref.hxx>
 #include <rtl/string.hxx>

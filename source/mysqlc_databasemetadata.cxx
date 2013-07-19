@@ -30,12 +30,10 @@
 #include <com/sun/star/sdbc/ColumnType.hpp>
 #include <com/sun/star/lang/XInitialization.hpp>
 
-#include <preextstl.h>
 #include <cppconn/resultset.h>
 #include <cppconn/connection.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
-#include <postextstl.h>
 
 #include "mysqlc_databasemetadata.hxx"
 #include "mysqlc_general.hxx"
@@ -55,7 +53,7 @@ using mysqlc::getStringFromAny;
 using ::rtl::OUStringToOString;
 
 
-static ext_std::string wild( "%" );
+static std::string wild( "%" );
 
 
 Reference< XResultSet > lcl_createMetaDataResultSet( const Reference< XComponentContext> &rxContext )
@@ -122,7 +120,7 @@ ODatabaseMetaData::~ODatabaseMetaData()
 }
 
 
-OUString ODatabaseMetaData::impl_getStringMetaData( const sal_Char *_methodName, const ext_std::string & ( sql::DatabaseMetaData::*_Method )() )
+OUString ODatabaseMetaData::impl_getStringMetaData( const sal_Char *_methodName, const std::string & ( sql::DatabaseMetaData::*_Method )() )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::%s", _methodName );
     OUString stringMetaData;
@@ -146,7 +144,7 @@ OUString ODatabaseMetaData::impl_getStringMetaData( const sal_Char *_methodName,
 }
 
 
-OUString ODatabaseMetaData::impl_getStringMetaData( const sal_Char *_methodName, ext_std::string ( sql::DatabaseMetaData::*_Method )() )
+OUString ODatabaseMetaData::impl_getStringMetaData( const sal_Char *_methodName, std::string ( sql::DatabaseMetaData::*_Method )() )
 {
     OSL_TRACE( "mysqlc::ODatabaseMetaData::%s", _methodName );
     OUString stringMetaData;
@@ -1476,7 +1474,7 @@ throw( SQLException, RuntimeException )
     Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
-    ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sch( OUStringToOString( schema, m_rConnection.getConnectionEncoding() ).getStr() ),
             tab( OUStringToOString( table, m_rConnection.getConnectionEncoding() ).getStr() ),
             cNamePattern( OUStringToOString( columnNamePattern, m_rConnection.getConnectionEncoding() ).getStr() );
@@ -1525,7 +1523,7 @@ throw( SQLException, RuntimeException )
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getColumns" );
     Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
-    ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sPattern( OUStringToOString( schemaPattern, m_rConnection.getConnectionEncoding() ).getStr() ),
             tNamePattern( OUStringToOString( tableNamePattern, m_rConnection.getConnectionEncoding() ).getStr() ),
             cNamePattern( OUStringToOString( columnNamePattern, m_rConnection.getConnectionEncoding() ).getStr() );
@@ -1587,11 +1585,11 @@ throw( SQLException, RuntimeException )
     std::vector< std::vector< Any > > rRows;
     try
     {
-        ext_std::string cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+        std::string cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
                 sPattern( OUStringToOString( schemaPattern, m_rConnection.getConnectionEncoding() ).getStr() ),
                 tNamePattern( OUStringToOString( tableNamePattern, m_rConnection.getConnectionEncoding() ).getStr() );
 
-        ext_std::list<sql::SQLString> tabTypes;
+        std::list<sql::SQLString> tabTypes;
         sal_Int32 nLength = types.getLength();
         for ( const OUString *pStart = types.getConstArray(), *p = pStart, *pEnd = pStart + nLength; p != pEnd; ++p )
         {
@@ -1664,7 +1662,7 @@ throw( SQLException, RuntimeException )
     Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
-    ext_std::string cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sPattern( OUStringToOString( schemaPattern, m_rConnection.getConnectionEncoding() ).getStr() ),
             pNamePattern( OUStringToOString( procedureNamePattern, m_rConnection.getConnectionEncoding() ).getStr() );
 
@@ -1729,7 +1727,7 @@ throw( SQLException, RuntimeException )
     OSL_TRACE( "mysqlc::ODatabaseMetaData::getExportedKeys" );
     Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
-    ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sch( OUStringToOString( schema, m_rConnection.getConnectionEncoding() ).getStr() ),
             tab( OUStringToOString( table, m_rConnection.getConnectionEncoding() ).getStr() );
 
@@ -1778,7 +1776,7 @@ throw( SQLException, RuntimeException )
     Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
-    ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sch( OUStringToOString( schema, m_rConnection.getConnectionEncoding() ).getStr() ),
             tab( OUStringToOString( table, m_rConnection.getConnectionEncoding() ).getStr() );
 
@@ -1826,7 +1824,7 @@ throw( SQLException, RuntimeException )
     Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
-    ext_std::string cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sch( OUStringToOString( schema, m_rConnection.getConnectionEncoding() ).getStr() ),
             tab( OUStringToOString( table, m_rConnection.getConnectionEncoding() ).getStr() );
 
@@ -1876,7 +1874,7 @@ throw( SQLException, RuntimeException )
     Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
-    ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sch( OUStringToOString( schema, m_rConnection.getConnectionEncoding() ).getStr() ),
             tab( OUStringToOString( table, m_rConnection.getConnectionEncoding() ).getStr() );
 
@@ -1926,7 +1924,7 @@ throw( SQLException, RuntimeException )
     Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
-    ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sch( OUStringToOString( schema, m_rConnection.getConnectionEncoding() ).getStr() ),
             tab( OUStringToOString( table, m_rConnection.getConnectionEncoding() ).getStr() );
 
@@ -1974,7 +1972,7 @@ throw( SQLException, RuntimeException )
     Reference< XResultSet > xResultSet( lcl_createMetaDataResultSet( m_xContext ) );
     std::vector< std::vector< Any > > rRows;
 
-    ext_std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string    cat( catalog.hasValue() ? OUStringToOString( getStringFromAny( catalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             sPattern( OUStringToOString( schemaPattern, m_rConnection.getConnectionEncoding() ).getStr() ),
             tPattern( OUStringToOString( tableNamePattern, m_rConnection.getConnectionEncoding() ).getStr() );
 
@@ -2053,7 +2051,7 @@ throw( SQLException, RuntimeException )
 
     std::vector< std::vector< Any > > rRows;
 
-    ext_std::string    primaryCat( primaryCatalog.hasValue() ? OUStringToOString( getStringFromAny( primaryCatalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
+    std::string    primaryCat( primaryCatalog.hasValue() ? OUStringToOString( getStringFromAny( primaryCatalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             foreignCat( foreignCatalog.hasValue() ? OUStringToOString( getStringFromAny( foreignCatalog ), m_rConnection.getConnectionEncoding() ).getStr() : "" ),
             pSchema( OUStringToOString( primarySchema, m_rConnection.getConnectionEncoding() ).getStr() ),
             pTable( OUStringToOString( primaryTable, m_rConnection.getConnectionEncoding() ).getStr() ),

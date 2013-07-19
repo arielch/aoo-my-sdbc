@@ -216,7 +216,7 @@ throw( SQLException, RuntimeException )
 
     try
     {
-        ext_std::string stringie( ::rtl::OUStringToOString( x, m_pConnection->getConnectionEncoding() ).getStr() );
+        std::string stringie( ::rtl::OUStringToOString( x, m_pConnection->getConnectionEncoding() ).getStr() );
         ( ( sql::PreparedStatement * )cppStatement )->setString( parameter, stringie );
     }
     catch ( sql::MethodNotImplementedException )
@@ -340,7 +340,7 @@ throw( SQLException, RuntimeException )
     aBuff.append( sal_Char( '-' ) );
     aBuff.append( sal_Int32( aData.Day ) );
 
-    ext_std::string dateStr = aBuff.getStr();
+    std::string dateStr = aBuff.getStr();
 
     try
     {
@@ -372,7 +372,7 @@ throw( SQLException, RuntimeException )
     aBuff.append( sal_Char( ':' ) );
     aBuff.append( sal_Int32( aVal.Seconds ) );
 
-    ext_std::string timeStr = aBuff.getStr();
+    std::string timeStr = aBuff.getStr();
 
     try
     {
@@ -414,7 +414,7 @@ throw( SQLException, RuntimeException )
     aBuff.append( sal_Char( ':' ) );
     aBuff.append( sal_Int32( aVal.Seconds ) );
 
-    ext_std::string dateTimeStr = aBuff.getStr();
+    std::string dateTimeStr = aBuff.getStr();
 
     try
     {
@@ -812,7 +812,7 @@ throw( SQLException, RuntimeException )
     checkDisposed( OPreparedStatement::rBHelper.bDisposed );
     checkParameterIndex( parameter );
 
-    ext_std::string blobby( ( char * )x.getConstArray(), x.getLength() );
+    std::string blobby( ( char * )x.getConstArray(), x.getLength() );
     try
     {
         ( ( sql::PreparedStatement * )cppStatement )->setString( parameter, blobby );

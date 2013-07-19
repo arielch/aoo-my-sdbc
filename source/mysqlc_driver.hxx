@@ -30,9 +30,7 @@
 #include <com/sun/star/uno/XComponentContext.hpp>
 
 #include <cppuhelper/compbase2.hxx>
-#include <preextstl.h>
 #include <cppconn/driver.h>
-#include <postextstl.h>
 #include <osl/module.h>
 
 

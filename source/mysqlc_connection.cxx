@@ -26,13 +26,11 @@
 #include "mysqlc_preparedstatement.hxx"
 #include "mysqlc_general.hxx"
 
-#include <preextstl.h>
 #include <cppconn/driver.h>
 #include <cppconn/connection.h>
 #include <cppconn/statement.h>
 #include <cppconn/metadata.h>
 #include <cppconn/exception.h>
-#include <postextstl.h>
 
 #include <com/sun/star/sdbc/ColumnValue.hpp>
 #include <com/sun/star/sdbc/XRow.hpp>
@@ -314,16 +312,16 @@ throw( SQLException )
     {
         sql::ConnectOptionsMap connProps;
 
-        ext_std::string user_str   = OUStringToOString( aUser, m_aSettings->encoding ).getStr();
-        ext_std::string pass_str   = OUStringToOString( aPass, m_aSettings->encoding ).getStr();
-        ext_std::string schema_str = OUStringToOString( m_aSettings->sSchema, m_aSettings->encoding ).getStr();
+        std::string user_str   = OUStringToOString( aUser, m_aSettings->encoding ).getStr();
+        std::string pass_str   = OUStringToOString( aPass, m_aSettings->encoding ).getStr();
+        std::string schema_str = OUStringToOString( m_aSettings->sSchema, m_aSettings->encoding ).getStr();
 
         connProps["userName"] = sql::ConnectPropertyVal( user_str );
         connProps["password"] = sql::ConnectPropertyVal( pass_str );
         connProps["schema"]   = sql::ConnectPropertyVal( schema_str );
 
         OUString aHostName;
-        ext_std::string host_str;
+        std::string host_str;
         sql::SQLString socket_str;
 
         if ( m_aSettings->sSocketOrPipe.getLength() )

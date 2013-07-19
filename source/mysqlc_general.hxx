@@ -26,9 +26,7 @@
 #include <com/sun/star/logging/XLogger.hpp>
 #include <com/sun/star/sdbc/SQLException.hpp>
 
-#include <preextstl.h>
 #include <cppconn/exception.h>
-#include <postextstl.h>
 
 
 /*
@@ -79,9 +77,9 @@ namespace mysqlc
     int mysqlToOOOType( int mysqlType ) throw ();
 
 
-    ::rtl::OUString convert( const ::ext_std::string &_string, const rtl_TextEncoding encoding );
+    ::rtl::OUString convert( const ::std::string &_string, const rtl_TextEncoding encoding );
 
-    ::ext_std::string convert( const ::rtl::OUString &_string, const rtl_TextEncoding encoding );
+    ::std::string convert( const ::rtl::OUString &_string, const rtl_TextEncoding encoding );
 
 
     inline void mysqlc_driver_log( const ::com::sun::star::uno::Reference< com::sun::star::logging::XLogger > &rxLogger,

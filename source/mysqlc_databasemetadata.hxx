@@ -26,9 +26,7 @@
 #include <com/sun/star/uno/XComponentContext.hpp>
 #include <cppuhelper/implbase1.hxx>
 
-#include <preextstl.h>
 #include <cppconn/metadata.h>
-#include <postextstl.h>
 
 #include "mysqlc_connection.hxx"
 
@@ -58,8 +56,8 @@ namespace mysqlc
 
         private:
             com::sun::star::uno::Reference< com::sun::star::uno::XComponentContext > m_xContext;
-            OUString impl_getStringMetaData( const sal_Char *_methodName, const ext_std::string & ( sql::DatabaseMetaData::*_Method )() );
-            OUString impl_getStringMetaData( const sal_Char *_methodName, ext_std::string ( sql::DatabaseMetaData::*_Method )() );
+            OUString impl_getStringMetaData( const sal_Char *_methodName, const std::string & ( sql::DatabaseMetaData::*_Method )() );
+            OUString impl_getStringMetaData( const sal_Char *_methodName, std::string ( sql::DatabaseMetaData::*_Method )() );
             OUString impl_getStringMetaData( const sal_Char *_methodName, const sql::SQLString & ( sql::DatabaseMetaData::*_Method )() );
             OUString impl_getStringMetaData( const sal_Char *_methodName, sql::SQLString ( sql::DatabaseMetaData::*_Method )() );
             sal_Int32 impl_getInt32MetaData( const sal_Char *_methodName, unsigned int ( sql::DatabaseMetaData::*_Method )() );
