@@ -184,7 +184,7 @@ $(OUT_COMP_LIB)/$(MYSQLCONNCPP_LIB) : $(MYSQLCONNCPP_SLOFILES)
 		/OUT:$@ \
 		/MAP:$(OUT_COMP_GEN)/$(subst $(SHAREDLIB_EXT),map,$(@F)) \
 		$(MYSQLCONNCPP_SLOFILES) \
-		$(STLPORTLIB) msvcrt.lib kernel32.lib
+		msvcrt.lib msvcprt.lib kernel32.lib
 	$(LINK_MANIFEST)
 else
 #$(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES) $(COMP_MAPFILE)
