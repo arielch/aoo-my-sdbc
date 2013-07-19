@@ -20,5 +20,5 @@
 #**************************************************************
 
 MYSQLC_VERSION_MAJOR=1
-MYSQLC_VERSION_MINOR=1
+MYSQLC_VERSION_MINOR=2
 MYSQLC_VERSION_MICRO=0
