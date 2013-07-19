@@ -87,7 +87,6 @@ OFFICE_START_OPTIONS=-nologo -nofirststartwizard -norestore -quickstart=no -base
 OXT_DEPLOYEDFLAG=$(OUT_COMP_GEN)/so_deployed_$(COMP_NAME).flag
 
 COMP_CXXFILES = \
-	factory.cxx \
 	mysqlc_optpages.cxx \
 	mysqlc_connection.cxx \
 	mysqlc_databasemetadata.cxx \

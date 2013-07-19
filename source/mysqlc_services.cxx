@@ -28,8 +28,6 @@
 
 namespace mysqlc
 {
-    void *SAL_CALL CreateDriverSingleton( void *pServiceManager );
-
     static struct cppu::ImplementationEntry ImplEntries[] =
     {
         {
@@ -44,7 +42,7 @@ namespace mysqlc
             MysqlCDriver::CreateInstance,
             MysqlCDriver::getImplementationName_static,
             MysqlCDriver::getSupportedServiceNames_static,
-            0 /* cppu::createOneInstanceComponentFactory */,
+            cppu::createOneInstanceComponentFactory,
             0,
             0
         },
@@ -64,12 +62,9 @@ extern "C"
     SAL_DLLPUBLIC_EXPORT void *SAL_CALL component_getFactory(
         const sal_Char *pImplName, void *pServiceManager, void *pRegistryKey )
     {
-        if ( mysqlc::MysqlCDriver::getImplementationName_static().compareToAscii( pImplName ) == 0 )
-            return mysqlc::CreateDriverSingleton( pServiceManager );
-        else
-            return ::cppu::component_getFactoryHelper( pImplName,
-                                                       pServiceManager,
-                                                       pRegistryKey ,
-                                                       mysqlc::ImplEntries );
+        return ::cppu::component_getFactoryHelper( pImplName,
+                                                   pServiceManager,
+                                                   pRegistryKey ,
+                                                   mysqlc::ImplEntries );
     }
 }
