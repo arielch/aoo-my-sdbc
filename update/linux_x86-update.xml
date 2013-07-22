@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<description xmlns="http://openoffice.org/extensions/description/2006" xmlns:dep="http://openoffice.org/extensions/description/2006" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <identifier value="com.sun.star.mysql-connector-ooo-linux_x86"/>
+    <version value="1.2.0"/>
+    <dependencies>
+        <dep:OpenOffice.org-minimal-version value="4.0" dep:name="OpenOffice.org 4.0"/>
+        <dep:OpenOffice.org-maximal-version value="4.9" dep:name="OpenOffice.org 4.9"/>
+    </dependencies>
+    <publisher>
+        <name xlink:href="http://code.google.com/a/apache-extras.org/p/aoo-my-sdbc/" lang="en">aoo-my-sdbc</name>
+    </publisher>
+    <update-download>
+        <src xlink:href="http://aoo-my-sdbc.apache-extras.org.codespot.com/files/aoo-my-sdbc-1.2.0-linux-x86.oxt"/>
+    </update-download>
+    <release-notes>
+        <src xlink:href="http://code.google.com/a/apache-extras.org/p/aoo-my-sdbc/wiki/ReleaseNotes" lang="en"/>
+    </release-notes>
+</description>

@@ -29,7 +29,7 @@ DESCRIPTION_DEP_NAME_MIN=Apache OpenOffice $(DESCRIPTION_OOO_MIN_VER)
 DESCRIPTION_DEP_NAME_MAX=Apache OpenOffice $(DESCRIPTION_OOO_MAX_VER)
 
 DESCRIPTION_PUBLISHER_URL=http://code.google.com/a/apache-extras.org/p/aoo-my-sdbc/
-DESCRIPTION_UPDATE_BASEURL=http://people.apache.org/~arielch/extensions/aoo-my-sdbc/
+DESCRIPTION_UPDATE_BASEURL=http://aoo-my-sdbc.apache-extras.org.codespot.com/git/update/
 
 UPDATE_DOWNLOAD_BASE=http://aoo-my-sdbc.apache-extras.org.codespot.com/files/
 RELEASE_NOTES=http://code.google.com/a/apache-extras.org/p/aoo-my-sdbc/wiki/ReleaseNotes
