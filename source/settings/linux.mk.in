@@ -22,9 +22,7 @@
 PATCH=patch
 TAR=tar
 ZCAT=zcat
-CAT=cat
 COPY=cp
-SED=sed
 CMAKE=cmake
 
 COPYRECURSIVE=$(COPY) -rf

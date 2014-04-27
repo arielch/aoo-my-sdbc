@@ -172,14 +172,14 @@ $(OUT_COMP_GEN)/$(COMP_DRIVER_CFG) : $(COMP_DRIVER_CFG)
 # rule for Logging.xcu
 $(OUT_COMP_GEN)/$(COMP_DRIVER_LOGGING_CFG) : $(COMP_DRIVER_LOGGING_CFG)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-	$(CAT) $< | $(SED) \
+	$(SDK_CAT) $< | $(SDK_SED) \
 		-e "s/#MY_SDBC_LOGGER#/$(MY_SDBC_LOGGER)/" \
 		-e "s/#MY_SDBC_LOGLEVEL#/$(MY_SDBC_LOGLEVEL)/" > $@
 
 # rule for extension description.xml
 $(COMP_UNOPKG_DESCRIPTION) :  xml/description.xml
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-	$(CAT) $< | $(SED) \
+	$(SDK_CAT) $< | $(SDK_SED) \
 	-e "s/#EXTENSION_VERSION#/$(EXTENSION_VERSION)/" \
 	-e "s/#DESCRIPTION_IDENTIFIER#/$(DESCRIPTION_IDENTIFIER)/" \
 	-e "s/#EXTENSION_PLATFORM#/$(EXTENSION_PLATFORM)/" \
@@ -196,7 +196,7 @@ $(COMP_UNOPKG_DESCRIPTION) :  xml/description.xml
 # rule for update description
 $(OUT_COMP_BIN)/$(DESCRIPTION_UPDATE_FILENAME) : xml/update.xml
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-	$(CAT) $< | $(SED) \
+	$(SDK_CAT) $< | $(SDK_SED) \
 		-e "s/#DESCRIPTION_IDENTIFIER#/$(DESCRIPTION_IDENTIFIER)/" \
 		-e "s/#EXTENSION_VERSION#/$(EXTENSION_VERSION)/" \
 		-e "s/#DESCRIPTION_PUBLISHER_URL#/$(subst /,\/,$(DESCRIPTION_PUBLISHER_URL))/" \
@@ -208,14 +208,14 @@ $(OUT_COMP_BIN)/$(DESCRIPTION_UPDATE_FILENAME) : xml/update.xml
 # rule for component package manifest
 $(COMP_UNOPKG_MANIFEST) : xml/manifest.xml
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-	$(CAT) $< | $(SED) \
+	$(SDK_CAT) $< | $(SDK_SED) \
 		-e "s/#COMP_NAME#/$(COMP_NAME)/" \
 		-e "s/#UNOPKG_PLATFORM#/$(UNOPKG_PLATFORM)/" > $@
 
 # rule for component pasive registration
 $(COMP_COMPONENTS) : xml/components.xml
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-	$(CAT) $< | $(SED) \
+	$(SDK_CAT) $< | $(SDK_SED) \
 		-e "s/#UNOPKG_PLATFORM#/$(UNOPKG_PLATFORM)/" \
 		-e "s/#COMP_IMPL_NAME#/$(COMP_IMPL_NAME)/" > $@
 

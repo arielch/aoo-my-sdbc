@@ -30,10 +30,6 @@ ZCAT=C:\UnxUtils\usr\local\wbin\zcat.exe
 # patching the external libraries
 PATCH=C:\UnxUtils\usr\local\wbin\patch.exe
 
-# get rid of echoing XML files
-CAT=C:\UnxUtils\usr\local\wbin\cat.exe
-SED=C:\UnxUtils\usr\local\wbin\sed.exe
-
 # we could use xcopy to copy recursively, but it sucks
 COPY=C:\UnxUtils\usr\local\wbin\cp.exe
 COPYRECURSIVE=$(COPY) -rf
