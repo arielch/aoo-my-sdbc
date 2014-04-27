@@ -249,7 +249,7 @@ endif
 
 update-desc : $(OUT_COMP_BIN)/$(DESCRIPTION_UPDATE_FILENAME)
 
-MySQLConnector : $(COMP_PACKAGE)
+# MySQLConnector : $(COMP_PACKAGE)
 # MySQLConnector : $(OUT_COMP_LIB)/$(COMP_IMPL_NAME)
 # MySQLConnector : $(COMP_SLOFILES)
 # Test MySQL Connector C++
@@ -266,7 +266,7 @@ MySQLConnector : $(COMP_PACKAGE)
 # MySQLConnector : $(MYSQLCONNC_PATCHED_FLAG)
 # MySQLConnector : $(MYSQLCONNC_UNPACKED_FLAG)
 # Test boost
-# MySQLConnector : $(BOOST_DELIVER_FLAG)
+MySQLConnector : $(BOOST_DELIVER_FLAG)
 # MySQLConnector : $(BOOST_PATCHED_FLAG)
 # MySQLConnector : $(BOOST_UNPACKED_FLAG)
 	@echo --------------------------------------------------------------------------------

@@ -22,7 +22,7 @@
 #----------------- Boost -------------------------
 
 BOOST=boost
-BOOST_TARFILE_NAME=boost_1_39_0
+BOOST_TARFILE_NAME=boost_1_55_0
 
 BOOST_TAR=$(EXTERNAL_DIR)/$(BOOST_TARFILE_NAME).tar.gz
 BOOST_PATCH_FILE=$(PATCHDIR)/$(BOOST_TARFILE_NAME).patch
@@ -210,10 +210,11 @@ $(BOOST_UNPACKED_FLAG): $(BOOST_TAR)
 
 $(BOOST_PATCHED_FLAG) : $(BOOST_PATCH_FILE) $(BOOST_UNPACKED_FLAG)
 #	-$(MKDIR) $(subst /,$(PS),$(@D))
-	cd $(subst /,$(PS),$(@D)/$(BOOST_TARFILE_NAME)) && $(PATCH) -p2 -i "$(CURDIR)/$<"
+	cd $(subst /,$(PS),$(@D)/$(BOOST_TARFILE_NAME)) && $(PATCH) -p3 -i "$(CURDIR)/$<"
 	@echo flagged > $(subst /,$(PS),$@)
 
 $(BOOST_DELIVER_FLAG) : $(BOOST_PATCHED_FLAG)
+	-$(DELRECURSIVE) $(subst /,$(PS),$(BOOST_INC_DIR)/boost)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
 	-$(MKDIR) $(subst /,$(PS),$(OUT_COMP_INC))
 	$(COPYRECURSIVE) $(subst /,$(PS),$(BOOST_INC_DIR_IN)) $(subst /,$(PS),$(BOOST_INC_DIR)/boost)
