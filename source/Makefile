@@ -136,6 +136,16 @@ COMP_CFLAGS += -DMY_SDBC_LOGGER=\"$(MY_SDBC_LOGGER)\"
 
 COMP_CFLAGS += $(BOOST_INC) $(MYSQLCONNCPP_INC)
 
+ifeq "$(OS)" "LINUX"
+# Enable dependency checking
+DEPFILES=$(wildcard $(addsuffix .d, $(basename ${COMP_SLOFILES})))
+ifneq (${DEPFILES},)
+include ${DEPFILES}
+endif
+CC_DEFINES+= -Wall -Wextra -MMD -MP -MF "$(addsuffix .d,$(basename $@))"
+endif
+
+
 $(OUT_COMP_SLO)/%.$(OBJ_EXT) : %.cxx $(SDKTYPEFLAG) $(BOOST_DELIVER_FLAG) $(MYSQLCONNCPP_DELIVER_FLAG)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
 	$(CC) $(CC_FLAGS) $(COMP_CFLAGS) $(CC_INCLUDES) -I$(OUT_COMP_INC) $(CC_DEFINES) $(CC_OUTPUT_SWITCH)$(subst /,$(PS),$@) $<
