@@ -135,7 +135,7 @@ COMP_CFLAGS += -DMY_SDBC_LOGGER=\"$(MY_SDBC_LOGGER)\"
 
 COMP_CFLAGS += $(BOOST_INC) $(MYSQLCONNCPP_INC)
 
-ifeq "$(OS)" "LINUX" || "$(OS)" "MACOSX"
+ifneq (,$(filter $(OS),LINUX MACOSX))
 # Enable dependency checking
 DEPFILES=$(wildcard $(addsuffix .d, $(basename ${COMP_SLOFILES})))
 ifneq (${DEPFILES},)
