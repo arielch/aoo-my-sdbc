@@ -1,0 +1,82 @@
+diff -uNrp a/mysql-connector-c-6.1.3-src/libmysql/CMakeLists.txt b/mysql-connector-c-6.1.3-src/libmysql/CMakeLists.txt
+--- a/mysql-connector-c-6.1.3-src/libmysql/CMakeLists.txt	2013-12-23 16:24:06.000000000 -0300
++++ b/mysql-connector-c-6.1.3-src/libmysql/CMakeLists.txt	2014-04-27 07:36:24.058324291 -0300
+@@ -226,24 +226,7 @@ MACRO(GET_TARGET_NAME target out_name)
+ ENDMACRO()
+ 
+ IF(UNIX)
+-  MACRO(GET_VERSIONED_LIBNAME LIBNAME EXTENSION VERSION OUTNAME)
+-    SET(DOT_VERSION ".${VERSION}")
+-    IF(DOT_VERSION STREQUAL ".") 
+-      SET(DOT_VERSION "")
+-    ENDIF()
+-    IF(APPLE)
+-      SET(${OUTNAME} ${LIBNAME}${DOT_VERSION}${EXTENSION})
+-    ELSE()
+-      SET(${OUTNAME} ${LIBNAME}${EXTENSION}${DOT_VERSION})
+-    ENDIF() 
+-  ENDMACRO()
+-ENDIF()
+-
+-IF(UNIX)
+   GET_TARGET_NAME(mysqlclient lib_name)
+-  INSTALL_SYMLINK(mysqlclient
+-    ${lib_name} ${CMAKE_STATIC_LIBRARY_PREFIX}mysqlclient_r.a
+-    ${INSTALL_LIBDIR} Development)
+ ENDIF()
+ 
+ IF(NOT DISABLE_SHARED)
+@@ -253,18 +236,9 @@ IF(NOT DISABLE_SHARED)
+     EXPORTS ${CLIENT_API_FUNCTIONS}
+     COMPONENT SharedLibraries)
+   IF(UNIX)
+-    # libtool compatability
+-    IF(CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR APPLE)
+-      SET(OS_SHARED_LIB_VERSION "${SHARED_LIB_MAJOR_VERSION}")
+-    ELSE()
+-      SET(OS_SHARED_LIB_VERSION
+-        "${SHARED_LIB_MAJOR_VERSION}.${SHARED_LIB_MINOR_VERSION}.0")
+-    ENDIF()
+     # Name of shared library is mysqlclient on Unix
+     SET_TARGET_PROPERTIES(libmysql PROPERTIES 
+-      OUTPUT_NAME mysqlclient 
+-      VERSION "${OS_SHARED_LIB_VERSION}" 
+-      SOVERSION "${SHARED_LIB_MAJOR_VERSION}")
++      OUTPUT_NAME mysqlclient)
+     CONFIGURE_FILE(libmysql.ver.in ${CMAKE_CURRENT_BINARY_DIR}/libmysql.ver)
+ 
+     GET_TARGET_PROPERTY(libmysql_link_flags libmysql LINK_FLAGS)
+@@ -288,33 +262,6 @@ IF(NOT DISABLE_SHARED)
+     #(mysqlclient in this case)
+     SET_TARGET_PROPERTIES(mysqlclient PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+     SET_TARGET_PROPERTIES(libmysql PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+-
+-    # Install links to libmysqlclient.so (client_r)
+-    GET_VERSIONED_LIBNAME(
+-      "${CMAKE_SHARED_LIBRARY_PREFIX}mysqlclient_r"
+-      "${CMAKE_SHARED_LIBRARY_SUFFIX}"
+-      ""
+-      linkname)
+-    GET_TARGET_NAME(libmysql lib_name)
+-    GET_FILENAME_COMPONENT(lib_name_we ${lib_name} NAME_WE)
+-    INSTALL_SYMLINK(libmysql
+-      ${lib_name} ${linkname}
+-      ${INSTALL_LIBDIR} SharedLibraries)
+-    SET(OS_SHARED_LIB_SYMLINKS
+-      "${SHARED_LIB_MAJOR_VERSION}" "${OS_SHARED_LIB_VERSION}")
+-    LIST(REMOVE_DUPLICATES OS_SHARED_LIB_SYMLINKS)
+-    FOREACH(ver ${OS_SHARED_LIB_SYMLINKS})
+-      GET_VERSIONED_LIBNAME(
+-        "${CMAKE_SHARED_LIBRARY_PREFIX}mysqlclient_r"
+-        "${CMAKE_SHARED_LIBRARY_SUFFIX}"
+-        "${ver}"
+-        linkname)
+-      GET_VERSIONED_LIBNAME(
+-        ${lib_name_we} "${CMAKE_SHARED_LIBRARY_SUFFIX}" "${ver}" lib_name_ver)
+-      INSTALL_SYMLINK(libmysql
+-        ${lib_name_ver} ${linkname}
+-        ${INSTALL_LIBDIR} SharedLibraries)
+-    ENDFOREACH()
+   ENDIF()
+ ENDIF()
+ 

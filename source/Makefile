@@ -110,7 +110,6 @@ COMP_CFLAGS += \
 
 
 ifeq "$(DEBUG)" "yes"
-	CC_FLAGS += -DOSL_DEBUG_LEVEL=2
 	CMAKE_BUILD_TYPE=Debug
 	MY_SDBC_LOGLEVEL=-2147483648
 else
@@ -136,7 +135,7 @@ COMP_CFLAGS += -DMY_SDBC_LOGGER=\"$(MY_SDBC_LOGGER)\"
 
 COMP_CFLAGS += $(BOOST_INC) $(MYSQLCONNCPP_INC)
 
-ifeq "$(OS)" "LINUX"
+ifeq "$(OS)" "LINUX" || "$(OS)" "MACOSX"
 # Enable dependency checking
 DEPFILES=$(wildcard $(addsuffix .d, $(basename ${COMP_SLOFILES})))
 ifneq (${DEPFILES},)
@@ -192,7 +191,7 @@ $(COMP_UNOPKG_DESCRIPTION) :  xml/description.xml
 	$(SDK_CAT) $< | $(SDK_SED) \
 	-e "s/#EXTENSION_VERSION#/$(EXTENSION_VERSION)/" \
 	-e "s/#DESCRIPTION_IDENTIFIER#/$(DESCRIPTION_IDENTIFIER)/" \
-	-e "s/#EXTENSION_PLATFORM#/$(EXTENSION_PLATFORM)/" \
+	-e "s/#EXTENSION_PLATFORM#/$(DESCRIPTION_EXTENSION_PLATFORM)/" \
 	-e "s/#DESCRIPTION_OOO_MIN_VER#/$(DESCRIPTION_OOO_MIN_VER)/" \
 	-e "s/#DESCRIPTION_OOO_MAX_VER#/$(DESCRIPTION_OOO_MAX_VER)/" \
 	-e "s/#DESCRIPTION_DEP_NAME_MIN#/$(DESCRIPTION_DEP_NAME_MIN)/" \
@@ -249,7 +248,7 @@ endif
 
 update-desc : $(OUT_COMP_BIN)/$(DESCRIPTION_UPDATE_FILENAME)
 
-# MySQLConnector : $(COMP_PACKAGE)
+MySQLConnector : $(COMP_PACKAGE)
 # MySQLConnector : $(OUT_COMP_LIB)/$(COMP_IMPL_NAME)
 # MySQLConnector : $(COMP_SLOFILES)
 # Test MySQL Connector C++
@@ -266,7 +265,7 @@ update-desc : $(OUT_COMP_BIN)/$(DESCRIPTION_UPDATE_FILENAME)
 # MySQLConnector : $(MYSQLCONNC_PATCHED_FLAG)
 # MySQLConnector : $(MYSQLCONNC_UNPACKED_FLAG)
 # Test boost
-MySQLConnector : $(BOOST_DELIVER_FLAG)
+# MySQLConnector : $(BOOST_DELIVER_FLAG)
 # MySQLConnector : $(BOOST_PATCHED_FLAG)
 # MySQLConnector : $(BOOST_UNPACKED_FLAG)
 	@echo --------------------------------------------------------------------------------

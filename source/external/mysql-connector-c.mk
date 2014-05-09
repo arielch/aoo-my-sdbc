@@ -19,25 +19,25 @@
 #
 #**************************************************************
 
-#mysql-connector-c-6.0.2.tar.gz
-#http://cdn.mysql.com/Downloads/Connector-C/mysql-connector-c-6.0.2.tar.gz
+# mysql-connector-c-6.1.3-src.tar.gz
+# http://dev.mysql.com/get/Downloads/Connector-C/mysql-connector-c-6.1.3-src.tar.gz
 
 MYSQL_CONNECTOR_C=mysql-connector-c
 
-MYSQL_CONNECTOR_C_LIB=libmysql.$(SHAREDLIB_EXT)
+MYSQL_CONNECTOR_C_LIB=libmysqlclient.$(SHAREDLIB_EXT)
 
 MYSQL_CONNECTOR_C_MAJOR=6
-MYSQL_CONNECTOR_C_MINOR=0
-MYSQL_CONNECTOR_C_MICRO=2
+MYSQL_CONNECTOR_C_MINOR=1
+MYSQL_CONNECTOR_C_MICRO=3
 
 MYSQL_CONNECTOR_C_VER=$(MYSQL_CONNECTOR_C)-$(MYSQL_CONNECTOR_C_MAJOR).$(MYSQL_CONNECTOR_C_MINOR).$(MYSQL_CONNECTOR_C_MICRO)
-MYSQL_CONNECTOR_C_TAR=$(MYSQL_CONNECTOR_C_VER).tar.gz
+MYSQL_CONNECTOR_C_TAR_DIR=${MYSQL_CONNECTOR_C_VER}-src
+MYSQL_CONNECTOR_C_TAR=$(MYSQL_CONNECTOR_C_TAR_DIR).tar.gz
 
 
 MYSQL_CONNECTOR_C_DOWNLOAD=http://cdn.mysql.com/Downloads/Connector-C/$(MYSQL_CONNECTOR_C_TAR)
-MYSQL_CONNECTOR_C_MD5=f922b778abdd25f7c1c95a8329144d56
+MYSQL_CONNECTOR_C_MD5=3161d47305234772db6d7ae30288a9ef
 
 MYSQL_CONNECTOR_C_LICENSE= \
 				COPYING \
-				EXCEPTIONS-CLIENT \
 				README

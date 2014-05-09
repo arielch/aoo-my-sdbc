@@ -49,6 +49,10 @@ else
 		EXTENSION_PLATFORM=macosx_x86
 		include settings/mac.mk
 	else
+	ifeq "$(UNOPKG_PLATFORM)" "MacOSX_x86_64"
+		EXTENSION_PLATFORM=macosx_x86_64
+		include settings/mac.mk
+	else
 	ifeq "$(UNOPKG_PLATFORM)" "Solaris_SPARC"
 		EXTENSION_PLATFORM=solaris_sparc
 	else
@@ -67,6 +71,7 @@ else
 	endif
 	endif
 	endif
+        endif
 endif
 
 #ifeq "$(UNOPKG_PLATFORM)" "Linux_SPARC"
