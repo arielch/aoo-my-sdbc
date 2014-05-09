@@ -5,9 +5,12 @@
     <publisher>
         <name xlink:href="#DESCRIPTION_PUBLISHER_URL#" lang="en">#DESCRIPTION_PUBLISHER_NAME#</name>
     </publisher>
-    <update-download>
+    <!-- update-download>
         <src xlink:href="#UPDATE_DOWNLOAD#"/>
-    </update-download>
+    </update-download -->
+    <update-website>
+        <src xlink:href="#UPDATE_WEBSITE#" lang="en" />
+    </update-website>
     <release-notes>
         <src xlink:href="#RELEASE_NOTES#" lang="en"/>
     </release-notes>
